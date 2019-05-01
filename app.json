@@ -1,0 +1,8 @@
+{
+  "expo": {
+    "name": "demo-expo",
+    "slug": "my-expo-project",
+    "sdkVersion": "32.0.0",
+    "version": "1.0.0",
+  }
+}

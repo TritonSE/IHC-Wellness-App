@@ -1,0 +1,52 @@
+{
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "test": "npm run tslint && npm run tsc-test && npm run jest",
+    "tslint": "tslint --project .",
+    "tsc-test": "tsc --project . --noEmit",
+    "jest": "jest",
+    "eject": "expo eject"
+  },
+  "dependencies": {
+    "expo": "^32.0.0",
+    "react": "16.5.0",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz"
+  },
+  "devDependencies": {
+    "@types/expo": "^32.0.10",
+    "@types/jest": "^24.0.12",
+    "@types/react": "^16.8.15",
+    "@types/react-native": "^0.57.51",
+    "@types/react-test-renderer": "^16.8.1",
+    "jest": "^24.7.1",
+    "jest-expo": "^32.0.0",
+    "react-native-typescript-transformer": "^1.2.12",
+    "react-test-renderer": "^16.8.6",
+    "ts-jest": "^24.0.2",
+    "tslint": "^5.15.0",
+    "tslint-config-airbnb": "^5.11.1",
+    "typescript": "^3.4.5"
+  },
+  "jest": {
+    "preset": "react-native",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.(js)$": "<rootDir>/node_modules/babel-jest",
+      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "testPathIgnorePatterns": [
+      "\\.snap$",
+      "<rootDir>/node_modules/"
+    ],
+    "cacheDirectory": ".jest/cache"
+  },
+  "private": true
+}
