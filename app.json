@@ -1,8 +1,14 @@
 {
   "expo": {
-    "name": "demo-expo",
-    "slug": "my-expo-project",
+    "name": "IHCWellness",
+    "slug": "IHCWellness",
     "sdkVersion": "32.0.0",
     "version": "1.0.0",
+    "assetBundlePatterns": [
+      "assets/images/*"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.tse.IHCWellness"
+    },
   }
 }
