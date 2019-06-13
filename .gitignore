@@ -8,3 +8,4 @@ npm-debug.*
 # Jest
 #
 .jest/
+# TODO add more regular expressions for ignoring files down here
