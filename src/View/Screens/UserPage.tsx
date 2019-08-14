@@ -1,7 +1,7 @@
 import * as React from 'react';
 import NavAbsolute from '../Navigations/NavAbsolute';
-import Profile from './Profile';
-import UserData from './UserData';
+import Profile from '../UserScreen/Profile';
+import UserData from '../UserScreen/UserData';
 
 export interface IProps {
   navigation: any;

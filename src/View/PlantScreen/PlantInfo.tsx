@@ -15,7 +15,7 @@ export interface IProps {
   listItems: IItem[];
 }
 
-export default class PlantInfo extends React.Component<IProps, IState> {
+export default class PlantInfo extends React.Component<IProps, object> {
   private idx: number;
 
   public getColor(name: string): string {

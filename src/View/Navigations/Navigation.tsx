@@ -1,10 +1,10 @@
 import { Ionicons } from '@expo/vector-icons'; // 6.2.2
 import * as React from 'react';
 import { createAppContainer, createBottomTabNavigator } from 'react-navigation';
-import CheckInPage from '../HomeScreen/CheckInPage';
-import PlantPage from '../PlantScreen/PlantPage';
-import StorePage from '../StoreScreen/StorePage';
-import UserPage from '../UserScreen/UserPage';
+import CheckInPage from '../Screens/CheckInPage';
+import PlantPage from '../Screens/PlantPage';
+import StorePage from '../Screens/StorePage';
+import UserPage from '../Screens/UserPage';
 import NavIcon from './NavIcon';
 
 const HomeIconWithBadge = (props: any) => {
