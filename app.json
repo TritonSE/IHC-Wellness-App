@@ -2,7 +2,7 @@
   "expo": {
     "name": "IHCWellness",
     "slug": "IHCWellness",
-    "sdkVersion": "32.0.0",
+    "sdkVersion": "35.0.0",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "assets/images/*"
