@@ -8,14 +8,14 @@ export default class StorePage extends React.Component<object, object> {
       <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
         <AppHeader title="Store"/>
         <Text style={styles.header}>Store Page!</Text>
-        <View styles={styles.shopRow}>
-          <TouchableOpacity sytle={styles.shopItem}>
+        <View styles={{flexDirection: 'row'}}>
+          <TouchableOpacity style={styles.shopItem}>
             <Text>Item 1</Text>
           </TouchableOpacity>
-          <TouchableOpacity sytle={styles.shopItem}>
+          <TouchableOpacity style={styles.shopItem}>
             <Text>Item 2</Text>
           </TouchableOpacity>
-          <TouchableOpacity sytle={styles.shopItem}>
+          <TouchableOpacity style={styles.shopItem}>
             <Text>Item 3</Text>
           </TouchableOpacity>
         </View>
@@ -30,16 +30,13 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start'
   },
-  shopRow: {
-    flexDirection: 'row'
-  },
   container: {
     paddingLeft: 30,
     paddingRight: 30,
     backgroundColor: 'green'
   },
   shopItem: {
-    backgroundColor: 'blue',
-    padding: 5
+    padding: 5,
+    backgroundColor: 'blue'
   }
 });

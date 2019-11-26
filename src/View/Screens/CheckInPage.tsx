@@ -22,7 +22,7 @@ export default class CheckInPage extends React.Component<object, object> {
   public render() {
     const {value} = this.state;
     return (
-      <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', borderColor: 'red' }}>
         <AppHeader title="Check-in"/>
         <Text>Check In!</Text>
         <View style={{paddingTop: 30}}>
