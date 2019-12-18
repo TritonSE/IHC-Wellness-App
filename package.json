@@ -16,6 +16,7 @@
     "expo": "^35.0.0",
     "react": "16.8.3",
     "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
+    "react-native-datepicker": "^1.7.2",
     "react-native-elements": "^1.1.0",
     "react-native-gesture-handler": "^1.4.1",
     "react-native-modal-dropdown": "^0.6.2",

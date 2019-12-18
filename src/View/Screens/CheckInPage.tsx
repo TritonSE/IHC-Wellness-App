@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {Text, View, AsyncStorage, Slider } from 'react-native';
 import { Button } from 'react-native-elements';
+import DatePicker from 'react-native-datepicker';
 import AppHeader from '../../components/AppHeader';
 import checkInHelper from '../../Business/checkInBackend.tsx'
 
@@ -9,7 +10,8 @@ export default class CheckInPage extends React.Component<object, object> {
     super(props);
     this.state = {
       mood: 0,
-      hoursOfSleep: 0
+      hoursOfSleep: 0,
+      dateToCheck: ""
     };
   }
 
@@ -41,6 +43,7 @@ export default class CheckInPage extends React.Component<object, object> {
             value={value}
           />
         </View>
+
         <Button
           title="Check In"
           onPress={ ()=>{checkInHelper.saveData(this.state)} }
@@ -53,6 +56,27 @@ export default class CheckInPage extends React.Component<object, object> {
           title="Clear All"
           onPress={ ()=>{checkInHelper.clearAllData()} }
         />
+
+        <DatePicker
+        style={{width: 100, flex:1}}
+        date={this.state.dateToCheck}
+        mode="date"
+        placeholder={this.state.dateToCheck}
+        format="YYYY-MM-DD"
+        minDate="2019-01-01"
+        maxDate={checkInHelper.getDate()}
+        customStyles={{
+          dateIcon: {
+            position: 'absolute',
+            left: -40,
+          },
+        }}
+        onDateChange={async (date) => {
+          this.setState({dateToCheck: date})
+          alert(checkInHelper.parseData(await checkInHelper.retrieveData(date)))
+        }}
+        />
+
       </View>
     );
   }

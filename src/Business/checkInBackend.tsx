@@ -1,6 +1,7 @@
 import {AsyncStorage } from 'react-native';
 
 const checkInHelper = {
+  //CHECKIN LOGIC
   saveData : async (obj)=>{
     let date = checkInHelper.getDate();
     //checks if person already checked in today
@@ -11,6 +12,10 @@ const checkInHelper = {
     else{//adds new information to storage
       try{
         let checkInData = obj;
+        checkInData = {
+          mood: obj.mood,
+          hoursOfSleep: obj.hoursOfSleep
+        }
         await AsyncStorage.setItem(date, JSON.stringify(checkInData));
         checkInHelper.updateDates(date);
       }
@@ -31,6 +36,18 @@ const checkInHelper = {
       console.log(error);
       return "error";
     }
+  },
+
+  parseData : (dataString) =>{
+    if(dataString == null){
+      return "You did not check in that day"
+    }
+    var parsed = JSON.parse(dataString)
+    var text = ""
+    Object.keys(parsed).forEach((key)=>{
+      text += key + " : " + parsed[key] + "\n"
+    })
+    return text
   },
 
   displayAllData : async () => {
@@ -73,7 +90,20 @@ const checkInHelper = {
       asyncValue.push(date)
       await AsyncStorage.setItem("checkins", JSON.stringify(asyncValue));
     }
-  }
+  },
+
+  //RETREIVING CHECKIN DATA
+  getCheckin : ()=>{
+
+  },
+
+  getPlaceholder : (dateToCheck)=>{
+    console.log(dateToCheck)
+    if(dateToCheck == ""){
+      return "select date"
+    }
+    return dateToCheck
+  },
 
 }
 
