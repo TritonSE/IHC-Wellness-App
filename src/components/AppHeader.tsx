@@ -10,7 +10,7 @@ interface IProps {
 export default class AppHeader extends React.Component<IProps, object> {
   public render() {
     return (
-      <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
+      <View style={{ flex: 0.5, justifyContent: 'flex-start', alignItems: 'center', borderWidth: 4, borderColor: 'red' }}>
         <Header
           centerComponent={{ text: this.props.title }}
         />
