@@ -64,7 +64,7 @@ export default class CheckInPage extends React.Component<object, object> {
         placeholder={this.state.dateToCheck}
         format="YYYY-MM-DD"
         minDate="2019-01-01"
-        maxDate={checkInHelper.getDate()}
+        maxDate={checkInHelper.getCurrentDate()}
         customStyles={{
           dateIcon: {
             position: 'absolute',

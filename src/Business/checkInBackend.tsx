@@ -3,7 +3,7 @@ import {AsyncStorage } from 'react-native';
 const checkInHelper = {
   //CHECKIN LOGIC
   saveData : async (obj)=>{
-    let date = checkInHelper.getDate();
+    let date = checkInHelper.getCurrentDate();
     //checks if person already checked in today
     let data = await checkInHelper.retrieveData(date);
     if(data == "error" || data != null){
@@ -67,9 +67,18 @@ const checkInHelper = {
     AsyncStorage.clear();
   },
 
-  getDate : () =>{
+  getCurrentDate : () =>{
     //gets the current date
     let date = new Date();
+    let year = date.getFullYear();
+    let month = ("0"+(date.getMonth()+1)).slice(-2);
+    let day = ("0"+ date.getDate()).slice(-2);
+    condensedDate =  year + "-" + month + "-" + day;
+    return condensedDate;
+  },
+
+  parseDate: (dateInSeconds)=>{
+    let date = new Date(dateInSeconds);
     let year = date.getFullYear();
     let month = ("0"+(date.getMonth()+1)).slice(-2);
     let day = ("0"+ date.getDate()).slice(-2);
