@@ -1,6 +1,8 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Button } from 'react-native';
 import AppHeader from '../../components/AppHeader';
+import storeHelper from '../../Business/storeBackend'
+
 
 export default class StorePage extends React.Component<object, object> {
   public render() {
@@ -18,6 +20,14 @@ export default class StorePage extends React.Component<object, object> {
           <TouchableOpacity style={styles.shopItem}>
             <Text>Item 3</Text>
           </TouchableOpacity>
+          <Button
+          title="Buy Item"
+          onPress={ ()=>{storeHelper.buyItem("terracotta")} }
+        />
+        <Button
+        title="Get Items"
+        onPress={ ()=>{console.log(storeHelper.getItems())}}
+        />
         </View>
       </View>
     );
