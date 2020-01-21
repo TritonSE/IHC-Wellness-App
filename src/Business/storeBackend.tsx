@@ -39,15 +39,38 @@ const storeHelper = {
         let asyncValue = await AsyncStorage.getItem("Items");
         if(asyncValue == null){
             await AsyncStorage.setItem("Items", JSON.stringify([]))
+                
         }
-        else{
-            //add onto the previous array
-            asyncValue = JSON.parse(asyncValue)
-            let count = 1
+        asyncValue = await AsyncStorage.getItem("Items");
+        
+        //add onto the previous array
+        asyncValue = JSON.parse(asyncValue)
+        console.log(asyncValue)
+
+        var found = false
+        
+        for (let [key, value] of Object.entries(asyncValue)) {
             
-            asyncValue.push({item: count.toString()})
+            console.log(`${value}`)
+            console.log(asyncValue[`${key}`])
+            console.log("key is")
+            console.log(`${key}`)
+            if (`${key}` == item) {
+                asyncValue[`${key}`] = parseInt(`${value}`, 10) + 1
+                await AsyncStorage.setItem("Items", JSON.stringify(asyncValue));
+                found = true;
+            } 
+        }
+
+        if (!found) {
+            let count = 1
+            asyncValue.push({[item]: count.toString()})
             await AsyncStorage.setItem("Items", JSON.stringify(asyncValue));
         }
+          
+
+        
+        
     },
 
     getItems : async () => {
