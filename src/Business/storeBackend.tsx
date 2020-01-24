@@ -1,4 +1,4 @@
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage, ProgressViewIOSComponent } from 'react-native';
 import { string } from 'prop-types';
 import items from './itemProperties.tsx';
 
@@ -35,6 +35,12 @@ const storeHelper = {
     },
 
 
+    addMoney: async function(amount: float) {
+      await AsyncStorage.setItem("Money", amount.toString());
+
+    },
+
+
 
     buyItem: async function(item: string) {
         // if (AsyncStorage.getItem("Items") )
@@ -59,6 +65,16 @@ const storeHelper = {
             found = true
             //updates the amount the user owns
             asyncValue[i].owned = asyncValue[i].owned + 1
+            var balance = await AsyncStorage.getItem("Money")
+            balance = parseInt(balance, 10)
+            var cost = asyncValue[i].price
+            if (balance < cost) {
+              console.log("broke")
+              return
+            } else {
+              balance -= cost
+              await AsyncStorage.setItem("Money", balance.toString())
+            }
           }
         }
 

@@ -25,8 +25,8 @@ export default class StorePage extends React.Component<object, object> {
           onPress={ ()=>{storeHelper.buyItem("terracotta")} }
         />
         <Button
-          title="Buy Item"
-          onPress={ ()=>{storeHelper.buyItem("plastic")} }
+          title="Add Money"
+          onPress={ ()=>{storeHelper.addMoney(10.4)} }
         />
         <Button
         title="Get Items"

@@ -64,7 +64,7 @@ const checkInHelper = {
   },
 
   clearAllData : async ()=>{
-    AsyncStorage.clear();
+    await AsyncStorage.clear();
   },
 
   getCurrentDate : () =>{
