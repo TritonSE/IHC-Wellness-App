@@ -1,12 +1,13 @@
 import { AsyncStorage } from 'react-native';
 import { string } from 'prop-types';
+import items from './itemProperties.tsx';
 
 const storeHelper = {
     metadataCount : 2,
-    storeMatrix : [ ["pots", 5, "terracotta", "plastic", "mud", "clay", "styrofoam"], 
-                        ["stems", 5, "long", "short", "medium", "yellow", "green"], 
+    storeMatrix : [ ["pots", 5, "terracotta", "plastic", "mud", "clay", "styrofoam"],
+                        ["stems", 5, "long", "short", "medium", "yellow", "green"],
                         ["flowers", 5, "rose", "tulip", "daisy", "sunflower", "rose2"]],
-    
+
     getPots : function() {
         return this.storeMatrix[0]
     },
@@ -19,6 +20,10 @@ const storeHelper = {
         return this.storeMatrix[2]
     },
 
+    getAllItems : function(){
+        return storeHelper.splicePots().concat(storeHelper.spliceStems()).concat(storeHelper.spliceFlowers())
+    },
+
     splicePots : function() {
         return this.storeMatrix[0].slice(this.metadataCount)
     },
@@ -29,7 +34,7 @@ const storeHelper = {
         return this.storeMatrix[2].slice(this.metadataCount)
     },
 
-    
+
 
     buyItem: async function(item: string) {
         // if (AsyncStorage.getItem("Items") )
@@ -37,53 +42,95 @@ const storeHelper = {
         // AsyncStorage.setItem(item, count.toString())
 
         let asyncValue = await AsyncStorage.getItem("Items");
+        //adds the Item array
         if(asyncValue == null){
             await AsyncStorage.setItem("Items", JSON.stringify([]))
-                
         }
         asyncValue = await AsyncStorage.getItem("Items");
-        
+
         //add onto the previous array
         asyncValue = JSON.parse(asyncValue)
-        console.log(asyncValue)
 
         var found = false
-        
-        for (let [key, value] of Object.entries(asyncValue)) {
-            
-            console.log(`${value}`)
-            console.log(asyncValue[`${key}`])
-            console.log("key is")
-            console.log(`${key}`)
-            if (`${key}` == item) {
-                asyncValue[`${key}`] = parseInt(`${value}`, 10) + 1
-                await AsyncStorage.setItem("Items", JSON.stringify(asyncValue));
-                found = true;
-            } 
+        //looks for the item in the list of items the user owns
+        for(var i = 0; i < asyncValue.length; i++){
+          //item was found
+          if(asyncValue[i].name == item){
+            found = true
+            //updates the amount the user owns
+            asyncValue[i].owned = asyncValue[i].owned + 1
+          }
         }
 
-        if (!found) {
-            let count = 1
-            asyncValue.push({[item]: count.toString()})
-            await AsyncStorage.setItem("Items", JSON.stringify(asyncValue));
+        //item was not found, so create a new instance
+        if(!found){
+          var newItem = items[item];
+          newItem.owned = 1;
+          asyncValue.push(newItem);
         }
-          
+        var stringified = JSON.stringify(asyncValue);
+        AsyncStorage.setItem("Items",stringified);
+        console.log(asyncValue);
 
-        
-        
+
+        // for (let [key, value] of Object.entries(asyncValue)) {
+        //
+        //     console.log(`${value}`)
+        //     console.log(asyncValue[`${key}`])
+        //     console.log("key is")
+        //     console.log(`${key}`)
+        //     if (`${key}` == item) {
+        //         asyncValue[`${key}`] = parseInt(`${value}`, 10) + 1
+        //         await AsyncStorage.setItem("Items", JSON.stringify(asyncValue));
+        //         found = true;
+        //     }
+        // }
+        //
+        // if (!found) {
+        //     let count = 1
+        //     asyncValue.push({[item]: count.toString()})
+        //     await AsyncStorage.setItem("Items", JSON.stringify(asyncValue));
+        // }
+
+
+
+
     },
 
     getItems : async () => {
-        AsyncStorage.getAllKeys().then((keyArray) => {
-            AsyncStorage.multiGet(keyArray).then((keyValArray) => {
-                let myStorage: any = {};
-                for (let keyVal of keyValArray) {
-                    myStorage[keyVal[0]] = keyVal[1]
-                }
-    
-                console.log('CURRENT STORAGE: ', myStorage);
-            })
-        });
+          var allItems = storeHelper.splicePots().concat(storeHelper.spliceStems()).concat(storeHelper.spliceFlowers())
+          var ownedItems;
+          try{//gets the list of all the items the user has
+            ownedItems = await AsyncStorage.getItem("Items");
+            if(ownedItems == null){
+              alert("You do not own any items");
+              return
+            }
+            ownedItems = JSON.parse(ownedItems);
+          }
+          catch(error){//user does not have an items array
+            alert("You do not own any items");
+            return
+          }
+          //looks for each item
+          for(var i = 0; i < allItems.length; i++){
+            //loops through the owned items for the item we are looking for
+            for(var j=0; j < ownedItems.length;j++){
+              if(ownedItems[j].name == allItems[i]){
+                console.log(ownedItems[j]);
+              }
+            }
+          }
+
+
+            // AsyncStorage.multiGet(allItems).then((keyValArray) => {
+            //     let myStorage: any = {};
+            //     for (let keyVal of keyValArray) {
+            //         myStorage[keyVal[0]] = keyVal[1]
+            //     }
+            //
+            //   //  console.log('CURRENT STORAGE: ', myStorage);
+            // })
     },
 
 
@@ -141,7 +188,7 @@ export default storeHelper
 
 //   buyItem : async(name : string) => {
 //     let item = await storeHelper.getItem(name);
-//     // update items numBought field 
+//     // update items numBought field
 //     item.numBought++;
 //     item.numAvailable++;
 //     await AsyncStorage.setItem(name, JSON.stringify(item));
