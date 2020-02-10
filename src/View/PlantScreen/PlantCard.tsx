@@ -34,7 +34,7 @@ export default class PlantCard extends React.Component<IProps, object> {
         source = require('../../../assets/images/Plant_Body_Long.png');
         break;
       case 'FOOTER':
-        source = require('../../../assets/images/Plant_Footer.png');
+        source = require('../../../assets/images/terracotta.png');
         break;
       default:
         source = {};

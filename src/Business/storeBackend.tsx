@@ -1,6 +1,6 @@
 import { AsyncStorage, ProgressViewIOSComponent } from 'react-native';
 import { string } from 'prop-types';
-import items from './itemProperties.tsx';
+import {pots, stems, flowers} from './itemProperties.tsx';
 
 const storeHelper = {
     metadataCount : 2,
@@ -42,10 +42,7 @@ const storeHelper = {
 
 
 
-    buyItem: async function(item: string) {
-        // if (AsyncStorage.getItem("Items") )
-        // let count = 1
-        // AsyncStorage.setItem(item, count.toString())
+    buyItem: async function(item: string, section) {
 
         let asyncValue = await AsyncStorage.getItem("Items");
         //adds the Item array
@@ -80,37 +77,19 @@ const storeHelper = {
 
         //item was not found, so create a new instance
         if(!found){
-          var newItem = items[item];
+          var indexOfItem = this.getIndex(item, section);
+          console.log(item, indexOfItem)
+          if(indexOfItem == null){
+              console.log("Couldn't find item")
+              return
+          }
+          var newItem = section[indexOfItem];
           newItem.owned = 1;
           asyncValue.push(newItem);
         }
         var stringified = JSON.stringify(asyncValue);
         AsyncStorage.setItem("Items",stringified);
         console.log(asyncValue);
-
-
-        // for (let [key, value] of Object.entries(asyncValue)) {
-        //
-        //     console.log(`${value}`)
-        //     console.log(asyncValue[`${key}`])
-        //     console.log("key is")
-        //     console.log(`${key}`)
-        //     if (`${key}` == item) {
-        //         asyncValue[`${key}`] = parseInt(`${value}`, 10) + 1
-        //         await AsyncStorage.setItem("Items", JSON.stringify(asyncValue));
-        //         found = true;
-        //     }
-        // }
-        //
-        // if (!found) {
-        //     let count = 1
-        //     asyncValue.push({[item]: count.toString()})
-        //     await AsyncStorage.setItem("Items", JSON.stringify(asyncValue));
-        // }
-
-
-
-
     },
 
     getItems : async () => {
@@ -137,17 +116,42 @@ const storeHelper = {
               }
             }
           }
-
-
-            // AsyncStorage.multiGet(allItems).then((keyValArray) => {
-            //     let myStorage: any = {};
-            //     for (let keyVal of keyValArray) {
-            //         myStorage[keyVal[0]] = keyVal[1]
-            //     }
-            //
-            //   //  console.log('CURRENT STORAGE: ', myStorage);
-            // })
     },
+
+    getIndex: (item, list)=>{
+      //gets the index of an item in a given array
+      console.log(list[0])
+      for(var i = 0; i < list.length; i++){
+        if(list[i].name == item){
+          return i;
+        }
+      }
+      return null;
+    },
+
+    getItemInfo: async(item, list)=>{
+
+      let asyncValue = await AsyncStorage.getItem("Items");
+      //adds the Item array
+      if(asyncValue == null){
+        var index = getIndex(item,list);
+        var item = list[index];
+        item.owned = 0;
+        return item;
+      }
+
+      //add onto the previous array
+      asyncValue = JSON.parse(asyncValue)
+
+      for(var i = 0; i < asyncValue.length; i++){
+        //item was found
+        if(asyncValue[i].name == item){
+          return asyncValue[i];
+        }
+      }
+
+
+    }
 
 
 
