@@ -31,16 +31,22 @@ export default class StorePage extends React.Component<object, object> {
             <Text>Item 3</Text>
           </TouchableOpacity>
           <Button
-          title="Buy Terracotta"
-          onPress={ ()=>{
-            this.setState({item: storeHelper.getItemInfo("terracotta",pots)})
-            this.setState({modalVisible: true})
-            this.setState({section: pots})
+          title="Get Terracotta"
+          onPress={ async ()=>{
+            var info = await storeHelper.getItemInfo("terracotta", "pots");
+            console.log(info);
+            // this.setState({item: storeHelper.getItemInfo("terracotta",pots)})
+            // this.setState({modalVisible: true})
+            // this.setState({section: pots})
           } }
           />
           <Button
+          title="Buy Terracotta"
+          onPress={ ()=>{storeHelper.buyItem("terracotta","pots")} }
+          />
+          <Button
           title="Buy Long Stem"
-          onPress={ ()=>{storeHelper.buyItem("long",stems)} }
+          onPress={ ()=>{storeHelper.buyItem("long","stems")} }
           />
         <Button
           title="Add Money"

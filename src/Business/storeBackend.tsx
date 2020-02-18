@@ -40,28 +40,63 @@ const storeHelper = {
 
     },
 
+    loadItems: async function(){
+      let asyncValue = await AsyncStorage.getItem("storeItems");
 
+      //initializes default values
+      var potsArray = pots;
+      var stemsArray = stems;
+      var flowersArray = flowers;
+      for(var i = 0; i < pots.length; i++){
+        potsArray[i].owned = 0;
+        potsArray[i].index = i;
+      }
+      for(var i = 0; i < stems.length; i++){
+        stemsArray[i].owned = 0;
+        stemsArray[i].index = i;
+      }
+      for(var i = 0; i < flowers.length ; i++){
+        flowersArray[i].owned = 0;
+        flowersArray[i].index = i;
+      }
+
+      //sets the item array in AsyncStorage to hold all items
+      if(asyncValue == null){
+        var items = [pots,stems,flowers];
+        await AsyncStorage.setItem("storeItems", JSON.stringify(items))
+      }
+    },
 
     buyItem: async function(item: string, section) {
 
-        let asyncValue = await AsyncStorage.getItem("Items");
+        let asyncValue = await AsyncStorage.getItem("storeItems");
+        let ownedValue = await AsyncStorage.getItem("owned");
         //adds the Item array
         if(asyncValue == null){
-            await AsyncStorage.setItem("Items", JSON.stringify([]))
+            await storeHelper.loadItems();
+            asyncValue = await AsyncStorage.getItem("storeItems");
         }
-        asyncValue = await AsyncStorage.getItem("Items");
+        //create owned arrray if doesn't exist already
+        if(ownedValue == null){
+          storeHelper.createOwned();
+        }
 
         //add onto the previous array
         asyncValue = JSON.parse(asyncValue)
 
         var found = false
-        //looks for the item in the list of items the user owns
-        for(var i = 0; i < asyncValue.length; i++){
+        //gets the index of the section
+        var sectionIndex = storeHelper.getListIndex(section);
+
+        //looks for the item in a certain section
+        for(var i = 0; i < asyncValue[sectionIndex].length; i++){
           //item was found
-          if(asyncValue[i].name == item){
+          if(asyncValue[sectionIndex][i].name == item){
             found = true
             //updates the amount the user owns
-            asyncValue[i].owned = asyncValue[i].owned + 1
+            asyncValue[sectionIndex][i].owned = asyncValue[sectionIndex][i].owned + 1
+            //adds to owned array
+            storeHelper.handleOwned(asyncValue[sectionIndex][i],sectionIndex)
             var balance = await AsyncStorage.getItem("Money")
             balance = parseInt(balance, 10)
             var cost = asyncValue[i].price
@@ -72,25 +107,82 @@ const storeHelper = {
               balance -= cost
               await AsyncStorage.setItem("Money", balance.toString())
             }
+
+            //updates asyncstorage to reflect changes
+            var stringified = JSON.stringify(asyncValue);
+            AsyncStorage.setItem("storeItems",stringified);
           }
         }
 
         //item was not found, so create a new instance
         if(!found){
-          var indexOfItem = this.getIndex(item, section);
-          console.log(item, indexOfItem)
-          if(indexOfItem == null){
-              console.log("Couldn't find item")
-              return
-          }
-          var newItem = section[indexOfItem];
-          newItem.owned = 1;
-          asyncValue.push(newItem);
+          alert("You are trying to buy an item that doesn't exist");
         }
-        var stringified = JSON.stringify(asyncValue);
-        AsyncStorage.setItem("Items",stringified);
-        console.log(asyncValue);
     },
+
+    getListIndex: (section)=>{
+      switch(section){
+        case "pots":
+          return 0;
+        case "stems":
+          return 1;
+        case "flowers":
+          return 2;
+      }
+    },
+
+    getItemInfo: async(item, list)=>{
+
+      let asyncValue = await AsyncStorage.getItem("storeItems");
+      //adds the Item array
+      if(asyncValue == null){
+        await storeHelper.loadItems();
+        asyncValue = await AsyncStorage.getItem("storeItems");
+      }
+      asyncValue = JSON.parse(asyncValue)
+      var sectionIndex = storeHelper.getListIndex(list);
+
+
+      for(var i = 0; i < asyncValue[sectionIndex].length; i++){
+        //item was found
+        if(asyncValue[sectionIndex][i].name == item){
+          return asyncValue[sectionIndex][i];
+        }
+      }
+      return "not found"
+
+    },
+
+
+    createOwned: async function(){
+      console.log("created")
+      var item = [[],[],[]];
+      item = JSON.stringify(item);
+      await AsyncStorage.setItem("owned", item);
+    },
+
+    handleOwned: async function(item, sectionIndex){
+      var ownedArray = await AsyncStorage.getItem("owned");
+      ownedArray = JSON.parse(ownedArray);
+      var indexOwnedArray = ownedArray[sectionIndex];
+
+      var found = false;
+      for(var i = 0; i < indexOwnedArray.length; i++){
+        //update item
+        if(indexOwnedArray[i].name == item.name){
+          indexOwnedArray[i] = item
+          found = true
+        }
+      }
+      //if not owned yet
+      if(!found){
+        indexOwnedArray.push(item);
+      }
+      ownedArray[sectionIndex]  = indexOwnedArray;
+      ownedArray = JSON.stringify(ownedArray)
+      await AsyncStorage.setItem("owned", ownedArray)
+    },
+
 
     getItems : async () => {
           var allItems = storeHelper.splicePots().concat(storeHelper.spliceStems()).concat(storeHelper.spliceFlowers())
@@ -129,29 +221,7 @@ const storeHelper = {
       return null;
     },
 
-    getItemInfo: async(item, list)=>{
 
-      let asyncValue = await AsyncStorage.getItem("Items");
-      //adds the Item array
-      if(asyncValue == null){
-        var index = getIndex(item,list);
-        var item = list[index];
-        item.owned = 0;
-        return item;
-      }
-
-      //add onto the previous array
-      asyncValue = JSON.parse(asyncValue)
-
-      for(var i = 0; i < asyncValue.length; i++){
-        //item was found
-        if(asyncValue[i].name == item){
-          return asyncValue[i];
-        }
-      }
-
-
-    }
 
 
 
