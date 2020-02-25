@@ -48,16 +48,43 @@ const storeHelper = {
       var stemsArray = stems;
       var flowersArray = flowers;
       for(var i = 0; i < pots.length; i++){
-        potsArray[i].owned = 0;
-        potsArray[i].index = i;
+        if (i == 0) {
+          potsArray[i].owned = 1;
+          potsArray[i].index = i;
+          potsArray[i].used = 1;
+          potsArray[i].available = potsArray[i].owned > potsArray[i].used
+        } else {
+          potsArray[i].owned = 0;
+          potsArray[i].index = i;
+          potsArray[i].used = 0;
+          potsArray[i].available = potsArray[i].owned > potsArray[i].used
+        }
       }
       for(var i = 0; i < stems.length; i++){
-        stemsArray[i].owned = 0;
-        stemsArray[i].index = i;
+        if (i == 0) {
+          stemsArray[i].owned = 1;
+          stemsArray[i].index = i;
+          stemsArray[i].used = 1;
+          stemsArray[i].available = stemsArray[i].owned > stemsArray[i].used
+        } else {
+          stemsArray[i].owned = 0;
+          stemsArray[i].index = i;
+          stemsArray[i].used = 0;
+          stemsArray[i].available = stemsArray[i].owned > stemsArray[i].used
+        }
       }
       for(var i = 0; i < flowers.length ; i++){
-        flowersArray[i].owned = 0;
-        flowersArray[i].index = i;
+        if (i == 0) {
+          flowersArray[i].owned = 1;
+          flowersArray[i].index = i;
+          flowersArray[i].used = 1;
+          flowersArray[i].available = flowersArray[i].owned > flowersArray[i].used
+        } else {
+          flowersArray[i].owned = 0;
+          flowersArray[i].index = i;
+          flowersArray[i].used = 0;
+          flowersArray[i].available = flowersArray[i].owned > flowersArray[i].used
+        }
       }
 
       //sets the item array in AsyncStorage to hold all items
@@ -95,6 +122,8 @@ const storeHelper = {
             found = true
             //updates the amount the user owns
             asyncValue[sectionIndex][i].owned = asyncValue[sectionIndex][i].owned + 1
+            asyncValue[sectionIndex][i].available = asyncValue[sectionIndex][i].owned > asyncValue[sectionIndex][i].used
+
             //adds to owned array
             storeHelper.handleOwned(asyncValue[sectionIndex][i],sectionIndex)
             var balance = await AsyncStorage.getItem("Money")
@@ -118,6 +147,7 @@ const storeHelper = {
         if(!found){
           alert("You are trying to buy an item that doesn't exist");
         }
+        console.log(stringified)
     },
 
     getListIndex: (section)=>{
