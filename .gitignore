@@ -9,3 +9,4 @@ npm-debug.*
 #
 .jest/
 # TODO add more regular expressions for ignoring files down here
+**.DS_Store

@@ -1,8 +1,20 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Button, Modal } from 'react-native';
 import AppHeader from '../../components/AppHeader';
+import storeHelper from '../../Business/storeBackend'
+import {pots, stems, flowers} from '../../Business/itemProperties.tsx';
+
 
 export default class StorePage extends React.Component<object, object> {
+  constructor() {
+    super();
+    this.state = {
+      modalVisible: false,
+      item: {name: ""},
+      section: []
+    };
+  }
+
   public render() {
     return (
       <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
@@ -18,6 +30,52 @@ export default class StorePage extends React.Component<object, object> {
           <TouchableOpacity style={styles.shopItem}>
             <Text>Item 3</Text>
           </TouchableOpacity>
+          <Button
+          title="Get Terracotta"
+          onPress={ async ()=>{
+            var info = await storeHelper.getItemInfo("terracotta", "pots");
+            console.log(info);
+            // this.setState({item: storeHelper.getItemInfo("terracotta",pots)})
+            // this.setState({modalVisible: true})
+            // this.setState({section: pots})
+          } }
+          />
+          <Button
+          title="Buy Terracotta"
+          onPress={ ()=>{storeHelper.buyItem("terracotta","pots")} }
+          />
+          <Button
+          title="Buy Long Stem"
+          onPress={ ()=>{storeHelper.buyItem("long","stems")} }
+          />
+        <Button
+          title="Add Money"
+          onPress={ ()=>{storeHelper.addMoney(10.4)} }
+        />
+
+        <Modal
+             transparent = {true}
+             visible = {this.state.modalVisible}>
+
+             <View >
+                <Text>Name: {this.state.item.name}</Text>
+                <View >
+                  <Button
+                    title="Buy item"
+                    onPress={async () => {
+                        this.setState({modalVisible: false });
+                        storeHelper.buyItem(this.state.item.name, this.state.section)
+                      }
+                    }
+                  />
+                  <Button
+                    title="Cancel"
+                    onPress={() => this.setState({ modalVisible: false })}
+                  />
+                </View>
+             </View>
+        </Modal>
+
         </View>
       </View>
     );

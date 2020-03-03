@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Switch, Text, View, TextInput, Modal, Button } from 'react-native';
 import { Avatar, ListItem } from 'react-native-elements';
+import profileHelper from '../../Business/profileBackend.tsx'
 
 import BaseIcon from './BaseIcon';
 import Chevron from './Chevron';
@@ -48,6 +49,8 @@ export default class Profile extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       pushNotifications: true,
+      modalVisible: false,
+      modalInput: 0,
     };
     this.onPressOptions = this.onPressOptions.bind(this);
   }
@@ -158,6 +161,45 @@ export default class Profile extends React.Component<IProps, IState> {
             }
             rightIcon={<Chevron />}
           />
+
+          <ListItem
+            title="Progress"
+            onPress={() => {
+              this.onPressOptions();
+              this.setState({modalVisible: true});
+              }
+            }
+            containerStyle={styles.listItemContainer}
+            rightIcon={<Chevron />}
+
+          />
+          <Modal
+               transparent = {true}
+               visible = {this.state.modalVisible}>
+
+               <View style = {styles.modalView}>
+                  <Text style = {styles.modalText}>How many days back would you like to view?</Text>
+                  <TextInput
+                    style={styles.modalTextInput}
+                    keyboardType="number-pad"
+                    onChangeText={(text)=> this.setState({modalInput:text})}
+                  />
+                  <View style={styles.modalButtonContainer}>
+                    <Button
+                      title="Confirm"
+                      onPress={async () => {
+                          this.setState({ modalVisible: false });
+                          profileHelper.retrieveDataSet(this.state.modalInput);
+                        }
+                      }
+                    />
+                    <Button
+                      title="Cancel"
+                      onPress={() => this.setState({ modalVisible: false })}
+                    />
+                  </View>
+               </View>
+          </Modal>
         </View>
         <InfoText text="Garden" />
         <View>
@@ -349,5 +391,37 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: '#ECECEC',
   },
+  modalView: {
+    width:"75%",
+    height:250,
+    alignItems: 'center',
+    justifyContent:"center",
+    backgroundColor: '#ffffff',
+    position: "absolute",
+    top:"30%",
+    left:"12.5%",
+    borderRadius: 15,
+    borderColor:"gray",
+    borderWidth:2
+  },
+  modalText:{
+    width:"80%",
+    textAlign:"center",
+    justifyContent:"center",
+    marginBottom:15
+  },
+  modalTextInput:{
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    width:75,
+    marginBottom:25,
+    justifyContent:"center",
+    textAlign:"center"
+  },
+  modalButtonContainer:{
+    flexDirection:"row",
+    width:"60%",
+    justifyContent:"space-around",
+  },
 });
-
