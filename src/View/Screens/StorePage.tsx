@@ -34,24 +34,24 @@ export default class StorePage extends React.Component<object, object> {
           <Button
           title="Get Terracotta"
           onPress={ async ()=>{
-            var info = await storeHelper.getItemInfo("terracotta", "pots");
+            var info = await storeHelper.getItemInfo("terracotta", "footers");
             console.log(info);
-            
+
           } }
           />
           <Button
           title="Buy Terracotta"
-          onPress={ ()=>{storeHelper.buyItem("terracotta","pots")} }
+          onPress={ ()=>{storeHelper.buyItem("terracotta","footers")} }
           />
 
-          
+
           <Button
           title="Buy Daisy"
-          onPress={ ()=>{storeHelper.buyItem("daisy","flowers")} }
+          onPress={ ()=>{storeHelper.buyItem("daisy","headers")} }
           />
           <Button
           title="Change Header"
-          onPress={ ()=>{plantHelper.changeHeader("sunflower","daisy")} }
+          onPress={ ()=>{plantHelper.changeHeader("sunflower","daisy",0)} }
           />
 
         <Button

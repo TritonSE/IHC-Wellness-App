@@ -1,4 +1,4 @@
-const pots = [
+const footers = [
   {
     name : "terracotta",
     price : 1.25,
@@ -11,7 +11,7 @@ const pots = [
   },
 ]
 
-const stems = [
+const bodies = [
   {
     name : "long",
     price : 1.25,
@@ -24,7 +24,7 @@ const stems = [
   },
 ]
 
-const flowers = [
+const headers = [
   {
     name : "sunflower",
     price : 1.25,
@@ -37,4 +37,4 @@ const flowers = [
   },
 ]
 
-export { pots, stems, flowers }
+export { footers, bodies, headers }

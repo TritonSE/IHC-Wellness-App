@@ -1,38 +1,28 @@
 import { AsyncStorage, ProgressViewIOSComponent } from 'react-native';
 import { string } from 'prop-types';
-import {pots, stems, flowers} from './itemProperties.tsx';
+import {footers, bodies, headers} from './itemProperties.tsx';
 
 const storeHelper = {
-    metadataCount : 2,
-    storeMatrix : [ ["pots", 5, "terracotta", "plastic", "mud", "clay", "styrofoam"],
-                        ["stems", 5, "long", "short", "medium", "yellow", "green"],
-                        ["flowers", 5, "rose", "tulip", "daisy", "sunflower", "rose2"]],
-
-    getPots : function() {
-        return this.storeMatrix[0]
+    getFooters : function() {
+        return footers;
     },
 
-    getStems : function() {
-        return this.storeMatrix[1]
+    getBodies : function() {
+        return bodies;
     },
 
-    getFlowers : function() {
-        return this.storeMatrix[2]
+    getHeaders : function() {
+        return headers;
     },
 
     getAllItems : function(){
-        return storeHelper.splicePots().concat(storeHelper.spliceStems()).concat(storeHelper.spliceFlowers())
+      var allItems = [];
+      allItems[0] = footers;
+      allItems[1] = bodies;
+      allItems[2] = headers;
+      return allItems;
     },
 
-    splicePots : function() {
-        return this.storeMatrix[0].slice(this.metadataCount)
-    },
-    spliceStems : function() {
-        return this.storeMatrix[1].slice(this.metadataCount)
-    },
-    spliceFlowers : function() {
-        return this.storeMatrix[2].slice(this.metadataCount)
-    },
 
 
     addMoney: async function(amount: float) {
@@ -40,76 +30,52 @@ const storeHelper = {
 
     },
 
-    loadItems: async function(){
-      let asyncValue = await AsyncStorage.getItem("storeItems");
+    createOwned: async function(){
+      var item = [[],[],[]];
+      item = JSON.stringify(item);
+      await AsyncStorage.setItem("owned", item);
+    },
 
-      //initializes default values
-      var potsArray = pots;
-      var stemsArray = stems;
-      var flowersArray = flowers;
-      for(var i = 0; i < pots.length; i++){
-        if (i == 0) {
-          potsArray[i].owned = 1;
-          potsArray[i].index = i;
-          potsArray[i].used = 1;
-          potsArray[i].available = potsArray[i].owned > potsArray[i].used
-        } else {
-          potsArray[i].owned = 0;
-          potsArray[i].index = i;
-          potsArray[i].used = 0;
-          potsArray[i].available = potsArray[i].owned > potsArray[i].used
-        }
-      }
-      for(var i = 0; i < stems.length; i++){
-        if (i == 0) {
-          stemsArray[i].owned = 1;
-          stemsArray[i].index = i;
-          stemsArray[i].used = 1;
-          stemsArray[i].available = stemsArray[i].owned > stemsArray[i].used
-        } else {
-          stemsArray[i].owned = 0;
-          stemsArray[i].index = i;
-          stemsArray[i].used = 0;
-          stemsArray[i].available = stemsArray[i].owned > stemsArray[i].used
-        }
-      }
-      for(var i = 0; i < flowers.length ; i++){
-        if (i == 0) {
-          flowersArray[i].owned = 1;
-          flowersArray[i].index = i;
-          flowersArray[i].used = 1;
-          flowersArray[i].available = flowersArray[i].owned > flowersArray[i].used
-        } else {
-          flowersArray[i].owned = 0;
-          flowersArray[i].index = i;
-          flowersArray[i].used = 0;
-          flowersArray[i].available = flowersArray[i].owned > flowersArray[i].used
-        }
-      }
+    //takes in an item and updates it and its owned and available fields in all owned array in async
+    handleOwned: async function(item, sectionIndex){
+      var ownedArray = await AsyncStorage.getItem("owned");
+      ownedArray = JSON.parse(ownedArray);
+      var indexOwnedArray = ownedArray[sectionIndex];
+      var found = false;
 
-      //sets the item array in AsyncStorage to hold all items
-      if(asyncValue == null){
-        var items = [pots,stems,flowers];
-        await AsyncStorage.setItem("storeItems", JSON.stringify(items))
+      for(var i = 0; i < indexOwnedArray.length; i++){
+        //update item
+        if(indexOwnedArray[i].name == item.name){
+          item.owned++;
+          item.available = item.owned > item.used;
+          indexOwnedArray[i] = item
+          found = true
+        }
       }
+      //if not owned yet
+      if(!found){
+        item.owned = 1;
+        item.used = 0;
+        item.available = item.owned > item.used;
+        indexOwnedArray.push(item);
+      }
+      ownedArray[sectionIndex] = indexOwnedArray;
+      ownedArray = JSON.stringify(ownedArray)
+      await AsyncStorage.setItem("owned", ownedArray)
     },
 
     buyItem: async function(item: string, section) {
 
-        let asyncValue = await AsyncStorage.getItem("storeItems");
         let ownedValue = await AsyncStorage.getItem("owned");
-        //adds the Item array
-        if(asyncValue == null){
-            await storeHelper.loadItems();
-            asyncValue = await AsyncStorage.getItem("storeItems");
-        }
+
         //create owned arrray if doesn't exist already
         if(ownedValue == null){
+          console.log('created')
           storeHelper.createOwned();
         }
 
         //add onto the previous array
-        asyncValue = JSON.parse(asyncValue)
+        let asyncValue = storeHelper.getAllItems();
 
         var found = false
         //gets the index of the section
@@ -120,12 +86,9 @@ const storeHelper = {
           //item was found
           if(asyncValue[sectionIndex][i].name == item){
             found = true
-            //updates the amount the user owns
-            asyncValue[sectionIndex][i].owned = asyncValue[sectionIndex][i].owned + 1
-            asyncValue[sectionIndex][i].available = asyncValue[sectionIndex][i].owned > asyncValue[sectionIndex][i].used
-
             //adds to owned array
             storeHelper.handleOwned(asyncValue[sectionIndex][i],sectionIndex)
+
             var balance = await AsyncStorage.getItem("Money")
             balance = parseInt(balance, 10)
             var cost = asyncValue[i].price
@@ -138,8 +101,6 @@ const storeHelper = {
             }
 
             //updates asyncstorage to reflect changes
-            var stringified = JSON.stringify(asyncValue);
-            AsyncStorage.setItem("storeItems",stringified);
           }
         }
 
@@ -147,78 +108,65 @@ const storeHelper = {
         if(!found){
           alert("You are trying to buy an item that doesn't exist");
         }
-        console.log(stringified)
-    },
-
-    getListIndex: (section)=>{
-      switch(section){
-        case "pots":
-          return 0;
-        case "stems":
-          return 1;
-        case "flowers":
-          return 2;
-      }
     },
 
     getItemInfo: async(item, list)=>{
-
-      let asyncValue = await AsyncStorage.getItem("storeItems");
+      let temp = null;
+      let asyncValue = storeHelper.getAllItems();
       //adds the Item array
-      if(asyncValue == null){
-        await storeHelper.loadItems();
-        asyncValue = await AsyncStorage.getItem("storeItems");
-      }
-      asyncValue = JSON.parse(asyncValue)
       var sectionIndex = storeHelper.getListIndex(list);
-
 
       for(var i = 0; i < asyncValue[sectionIndex].length; i++){
         //item was found
         if(asyncValue[sectionIndex][i].name == item){
-          return asyncValue[sectionIndex][i];
+          temp = asyncValue[sectionIndex][i];
         }
       }
-      return "not found"
-
-    },
-
-
-    createOwned: async function(){
-      console.log("created")
-      var item = [[],[],[]];
-      item = JSON.stringify(item);
-      await AsyncStorage.setItem("owned", item);
-    },
-
-    handleOwned: async function(item, sectionIndex){
+      //looks for this item in all owned and
       var ownedArray = await AsyncStorage.getItem("owned");
       ownedArray = JSON.parse(ownedArray);
       var indexOwnedArray = ownedArray[sectionIndex];
-
-      var found = false;
       for(var i = 0; i < indexOwnedArray.length; i++){
-        //update item
-        if(indexOwnedArray[i].name == item.name){
-          indexOwnedArray[i] = item
-          found = true
+        if(indexOwnedArray[i].name == item){
+          return indexOwnedArray[i]
         }
       }
-      //if not owned yet
-      if(!found){
-        indexOwnedArray.push(item);
-      }
-      ownedArray[sectionIndex]  = indexOwnedArray;
-      ownedArray = JSON.stringify(ownedArray)
-      await AsyncStorage.setItem("owned", ownedArray)
+
+      //item not owned yet so return hardcoded 0
+      temp.owned = 0;
+      temp.available = false;
+      temp.used = 0;
+      return temp;
+
     },
 
+    getListIndex: (section)=>{
+      switch(section){
+        case "footers":
+          return 0;
+        case "bodies":
+          return 1;
+        case "headers":
+          return 2;
+      }
+    },
 
-    getItems : async () => {
-          var allItems = storeHelper.splicePots().concat(storeHelper.spliceStems()).concat(storeHelper.spliceFlowers())
+    /*getIndex: (item, list)=>{
+      //gets the index of an item in a given array
+      console.log(list[0])
+      for(var i = 0; i < list.length; i++){
+        if(list[i].name == item){
+          return i;
+        }
+      }
+      return null;
+    },*/
+
+    /*getItems : async () => {
+          var allItems = storeHelper.getAllItems();
           var ownedItems;
           try{//gets the list of all the items the user has
-            ownedItems = await AsyncStorage.getItem("Items");
+            ownedItems = await AsyncStorage.getItem("owned");
             if(ownedItems == null){
               alert("You do not own any items");
               return
@@ -238,20 +186,7 @@ const storeHelper = {
               }
             }
           }
-    },
-
-    getIndex: (item, list)=>{
-      //gets the index of an item in a given array
-      console.log(list[0])
-      for(var i = 0; i < list.length; i++){
-        if(list[i].name == item){
-          return i;
-        }
-      }
-      return null;
-    },
-
-
+    },*/
 
 
 
