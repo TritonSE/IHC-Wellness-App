@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ScrollView, StyleSheet, Switch, Text, View, TextInput, Modal, Button } from 'react-native';
 import { Avatar, ListItem } from 'react-native-elements';
-import profileHelper from '../../Business/profileBackend.tsx'
+import profileHelper from '../../Business/ProfileBackend';
 
 import BaseIcon from './BaseIcon';
 import Chevron from './Chevron';
