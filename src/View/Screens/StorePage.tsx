@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Button, Modal } from 'react-native';
-import AppHeader from '../../components/AppHeader';
-import storeHelper from '../../Business/storeBackend'
-import plantHelper from '../../Business/plantBackend'
-import {pots, stems, flowers} from '../../Business/itemProperties.tsx';
 
+import PlantBackend from '../../Business/PlantBackend';
+import StoreBackend from '../../Business/StoreBackend';
+import AppHeader from '../../components/AppHeader';
 
 export default class StorePage extends React.Component<object, object> {
   constructor() {
@@ -34,41 +33,41 @@ export default class StorePage extends React.Component<object, object> {
           <Button
           title="Get Terracotta"
           onPress={ async ()=>{
-            var info = await storeHelper.getItemInfo("terracotta", "footers");
+            var info = await StoreBackend.getItemInfo("terracotta", "footers");
             console.log(info);
 
           } }
           />
           <Button
           title="Buy Terracotta"
-          onPress={ ()=>{storeHelper.buyItem("terracotta","footers")} }
+          onPress={ ()=>{StoreBackend.buyItem("terracotta","footers")} }
           />
 
 
           <Button
           title="Buy Daisy"
-          onPress={ ()=>{storeHelper.buyItem("daisy","headers")} }
+          onPress={ ()=>{StoreBackend.buyItem("daisy","headers")} }
           />
           <Button
           title="Change Header"
-          onPress={ ()=>{plantHelper.changeHeader("sunflower","daisy",0)} }
+          onPress={ ()=>{PlantBackend.changeHeader("sunflower","daisy",0)} }
           />
 
         <Button
           title="createDefault"
-          onPress={ ()=>{plantHelper.createDefaultPlantArray()} }
+          onPress={ ()=>{PlantBackend.createDefaultPlantArray()} }
           />
         <Button
           title="header"
-          onPress={ ()=>{plantHelper.getHeader(0)} }
+          onPress={ ()=>{PlantBackend.getHeader(0)} }
         />
         <Button
           title="body"
-          onPress={ ()=>{plantHelper.getBody(0)} }
+          onPress={ ()=>{PlantBackend.getBody(0)} }
         />
         <Button
           title="footer"
-          onPress={ ()=>{plantHelper.getFooter(0)} }
+          onPress={ ()=>{PlantBackend.getFooter(0)} }
         />
 
         <Modal
@@ -82,7 +81,7 @@ export default class StorePage extends React.Component<object, object> {
                     title="Buy item"
                     onPress={async () => {
                         this.setState({modalVisible: false });
-                        storeHelper.buyItem(this.state.item.name, this.state.section)
+                        StoreBackend.buyItem(this.state.item.name, this.state.section)
                       }
                     }
                   />

@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { ScrollView, StyleSheet, Switch, Text, View, TextInput, Modal, Button } from 'react-native';
 import { Avatar, ListItem } from 'react-native-elements';
-import profileHelper from '../../Business/profileBackend.tsx'
+
+import ProfileBackend from '../../Business/ProfileBackend';
 
 import BaseIcon from './BaseIcon';
 import Chevron from './Chevron';
@@ -189,7 +190,7 @@ export default class Profile extends React.Component<IProps, IState> {
                       title="Confirm"
                       onPress={async () => {
                           this.setState({ modalVisible: false });
-                          profileHelper.retrieveDataSet(this.state.modalInput);
+                          ProfileBackend.retrieveDataSet(this.state.modalInput);
                         }
                       }
                     />
@@ -212,8 +213,8 @@ export default class Profile extends React.Component<IProps, IState> {
               <BaseIcon
                 containerStyle={{ backgroundColor: '#FF3B30' }}
                 icon={{
-                  type: 'ionicon',
                   name: 'ios-rose',
+                  type: 'ionicon',
                 }}
               />
             }
@@ -228,8 +229,8 @@ export default class Profile extends React.Component<IProps, IState> {
               <BaseIcon
                 containerStyle={{ backgroundColor: '#228B22' }}
                 icon={{
-                  type: 'entypo',
                   name: 'tree',
+                  type: 'entypo',
                 }}
               />
             }
@@ -244,8 +245,8 @@ export default class Profile extends React.Component<IProps, IState> {
               <BaseIcon
                 containerStyle={{ backgroundColor: '#FF2D55' }}
                 icon={{
-                  type: 'entypo',
                   name: 'flower',
+                  type: 'entypo',
                 }}
               />
             }
@@ -262,8 +263,8 @@ export default class Profile extends React.Component<IProps, IState> {
                   backgroundColor: '#4CD964',
                 }}
                 icon={{
-                  type: 'entypo',
                   name: 'leaf',
+                  type: 'entypo',
                 }}
               />
             }
@@ -280,8 +281,8 @@ export default class Profile extends React.Component<IProps, IState> {
               <BaseIcon
                 containerStyle={{ backgroundColor: '#A4C8F0' }}
                 icon={{
-                  type: 'ionicon',
                   name: 'md-information-circle',
+                  type: 'ionicon',
                 }}
               />
             }
@@ -295,8 +296,8 @@ export default class Profile extends React.Component<IProps, IState> {
               <BaseIcon
                 containerStyle={{ backgroundColor: '#C6C7C6' }}
                 icon={{
-                  type: 'entypo',
                   name: 'light-bulb',
+                  type: 'entypo',
                 }}
               />
             }
@@ -312,8 +313,8 @@ export default class Profile extends React.Component<IProps, IState> {
                   backgroundColor: '#C47EFF',
                 }}
                 icon={{
-                  type: 'entypo',
                   name: 'share',
+                  type: 'entypo',
                 }}
               />
             }
@@ -324,9 +325,9 @@ export default class Profile extends React.Component<IProps, IState> {
             onPress={() => this.onPressOptions()}
             containerStyle={styles.listItemContainer}
             badge={{
-              value: 5,
-              textStyle: { color: 'white' },
               containerStyle: { backgroundColor: 'gray', marginTop: 0 },
+              textStyle: { color: 'white' },
+              value: 5,
             }}
             leftIcon={
               <BaseIcon
@@ -334,8 +335,8 @@ export default class Profile extends React.Component<IProps, IState> {
                   backgroundColor: '#FECE44',
                 }}
                 icon={{
-                  type: 'entypo',
                   name: 'star',
+                  type: 'entypo',
                 }}
               />
             }
@@ -351,8 +352,8 @@ export default class Profile extends React.Component<IProps, IState> {
                   backgroundColor: '#00C001',
                 }}
                 icon={{
-                  type: 'material',
                   name: 'feedback',
+                  type: 'material',
                 }}
               />
             }
@@ -392,36 +393,36 @@ const styles = StyleSheet.create({
     borderColor: '#ECECEC',
   },
   modalView: {
-    width:"75%",
+    width:'75%',
     height:250,
     alignItems: 'center',
-    justifyContent:"center",
+    justifyContent:'center',
     backgroundColor: '#ffffff',
-    position: "absolute",
-    top:"30%",
-    left:"12.5%",
+    position: 'absolute',
+    top:'30%',
+    left:'12.5%',
     borderRadius: 15,
-    borderColor:"gray",
-    borderWidth:2
+    borderColor:'gray',
+    borderWidth:2,
   },
   modalText:{
-    width:"80%",
-    textAlign:"center",
-    justifyContent:"center",
-    marginBottom:15
+    justifyContent:'center',
+    marginBottom:15,
+    textAlign:'center',
+    width:'80%',
   },
   modalTextInput:{
-    height: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    width:75,
+    height: 40,
+    justifyContent:'center',
     marginBottom:25,
-    justifyContent:"center",
-    textAlign:"center"
+    textAlign:'center',
+    width:75,
   },
   modalButtonContainer:{
-    flexDirection:"row",
-    width:"60%",
-    justifyContent:"space-around",
+    flexDirection:'row',
+    justifyContent:'space-around',
+    width:'60%',
   },
 });

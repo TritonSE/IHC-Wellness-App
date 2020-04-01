@@ -1,9 +1,8 @@
 import * as React from 'react';
-import {Text, View, AsyncStorage, Slider } from 'react-native';
+import { Text, View, Slider } from 'react-native';
 import { Button } from 'react-native-elements';
-import DatePicker from 'react-native-datepicker';
 import AppHeader from '../../components/AppHeader';
-import checkInHelper from '../../Business/checkInBackend.tsx'
+import CheckinBackend from '../../Business/CheckinBackend'
 
 export default class CheckInPage extends React.Component<object, object> {
   constructor(props) {
@@ -46,35 +45,15 @@ export default class CheckInPage extends React.Component<object, object> {
 
         <Button
           title="Check In"
-          onPress={ ()=>{checkInHelper.saveData(this.state)} }
+          onPress={ ()=>{CheckinBackend.saveData(this.state)} }
         />
         <Button
           title="Display"
-          onPress={ ()=>{checkInHelper.displayAllData()} }
+          onPress={ ()=>{CheckinBackend.displayAllData()} }
         />
         <Button
           title="Clear All"
-          onPress={ ()=>{checkInHelper.clearAllData()} }
-        />
-
-        <DatePicker
-        style={{width: 100, flex:1}}
-        date={this.state.dateToCheck}
-        mode="date"
-        placeholder={this.state.dateToCheck}
-        format="YYYY-MM-DD"
-        minDate="2019-01-01"
-        maxDate={checkInHelper.getCurrentDate()}
-        customStyles={{
-          dateIcon: {
-            position: 'absolute',
-            left: -40,
-          },
-        }}
-        onDateChange={async (date) => {
-          this.setState({dateToCheck: date})
-          alert(checkInHelper.parseData(await checkInHelper.retrieveData(date)))
-        }}
+          onPress={ ()=>{CheckinBackend.clearAllData()} }
         />
 
       </View>
