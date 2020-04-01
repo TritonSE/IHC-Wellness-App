@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ScrollView, StyleSheet, Switch, Text, View, TextInput, Modal, Button } from 'react-native';
 import { Avatar, ListItem } from 'react-native-elements';
-import profileHelper from '../../Business/profileBackend.tsx'
+import ProfileBackend from '../../Business/ProfileBackend.tsx'
 
 import BaseIcon from './BaseIcon';
 import Chevron from './Chevron';
@@ -189,7 +189,7 @@ export default class Profile extends React.Component<IProps, IState> {
                       title="Confirm"
                       onPress={async () => {
                           this.setState({ modalVisible: false });
-                          profileHelper.retrieveDataSet(this.state.modalInput);
+                          ProfileBackend.retrieveDataSet(this.state.modalInput);
                         }
                       }
                     />
