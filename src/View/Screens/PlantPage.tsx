@@ -4,8 +4,7 @@ import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview
 import PlantCard, { Data } from '../PlantScreen/PlantCard';
 import PlantData from '../PlantScreen/PlantData';
 import PlantInfo from '../PlantScreen/PlantInfo';
-import plantHelper from '../../Business/plantBackend';
-
+import PlantHelper from '../../Business/PlantBackend';
 
 const { height, width } = Dimensions.get('window');
 
