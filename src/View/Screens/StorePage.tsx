@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Button, Modal } from 'react-native';
 import AppHeader from '../../components/AppHeader';
 import storeHelper from '../../Business/storeBackend'
+import plantHelper from '../../Business/plantBackend'
 import {pots, stems, flowers} from '../../Business/itemProperties.tsx';
 
 
@@ -33,24 +34,41 @@ export default class StorePage extends React.Component<object, object> {
           <Button
           title="Get Terracotta"
           onPress={ async ()=>{
-            var info = await storeHelper.getItemInfo("terracotta", "pots");
+            var info = await storeHelper.getItemInfo("terracotta", "footers");
             console.log(info);
-            // this.setState({item: storeHelper.getItemInfo("terracotta",pots)})
-            // this.setState({modalVisible: true})
-            // this.setState({section: pots})
+
           } }
           />
           <Button
           title="Buy Terracotta"
-          onPress={ ()=>{storeHelper.buyItem("terracotta","pots")} }
+          onPress={ ()=>{storeHelper.buyItem("terracotta","footers")} }
+          />
+
+
+          <Button
+          title="Buy Daisy"
+          onPress={ ()=>{storeHelper.buyItem("daisy","headers")} }
           />
           <Button
-          title="Buy Long Stem"
-          onPress={ ()=>{storeHelper.buyItem("long","stems")} }
+          title="Change Header"
+          onPress={ ()=>{plantHelper.changeHeader("sunflower","daisy",0)} }
+          />
+
+        <Button
+          title="createDefault"
+          onPress={ ()=>{plantHelper.createDefaultPlantArray()} }
           />
         <Button
-          title="Add Money"
-          onPress={ ()=>{storeHelper.addMoney(10.4)} }
+          title="header"
+          onPress={ ()=>{plantHelper.getHeader(0)} }
+        />
+        <Button
+          title="body"
+          onPress={ ()=>{plantHelper.getBody(0)} }
+        />
+        <Button
+          title="footer"
+          onPress={ ()=>{plantHelper.getFooter(0)} }
         />
 
         <Modal
