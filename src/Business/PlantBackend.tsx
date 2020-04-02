@@ -1,7 +1,7 @@
 import { AsyncStorage } from 'react-native';
 import { bodies, footers, headers } from './itemProperties.tsx';
 
-const PlantHelper = {
+const PlantBackend = {
 
   createDefaultPlantArray: async () => {
     headers[0].owned = 1;
@@ -112,4 +112,4 @@ const PlantHelper = {
 
 };
 
-export default PlantHelper;
+export default PlantBackend;

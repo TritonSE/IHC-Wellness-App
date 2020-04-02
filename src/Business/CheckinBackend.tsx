@@ -4,7 +4,7 @@ const CheckinBackend = {
 
   // CHECKIN LOGIC
   // TODO define checkin type
-  saveData: async (obj: any) => {
+  saveData: async (checkin: any) => {
     const date = CheckinBackend.getCurrentDate();
     // checks if person already checked in today
     const data = await CheckinBackend.retrieveData(date);
@@ -13,10 +13,10 @@ const CheckinBackend = {
     } else {
       // add new information to storage
       try {
-        let checkInData = obj;
+        let checkInData = checkin;
         checkInData = {
-          hoursOfSleep: obj.hoursOfSleep,
-          mood: obj.mood,
+          hoursOfSleep: checkin.hoursOfSleep,
+          mood: checkin.mood,
         };
         await AsyncStorage.setItem(date, JSON.stringify(checkInData));
         CheckinBackend.updateDates(date);

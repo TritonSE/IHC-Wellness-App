@@ -9,7 +9,7 @@ const footers = [
     price : 1.25,
     img : "terracotta.png",
   },
-]
+];
 
 const bodies = [
   {
@@ -22,7 +22,7 @@ const bodies = [
     price : 1.25,
     img : "terracotta.png",
   },
-]
+];
 
 const headers = [
   {
@@ -35,6 +35,6 @@ const headers = [
     price : 1.25,
     img : "terracotta.png",
   },
-]
+];
 
-export { footers, bodies, headers }
+export { footers, bodies, headers };

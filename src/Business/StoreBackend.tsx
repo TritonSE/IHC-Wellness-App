@@ -24,8 +24,10 @@ const StoreBackend = {
   },
 
   async addMoney (amount: number) {
-    await AsyncStorage.setItem('Money', amount.toString());
+    const currMoney = await AsyncStorage.getItem('Money');
+    const newMoney = amount + parseFloat(currMoney || '0');
 
+    await AsyncStorage.setItem('Money', newMoney.toString());
   },
 
   async createOwned () {
