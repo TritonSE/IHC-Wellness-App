@@ -1,29 +1,26 @@
 import * as React from 'react';
-import { Dimensions, Slider, Text, TextInput, View } from 'react-native';
+import { ScrollView, Text, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { Button } from 'react-native-elements';
-import { ScrollView } from 'react-native-gesture-handler';
 
 import AppHeader from '../../components/AppHeader';
 import CheckinSlider from '../../components/CheckinSlider';
 
 import CheckinBackend from '../../Business/CheckinBackend';
 
-interface IProps {}
-
 interface IState {
-  mood: number;
+  health: number;
   hoursOfSleep: number;
-  happy: number;
+  mood: number;
   journal: string;
 }
 
-export default class CheckInPage extends React.Component<IProps, IState> {
-  constructor(props: IProps) {
+class CheckinPage extends React.Component<object, IState> {
+  constructor(props: object) {
     super(props);
     this.state = {
-      mood: 5,
+      health: 5,
       hoursOfSleep: 8,
-      happy: 1,
+      mood: 1,
       journal: '',
     };
   }
@@ -36,66 +33,72 @@ export default class CheckInPage extends React.Component<IProps, IState> {
 
   public render() {
     return (
-      <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', borderColor: 'red' }}>
+      <View style={styles.pageView}>
         <AppHeader title="Check-in" />
-        <Text>Check In!</Text>
-        <ScrollView>
-        <View style={{ paddingTop: 30 }}>
-          <CheckinSlider
-            title="How are you feeling today"
-            step={0.1}
-            minValue={0}
-            maxValue={10}
-            value={this.state.mood}
-            onSlidingComplete={(val) => this.setState({ mood: val })}
-            />
-          <CheckinSlider
-            title="How many hours of sleep did you get last night?"
-            step={0.1}
-            minValue={0}
-            maxValue={10}
-            value={this.state.hoursOfSleep}
-            onSlidingComplete={(val) => this.setState({ hoursOfSleep: val })}
-            />
-          <CheckinSlider
-            title="Are you happy?"
-            step={0.001}
-            minValue={0}
-            maxValue={1}
-            value={this.state.happy}
-            onSlidingComplete={(val) => this.setState({ happy: val })}
-            />
-        </View>
 
-        <View style = {{ paddingTop: 20 }}>
+        <ScrollView style={styles.questions}>
+            <CheckinSlider
+              title="How healthy are you feeling today?"
+              step={0.1}
+              minValue={0}
+              maxValue={10}
+              value={this.state.health}
+              onSlidingComplete={(val) => this.setState({ health: val })}
+            />
+
+            <CheckinSlider
+              title="How many hours of sleep did you get last night?"
+              step={0.1}
+              minValue={0}
+              maxValue={10}
+              value={this.state.hoursOfSleep}
+              onSlidingComplete={(val) => this.setState({ hoursOfSleep: val })}
+            />
+
+            <CheckinSlider
+              title="Are you happy?"
+              step={1}
+              minValue={0}
+              maxValue={1}
+              value={this.state.mood}
+              onSlidingComplete={(val) => this.setState({ mood: val })}
+            />
+
             <TextInput
-               style={{ height: 40 }}
-               multiline={true}
-               underlineColorAndroid = "transparent"
-               placeholder = "Journal Entry"
-               placeholderTextColor = "#000000"
-               autoCapitalize = "none"
-               onChangeText={(val) => this.setState({ journal: val })}
-               />
-        </View>
-        <View style={{ paddingTop: 20 }}>
-          <Button
-            title="Submit"
-            onPress={this.sendFormInfo}
-            />
-        </View>
+              style={{ height: 40 }}
+              multiline={true}
+              underlineColorAndroid = "transparent"
+              placeholder = "Journal Entry"
+              placeholderTextColor = "#000000"
+              autoCapitalize = "none"
+              onChangeText={(val) => this.setState({ journal: val })}
+              />
 
-        <Button
-          title="Display"
-          onPress={ () => { CheckinBackend.displayAllData(); } }
-        />
-        <Button
-          title="Clear All"
-          onPress={ () => { CheckinBackend.clearAllData(); } }
-        />
+            <Button
+              style={styles.submitButton}
+              title="Submit"
+              onPress={this.sendFormInfo}
+            />
 
         </ScrollView>
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  pageView: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'flex-start',
+    // borderColor: 'red',
+  },
+  questions: {
+    marginTop: 64,
+  },
+  submitButton: {
+    paddingTop: 20,
+  },
+});
+
+export default CheckinPage;

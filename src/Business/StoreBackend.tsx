@@ -44,7 +44,7 @@ const StoreBackend = {
     let found = false;
 
     for (let i = 0; i < indexOwnedArray.length; i++) {
-        // update item
+      // update item
       if (indexOwnedArray[i].name === item.name) {
         item.owned++;
         item.available = item.owned > item.used;

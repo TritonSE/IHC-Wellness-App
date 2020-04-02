@@ -55,7 +55,9 @@ class CheckinSlider extends React.Component<IProps, IState> {
 
   public render() {
     const deviceWidth = Dimensions.get('window').width;
-    const valuePosition = ((this.state.value / (this.props.maxValue - this.props.minValue)) * this.state.width) + this.state.leftOffset;
+    const valuePosition = this.state.leftOffset
+                          + this.state.width
+                          * (this.state.value / (this.props.maxValue - this.props.minValue));
 
     return (
         <View style={{ paddingTop: 30 }}>
@@ -64,7 +66,7 @@ class CheckinSlider extends React.Component<IProps, IState> {
             {Math.floor(this.state.value)}</Text>
           <Slider
             // ref={(slider) => { this.setState({ slider: slider, }) }}
-            step={0.1}
+            step={this.props.step}
             minimumValue={this.props.minValue}
             maximumValue={this.props.maxValue}
             value={this.props.value}
