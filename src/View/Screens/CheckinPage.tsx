@@ -1,11 +1,9 @@
 import * as React from 'react';
-import { ScrollView, Text, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { Button } from 'react-native-elements';
-
-import AppHeader from '../../components/AppHeader';
-import CheckinSlider from '../../components/CheckinSlider';
+import { Button, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
 import CheckinBackend from '../../Business/CheckinBackend';
+import AppHeader from '../../components/AppHeader';
+import CheckinSlider from '../../components/CheckinSlider';
 
 interface IState {
   health: number;
@@ -93,6 +91,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     // borderColor: 'red',
   },
+  // Without this the ScrollView is able to scroll past the header for an unknown reason
   questions: {
     marginTop: 64,
   },
