@@ -36,7 +36,7 @@ export default class CheckInPage extends React.Component<object, IState> {
       <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', borderColor: 'red' }}>
         <AppHeader title="Check-in" />
         <Text>Check In!</Text>
-        <ScrollView style={styles.scrollView} bounces={true}>
+        <ScrollView style={styles.scrollView} >
           <View style={styles.aboveSliders}>
             <CheckInSlider
               title="How are you feeling today"
@@ -83,7 +83,7 @@ export default class CheckInPage extends React.Component<object, IState> {
               onPress={this.sendFormInfo}
             />
           </View>
-        </ScrollView>
+          </ScrollView>  
       </View>
     );
   }
@@ -97,12 +97,13 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   textBox: {
-    height: 100,
+    height: 200,
     borderWidth: 2,
   },
   headerText: {
     fontSize: 14,
   },
   scrollView: {
+
   },
 });

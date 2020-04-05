@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Button, Modal } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Button, Modal, FlatList, Alert } from 'react-native';
 import AppHeader from '../../components/AppHeader';
 import storeHelper from '../../Business/storeBackend'
 import {pots, stems, flowers} from '../../Business/itemProperties.tsx';
@@ -13,6 +13,10 @@ export default class StorePage extends React.Component<object, object> {
       item: {name: ""},
       section: []
     };
+  }
+
+  ItemCardRenderer = () => {
+    
   }
 
   public render() {
@@ -51,6 +55,19 @@ export default class StorePage extends React.Component<object, object> {
         <Button
           title="Add Money"
           onPress={ ()=>{storeHelper.addMoney(10.4)} }
+        />
+
+        <FlatList
+          data={
+            [
+              {key: 'Get Terracotta'},
+              {key: 'Buy Terracotta'},
+              {key: 'Buy Long Stem'},
+              {key: 'Add Money'}
+            ]
+          }
+          renderItem={({item}) => <Button title={item.key} onPress={()=>Alert.alert(item.key)} />}
+          horizontal={true}
         />
 
         <Modal
