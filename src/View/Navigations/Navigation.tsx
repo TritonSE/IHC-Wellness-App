@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons'; // 6.2.2
 import * as React from 'react';
 import { createAppContainer, createBottomTabNavigator } from 'react-navigation';
-import CheckInPage from '../Screens/CheckInPage';
+
+import CheckinPage from '../Screens/CheckinPage';
 import PlantPage from '../Screens/PlantPage';
 import StorePage from '../Screens/StorePage';
 import UserPage from '../Screens/UserPage';
@@ -38,7 +39,7 @@ const getTabBarIcon = (navigation: any, _focused: boolean, tintColor: string | n
 export default createAppContainer(
   createBottomTabNavigator(
     {
-      CheckIn: { screen: CheckInPage },
+      CheckIn: { screen: CheckinPage },
       Plant: { screen: PlantPage },
       Store: { screen: StorePage },
       User: { screen: UserPage },

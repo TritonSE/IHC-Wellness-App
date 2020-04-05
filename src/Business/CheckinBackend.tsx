@@ -1,21 +1,30 @@
 import { Alert, AsyncStorage } from 'react-native';
 
 const CheckinBackend = {
-  saveData: async (checkinData: object) => {
+
+  // CHECKIN LOGIC
+  // TODO define checkin type
+  saveData: async (checkin: any) => {
     const date = CheckinBackend.getCurrentDate();
-    // check if person has already checked in today
+    // checks if person already checked in today
     const data = await CheckinBackend.retrieveData(date);
     if (data === 'error' || data != null) {
       Alert.alert('You have already checked in today');
-      return;
+    } else {
+      // add new information to storage
+      try {
+        let checkInData = checkin;
+        checkInData = {
+          hoursOfSleep: checkin.hoursOfSleep,
+          mood: checkin.mood,
+        };
+        await AsyncStorage.setItem(date, JSON.stringify(checkInData));
+        CheckinBackend.updateDates(date);
+      } catch (error) {
+        console.log(error);
+      }
     }
-    // add new information to storage
-    try {
-      await AsyncStorage.setItem(date, JSON.stringify(checkinData));
-      CheckinBackend.updateDates(date);
-    } catch (error) {
-      console.log(error);
-    }
+
   },
 
   retrieveData: async (date: string) => {
@@ -23,14 +32,15 @@ const CheckinBackend = {
       const asyncValue = await AsyncStorage.getItem(date);
       return asyncValue;
     } catch (error) {
-      // throw error; // TODO change to throw error
       console.log(error);
       return 'error';
     }
   },
 
-  parseData: (dataString: string | null) => {
-    if (dataString == null) return 'You did not check in that day';
+  parseData: (dataString: string) => {
+    if (dataString == null) {
+      return 'You did not check in that day';
+    }
     const parsed = JSON.parse(dataString);
     let text = '';
     Object.keys(parsed).forEach((key) => {
@@ -42,10 +52,11 @@ const CheckinBackend = {
   displayAllData: async () => {
     AsyncStorage.getAllKeys().then((keyArray) => {
       AsyncStorage.multiGet(keyArray).then((keyValArray) => {
-        let myStorage: any = {};
+        const myStorage: any = {};
         for (const keyVal of keyValArray) {
           myStorage[keyVal[0]] = keyVal[1];
         }
+
         console.log('CURRENT STORAGE: ', myStorage);
       });
     });
@@ -63,16 +74,16 @@ const CheckinBackend = {
     // gets the current date or the date from time in milliseconds
     const date = new Date(dateInMilliseconds);
     const year = date.getFullYear();
-    const month = (`0${date.getMonth() + 1}`).slice(-2);
-    const day = (`0${date.getDate()}`).slice(-2);
+    const month = `0${date.getMonth() + 1}`.slice(-2);
+    const day = `0${date.getDate()}`.slice(-2);
     const condensedDate = `${year}-${month}-${day}`;
     return condensedDate;
   },
 
   updateDates: async (date: string) => {
     // check if at least one date has already been recorded
-    const checkinStr = await AsyncStorage.getItem('checkins');
-    let allDates = checkinStr ? JSON.parse(checkinStr) : null;
+    const checkinsJson = await AsyncStorage.getItem('checkins');
+    let allDates = checkinsJson ? JSON.parse(checkinsJson) : null;
     // create an array with the first date or append to the existing array
     if (allDates == null) {
       allDates = [date];
@@ -84,9 +95,12 @@ const CheckinBackend = {
 
   getPlaceholder: (dateToCheck: string) => {
     console.log(dateToCheck);
-    if (dateToCheck === '') return 'select date';
+    if (dateToCheck === '') {
+      return 'select date';
+    }
     return dateToCheck;
   },
+
 };
 
 export default CheckinBackend;

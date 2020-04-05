@@ -1,40 +1,40 @@
-const pots = [
+const footers = [
   {
-    name : "terracotta",
-    price : 1.25,
-    img : "terracotta.png",
+    name: 'terracotta',
+    price: 1.25,
+    img: 'terracotta.png',
   },
   {
-    name : "clay",
-    price : 1.25,
-    img : "terracotta.png",
+    name: 'clay',
+    price: 1.25,
+    img: 'terracotta.png',
   },
-]
+];
 
-const stems = [
+const bodies = [
   {
-    name : "long",
-    price : 1.25,
-    img : "terracotta.png",
+    name: 'long',
+    price: 1.25,
+    img: 'terracotta.png',
   },
   {
-    name : "short",
-    price : 1.25,
-    img : "terracotta.png",
+    name: 'short',
+    price: 1.25,
+    img: 'terracotta.png',
   },
-]
+];
 
-const flowers = [
+const headers = [
   {
-    name : "sunflower",
-    price : 1.25,
-    img : "terracotta.png",
+    name: 'sunflower',
+    price: 1.25,
+    img: 'terracotta.png',
   },
   {
-    name : "daisy",
-    price : 1.25,
-    img : "terracotta.png",
+    name: 'daisy',
+    price: 1.25,
+    img: 'terracotta.png',
   },
-]
+];
 
-export { pots, stems, flowers }
+export { footers, bodies, headers };
