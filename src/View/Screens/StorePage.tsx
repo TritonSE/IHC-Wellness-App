@@ -1,12 +1,5 @@
 import * as React from 'react';
-<<<<<<< HEAD
-import { Text, View, StyleSheet, TouchableOpacity, Button, Modal, FlatList, Alert } from 'react-native';
-import AppHeader from '../../components/AppHeader';
-import storeHelper from '../../Business/storeBackend'
-import {pots, stems, flowers} from '../../Business/itemProperties.tsx';
-=======
 import { Button, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
->>>>>>> master
 
 import PlantBackend from '../../Business/PlantBackend';
 import StoreBackend from '../../Business/StoreBackend';
