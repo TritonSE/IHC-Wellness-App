@@ -52,29 +52,10 @@ export default class StorePage extends React.Component<object, object> {
             onPress={ () => { StoreBackend.buyItem('daisy', 'headers'); } }
           />
 
-<<<<<<< HEAD
-        <FlatList
-          data={
-            [
-              {key: 'Get Terracotta'},
-              {key: 'Buy Terracotta'},
-              {key: 'Buy Long Stem'},
-              {key: 'Add Money'}
-            ]
-          }
-          renderItem={({item}) => <Button title={item.key} onPress={()=>Alert.alert(item.key)} />}
-          horizontal={true}
-        />
-
-        <Modal
-             transparent = {true}
-             visible = {this.state.modalVisible}>
-=======
           <Button
           title="Change Header"
           onPress={ () => { PlantBackend.changeHeader('sunflower', 'daisy', 0); } }
           />
->>>>>>> master
 
           <Button
             title="createDefault"

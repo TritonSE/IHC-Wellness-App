@@ -4,6 +4,7 @@ import { Button, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
 import CheckinSlider from '../../components/CheckinSlider';
+import Textbox from '../../components/Textbox';
 
 interface IState {
   health: number;
@@ -62,16 +63,27 @@ class CheckinPage extends React.Component<object, IState> {
               onSlidingComplete={(val) => this.setState({ mood: val })}
             />
 
-            <TextInput
-              style={{ height: 40 }}
+            {/*<TextInput
+              style={styles.textInputs}
               multiline={true}
               underlineColorAndroid = "transparent"
               placeholder = "Journal Entry"
               placeholderTextColor = "#000000"
               autoCapitalize = "none"
               onChangeText={(val) => this.setState({ journal: val })}
-              />
-
+            />*/}
+    
+            <Textbox 
+              style={styles.textInputs}
+              title="Journal Entry"
+              titleColor="#000000"
+              multiline={true}
+              autocapital="none"
+              underlineColor="transparent"
+              finalText={this.state.journal}
+              onChangeText={(val) => this.setState({ journal: val })}
+            />
+            
             <Button
               style={styles.submitButton}
               title="Submit"
@@ -98,6 +110,18 @@ const styles = StyleSheet.create({
   submitButton: {
     paddingTop: 20,
   },
+  textInputs: {
+    height: 100, // For dimensions
+    borderRadius: 2, // How round is the text box
+    borderWidth: 2, // Set border width.
+    borderColor: '#000000', // Set border Hex Color Code Here
+    color: '#000000', // Setting up Text Font Color.
+    backgroundColor : '#FFFFFF', // Setting Up Background Color of Text component.
+    padding : 2, // Adding padding on Text component.
+    fontSize: 14,
+    //textAlign: 'center',
+    margin: 10
+  }
 });
 
 export default CheckinPage;
