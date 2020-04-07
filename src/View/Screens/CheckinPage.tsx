@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { Button, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Button, ScrollView, StyleSheet, View } from 'react-native';
 
 import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
 import CheckinSlider from '../../components/CheckinSlider';
-import Textbox from '../../components/Textbox';
+import CheckinTextInput from '../../components/CheckinTextInput';
 
 interface IState {
   health: number;
@@ -73,7 +73,7 @@ class CheckinPage extends React.Component<object, IState> {
               onChangeText={(val) => this.setState({ journal: val })}
             />*/}
     
-            <Textbox 
+            <CheckinTextInput 
               style={styles.textInputs}
               title="Journal Entry"
               titleColor="#000000"
