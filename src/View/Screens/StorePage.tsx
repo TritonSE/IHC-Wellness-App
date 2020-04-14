@@ -32,31 +32,38 @@ export default class StorePage extends React.Component<object, object> {
             <Text>Item 3</Text>
           </TouchableOpacity>
           <Button
-          title="Get Terracotta"
-          onPress={ async ()=>{
-            var info = await storeHelper.getItemInfo("terracotta", "footers");
-            console.log(info);
+          title="Buy Terracotta"
+          onPress={ ()=>
+            {
+            storeHelper.buyItem("terracotta","footers")
 
           } }
           />
           <Button
-          title="Buy Terracotta"
-          onPress={ ()=>{storeHelper.buyItem("terracotta","footers")} }
-          />
-
-
-          <Button
-          title="Buy Daisy"
-          onPress={ ()=>{storeHelper.buyItem("daisy","headers")} }
+          title="Buy Long"
+          onPress={ ()=>{storeHelper.buyItem("long","bodies")} }
           />
           <Button
-          title="Change Header"
-          onPress={ ()=>{plantHelper.changeHeader("sunflower","daisy",0)} }
+          title="Buy Short"
+          onPress={ ()=>{storeHelper.buyItem("short","bodies")} }
+          />
+
+          <Button
+          title="Add Body"
+          onPress={ ()=>{plantHelper.addBody(0, "short")} }
+          />
+          
+          <Button
+          title="Change Body"
+          onPress={ ()=>{plantHelper.changeBody(0, "short", 1, "long")} }
           />
 
         <Button
           title="createDefault"
-          onPress={ ()=>{plantHelper.createDefaultPlantArray()} }
+          onPress={ ()=>{
+            storeHelper.createOwned()
+            plantHelper.createDefaultPlantArray()
+          } }
           />
         <Button
           title="header"

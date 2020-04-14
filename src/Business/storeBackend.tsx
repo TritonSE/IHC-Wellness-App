@@ -62,13 +62,48 @@ const storeHelper = {
       ownedArray[sectionIndex] = indexOwnedArray;
       ownedArray = JSON.stringify(ownedArray)
       await AsyncStorage.setItem("owned", ownedArray)
+
+      return item;
+    },
+
+    handlePlants: async function(item, plantArray, section) {
+      for(var i = 0; i < plantArray.length; i++) {
+        var currentPlant = plantArray[i]
+        
+
+        if (section == "footers") {
+          // footer
+          if (currentPlant.footer.name == item.name) {
+            // we are currently using the bought item as a footer in the plant
+            
+            currentPlant.footer = item
+          }
+        } else if (section == "bodies") {
+          var bodyArray = currentPlant.body
+          for (var j = 0; j < bodyArray.length; j ++) {
+            var bodyItem = bodyArray[j]
+            if (bodyItem.name = item.name) {
+              bodyArray[j] = item
+              currentPlant.body = bodyArray
+            }
+          }
+
+        } else if (section == "headers") {
+          if (currentPlant.header.name == item.name) {
+            currentPlant.header = item
+          }
+        }
+        plantArray[i] = currentPlant;
+      }
+      // push plantArray
+      await AsyncStorage.setItem("PlantArray", JSON.stringify(plantArray))
     },
 
     buyItem: async function(item: string, section) {
 
         let ownedValue = await AsyncStorage.getItem("owned");
 
-        //create owned arrray if doesn't exist already
+        //create owned array if doesn't exist already
         if(ownedValue == null){
           console.log('created')
           storeHelper.createOwned();
@@ -87,7 +122,12 @@ const storeHelper = {
           if(asyncValue[sectionIndex][i].name == item){
             found = true
             //adds to owned array
-            storeHelper.handleOwned(asyncValue[sectionIndex][i],sectionIndex)
+            var newItem = await storeHelper.handleOwned(asyncValue[sectionIndex][i],sectionIndex)
+
+            var plantArray = await AsyncStorage.getItem("PlantArray")
+            plantArray = JSON.parse(plantArray);
+            
+            storeHelper.handlePlants(newItem, plantArray, section)
 
             var balance = await AsyncStorage.getItem("Money")
             balance = parseInt(balance, 10)
