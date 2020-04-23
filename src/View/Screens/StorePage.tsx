@@ -55,7 +55,10 @@ export default class StorePage extends React.Component<object, object> {
 
           <Button
             title="createDefault"
-            onPress={ () => { PlantBackend.createDefaultPlantArray(); } }
+            onPress={ () => {
+              StoreBackend.createOwned();
+              PlantBackend.createDefaultPlantArray();
+            } }
           />
 
           <Button

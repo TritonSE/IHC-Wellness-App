@@ -2,10 +2,10 @@ import * as React from 'react';
 import { Dimensions, FlatList, StyleSheet, View } from 'react-native';
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 
+import PlantBackend from '../../Business/PlantBackend';
 import PlantCard, { Data } from '../PlantScreen/PlantCard';
 import PlantData from '../PlantScreen/PlantData';
 import PlantInfo from '../PlantScreen/PlantInfo';
-import PlantBackend from '../../Business/PlantBackend';
 
 const { height, width } = Dimensions.get('window');
 
