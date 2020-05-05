@@ -78,6 +78,54 @@ class CheckinPage extends React.Component<object, IState> {
               onPress={this.sendFormInfo}
             />
 
+            <Button
+              style={styles.submitButton}
+              title="Display"
+              onPress={()=> {CheckinBackend.displayAllData()}}
+            />
+
+            <Button
+              style={styles.submitButton}
+              title="Clear"
+              onPress={()=> {CheckinBackend.clearAllData()}}
+            />
+
+            <Button
+              style={styles.submitButton}
+              title="Add Question"
+              onPress={()=> {CheckinBackend.addQuestion("How?")}}
+            />
+
+            <Button
+              style={styles.submitButton}
+              title="Set Question True"
+              onPress={()=> {CheckinBackend.setQuestionUsage("How?", true)}}
+            />
+
+            <Button
+              style={styles.submitButton}
+              title="Set Question False"
+              onPress={()=> {CheckinBackend.setQuestionUsage("How?", false)}}
+            />
+
+            <Button
+              style={styles.submitButton}
+              title="Get All Questions"
+              onPress={()=> {CheckinBackend.getAllQuestions()}}
+            />
+
+            <Button
+              style={styles.submitButton}
+              title="Get Used Question"
+              onPress={()=> {CheckinBackend.getUsedQuestions(true)}}
+            />
+
+            <Button
+              style={styles.submitButton}
+              title="Get Non Used Question"
+              onPress={()=> {CheckinBackend.getUsedQuestions(false)}}
+            />
+
         </ScrollView>
       </View>
     );
