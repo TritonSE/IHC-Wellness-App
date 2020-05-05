@@ -16,6 +16,7 @@ const CheckinBackend = {
         let checkInData = checkin;
         await AsyncStorage.setItem(date, JSON.stringify(checkInData));
         CheckinBackend.updateDates(date);
+        return checkInData
       } catch (error) {
         console.log(error);
       }
@@ -57,6 +58,22 @@ const CheckinBackend = {
       });
     });
   },
+  displayPlant: async()=>{
+    var ownedArray = await AsyncStorage.getItem("owned")
+    if(ownedArray== null){
+      console.log("{}")
+      return;
+    }
+    ownedArray = ownedArray.split("}]")
+    console.log("owned")
+    for(var i = 0; i < ownedArray.length; i++){
+      console.log(ownedArray[i] + " ")
+    }
+    var plantArray = await AsyncStorage.getItem("PlantArray")
+    console.log("PlantArray: " + plantArray)
+    var money = await AsyncStorage.getItem("Money")
+    console.log("Money: " + money)
+  },
 
   clearAllData: async () => {
     await AsyncStorage.clear();
@@ -87,6 +104,7 @@ const CheckinBackend = {
       allDates.push(date);
     }
     await AsyncStorage.setItem('checkins', JSON.stringify(allDates));
+    return allDates
   },
 
   getPlaceholder: (dateToCheck: string) => {
@@ -101,7 +119,7 @@ const CheckinBackend = {
     await AsyncStorage.setItem('questions', JSON.stringify([]));
   },
 
-  addQuestion: async (question: string)=>{
+  addQuestion: async (question: string, key: string)=>{
     //gets the question aray from asyncstorage
     const questionArrayJson = await AsyncStorage.getItem('questions');
     let questionArray = questionArrayJson ? JSON.parse(questionArrayJson) : null;
@@ -112,31 +130,36 @@ const CheckinBackend = {
     const questionObject = {
       question: question,
       used: false,
+      key: key,
     }
     questionArray.push(questionObject);
     //adds the question to asyncstorage
     await AsyncStorage.setItem("questions", JSON.stringify(questionArray));
+    return questionObject
   },
 
-  setQuestionUsage: async (question: string, using: boolean)=>{
+  setQuestionUsage: async (key: string, using: boolean)=>{
     //gets the question aray from asyncstorage
     const questionArrayJson = await AsyncStorage.getItem('questions');
     let questionArray = questionArrayJson ? JSON.parse(questionArrayJson) : null;
     if(questionArray == null){
       //ends function call if question array doesn't exist
-      console.log("Question was not found");
+      console.log("You do not have any saved questions");
       return
     }
+    let questionObject = null
     //looks to see if the question already exist in array
     for(var i = 0; i< questionArray.length; i++){
-      if(questionArray[i].question == question){
+      if(questionArray[i].key == key){
         //found the question, and set it to be used
         questionArray[i].used = using;
+        questionObject = questionArray[i];
         console.log("this question's usage is now set to " + using);
         break;
       }
     }
     await AsyncStorage.setItem("questions", JSON.stringify(questionArray));
+    return questionObject
   },
 
 

@@ -25,10 +25,12 @@ const ProfileBackend = {
 
   retrieveDataSet: async (numDays: number) => {
     const dateSet = await ProfileBackend.retrieveDates(numDays);
-    AsyncStorage.multiGet(dateSet, (err, result) => {
-      console.log(result);
+    let dates;
+    await AsyncStorage.multiGet(dateSet, (err, result) => {
+      dates = result;
     });
-
+    console.log(dates);
+    return dates;
   },
 
   getAllDates: async ()=>{
@@ -43,15 +45,13 @@ const ProfileBackend = {
         acceptedKeys.push(currentKey);
       }
     }
-    console.log(acceptedKeys);
+    console.log("all dates in storage " + acceptedKeys);
     return acceptedKeys;
   },
 
   retrieveDates: async (numDays: number) => {
     const dates = await ProfileBackend.getAllDates();
     const today = new Date(CheckinBackend.getCurrentDate());
-    console.log(dates)
-    console.log(today)
     const secondsLimit = (numDays - 1) * 24 * 60 * 60;
     // loops through all dates the user checked in
     let i = dates.length-1;
