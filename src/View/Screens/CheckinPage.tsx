@@ -1,9 +1,11 @@
 import * as React from 'react';
-import { Button, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Button, Dimensions, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
 import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
 import CheckinSlider from '../../components/CheckinSlider';
+
+const { height, width } = Dimensions.get('window');
 
 interface IState {
   health: number;
@@ -34,7 +36,7 @@ class CheckinPage extends React.Component<object, IState> {
       <View style={styles.pageView}>
         <AppHeader title="Check-in" />
 
-        <ScrollView style={styles.questions}>
+        <ScrollView style={styles.questionScroll}>
             <CheckinSlider
               title="How healthy are you feeling today?"
               step={0.1}
@@ -78,6 +80,54 @@ class CheckinPage extends React.Component<object, IState> {
               onPress={this.sendFormInfo}
             />
 
+            <Button
+              style={styles.submitButton}
+              title="Display"
+              onPress={()=> {CheckinBackend.displayAllData()}}
+            />
+
+            <Button
+              style={styles.submitButton}
+              title="Clear"
+              onPress={()=> {CheckinBackend.clearAllData()}}
+            />
+
+            <Button
+              style={styles.submitButton}
+              title="Add Question"
+              onPress={()=> {CheckinBackend.addQuestion("How?")}}
+            />
+
+            <Button
+              style={styles.submitButton}
+              title="Set Question True"
+              onPress={()=> {CheckinBackend.setQuestionUsage("How?", true)}}
+            />
+
+            <Button
+              style={styles.submitButton}
+              title="Set Question False"
+              onPress={()=> {CheckinBackend.setQuestionUsage("How?", false)}}
+            />
+
+            <Button
+              style={styles.submitButton}
+              title="Get All Questions"
+              onPress={()=> {CheckinBackend.getAllQuestions()}}
+            />
+
+            <Button
+              style={styles.submitButton}
+              title="Get Used Question"
+              onPress={()=> {CheckinBackend.getUsedQuestions(true)}}
+            />
+
+            <Button
+              style={styles.submitButton}
+              title="Get Non Used Question"
+              onPress={()=> {CheckinBackend.getUsedQuestions(false)}}
+            />
+
         </ScrollView>
       </View>
     );
@@ -92,8 +142,9 @@ const styles = StyleSheet.create({
     // borderColor: 'red',
   },
   // Without this the ScrollView is able to scroll past the header for an unknown reason
-  questions: {
-    marginTop: 64,
+  questionScroll: {
+    // marginTop: 64,
+    width,
   },
   submitButton: {
     paddingTop: 20,

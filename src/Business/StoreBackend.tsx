@@ -27,7 +27,7 @@ const storeHelper = {
 
     addMoney: async function(amount: float) {
       await AsyncStorage.setItem("Money", amount.toString());
-
+      return amount
     },
 
     createOwned: async function(){
@@ -69,20 +69,23 @@ const storeHelper = {
     handlePlants: async function(item, plantArray, section) {
       for(var i = 0; i < plantArray.length; i++) {
         var currentPlant = plantArray[i]
-        
+
 
         if (section == "footers") {
           // footer
           if (currentPlant.footer.name == item.name) {
             // we are currently using the bought item as a footer in the plant
-            
+
             currentPlant.footer = item
           }
         } else if (section == "bodies") {
           var bodyArray = currentPlant.body
           for (var j = 0; j < bodyArray.length; j ++) {
+
             var bodyItem = bodyArray[j]
-            if (bodyItem.name = item.name) {
+            console.log("Body:" + bodyItem.name)
+            console.log("Item:" + item.name)
+            if (bodyItem.name == item.name) {
               bodyArray[j] = item
               currentPlant.body = bodyArray
             }
@@ -100,7 +103,7 @@ const storeHelper = {
     },
 
     buyItem: async function(item: string, section) {
-
+        let newItem = null;
         let ownedValue = await AsyncStorage.getItem("owned");
 
         //create owned array if doesn't exist already
@@ -122,11 +125,11 @@ const storeHelper = {
           if(asyncValue[sectionIndex][i].name == item){
             found = true
             //adds to owned array
-            var newItem = await storeHelper.handleOwned(asyncValue[sectionIndex][i],sectionIndex)
+            newItem = await storeHelper.handleOwned(asyncValue[sectionIndex][i],sectionIndex)
 
             var plantArray = await AsyncStorage.getItem("PlantArray")
             plantArray = JSON.parse(plantArray);
-            
+
             storeHelper.handlePlants(newItem, plantArray, section)
 
             var balance = await AsyncStorage.getItem("Money")
@@ -139,14 +142,14 @@ const storeHelper = {
               balance -= cost
               await AsyncStorage.setItem("Money", balance.toString())
             }
-
-            //updates asyncstorage to reflect changes
           }
         }
 
         //item was not found, so create a new instance
         if(!found){
           alert("You are trying to buy an item that doesn't exist");
+        }else{
+          return newItem
         }
     },
 
@@ -190,189 +193,6 @@ const storeHelper = {
           return 2;
       }
     },
-
-    /*getIndex: (item, list)=>{
-      //gets the index of an item in a given array
-      console.log(list[0])
-      for(var i = 0; i < list.length; i++){
-        if(list[i].name == item){
-          return i;
-        }
-      }
-      return null;
-    },*/
-
-    /*getItems : async () => {
-          var allItems = storeHelper.getAllItems();
-          var ownedItems;
-          try{//gets the list of all the items the user has
-            ownedItems = await AsyncStorage.getItem("owned");
-            if(ownedItems == null){
-              alert("You do not own any items");
-              return
-            }
-            ownedItems = JSON.parse(ownedItems);
-          }
-          catch(error){//user does not have an items array
-            alert("You do not own any items");
-            return
-          }
-          //looks for each item
-          for(var i = 0; i < allItems.length; i++){
-            //loops through the owned items for the item we are looking for
-            for(var j=0; j < ownedItems.length;j++){
-              if(ownedItems[j].name == allItems[i]){
-                console.log(ownedItems[j]);
-              }
-            }
-          }
-    },*/
-
-
-
 }
 
 export default storeHelper
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const storeHelper = {
-
-//   buyItem : async(name : string) => {
-//     let item = await storeHelper.getItem(name);
-//     // update items numBought field
-//     item.numBought++;
-//     item.numAvailable++;
-//     await AsyncStorage.setItem(name, JSON.stringify(item));
-
-//   },
-
-//   getItem : async(name : string) => {
-//     try {
-//       let itemString = await AsyncStorage.getItem(name);
-//       return JSON.parse(String(itemString));
-//     } catch(error){
-//       console.log(error);
-//       return "error";
-//     }
-//   },
-
-//   saveData : async (obj) => {
-//     let date = storeHelper.getDate();
-//     //checks if person already checked in today
-//     let data = await checkInHelper.retrieveData(date);
-//     if(data == "error" || data != null){
-//       alert("You have already checked in today");
-//     }
-//     else{//adds new information to storage
-//       try{
-//         let checkInData = obj;
-//         await AsyncStorage.setItem(date, JSON.stringify(checkInData));
-//         checkInHelper.updateDates(date);
-//       }
-//       catch(error){
-//         console.log(error)
-//       }
-//     }
-
-
-//   },
-
-//   retrieveData : async (date) => {
-//     try{
-//       let asyncValue = await AsyncStorage.getItem(date);
-//       return asyncValue;
-//     }
-//     catch(error){
-//       console.log(error);
-//       return "error";
-//     }
-//   },
-
-//   displayAllData : async () => {
-//     AsyncStorage.getAllKeys().then((keyArray) => {
-//       AsyncStorage.multiGet(keyArray).then((keyValArray) => {
-//         let myStorage: any = {};
-//         for (let keyVal of keyValArray) {
-//           myStorage[keyVal[0]] = keyVal[1]
-//         }
-
-//         console.log('CURRENT STORAGE: ', myStorage);
-//       })
-//     });
-//   },
-
-//   clearAllData : async ()=>{
-//     AsyncStorage.clear();
-//   },
-
-//   getDate : () =>{
-//     //gets the current date
-//     let date = new Date();
-//     let year = date.getFullYear();
-//     let month = ("0"+(date.getMonth()+1)).slice(-2);
-//     let day = ("0"+ date.getDate()).slice(-2);
-//     condensedDate =  year + "-" + month + "-" + day;
-//     return condensedDate;
-//   },
-
-//   updateDates : async (date)=>{
-//     //check if at least one date has already been recorded
-//     let asyncValue = await AsyncStorage.getItem("checkins");
-//     if(asyncValue == null){
-//       let allDates = [date];
-//       await AsyncStorage.setItem("checkins", JSON.stringify(allDates))
-//     }
-//     else{
-//       //add onto the previous array
-//       asyncValue = JSON.parse(asyncValue)
-//       asyncValue.push(date)
-//       await AsyncStorage.setItem("checkins", JSON.stringify(asyncValue));
-//     }
-//   }
-// }
-
-// export default storeHelper
