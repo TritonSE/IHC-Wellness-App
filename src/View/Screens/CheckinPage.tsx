@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Button, Dimensions, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Button, Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 
 import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
 import CheckinSlider from '../../components/CheckinSlider';
+import CheckinTextInput from '../../components/CheckinTextInput';
 
 const { height, width } = Dimensions.get('window');
 
@@ -27,106 +28,99 @@ class CheckinPage extends React.Component<object, IState> {
 
   public sendFormInfo = () => {
     const formInfo = Object.assign({}, this.state);
-    console.log(JSON.stringify(formInfo));
+    console.log(`Saving checkin response ${JSON.stringify(formInfo)}`);
     CheckinBackend.saveData(formInfo);
   }
 
+  // TODO: KeyboardAvoidingView did not work
+  // Will probably want to use react-native-keyboard-aware-scroll-view instead
   public render() {
     return (
       <View style={styles.pageView}>
         <AppHeader title="Check-in" />
-
         <ScrollView style={styles.questionScroll}>
-            <CheckinSlider
-              title="How healthy are you feeling today?"
-              step={0.1}
-              minValue={0}
-              maxValue={10}
-              value={this.state.health}
-              onSlidingComplete={(val) => this.setState({ health: val })}
-            />
+          <CheckinSlider
+            title="How healthy are you feeling today?"
+            step={0.1}
+            minValue={0}
+            maxValue={10}
+            value={this.state.health}
+            onSlidingComplete={(val) => this.setState({ health: val })}
+          />
 
-            <CheckinSlider
-              title="How many hours of sleep did you get last night?"
-              step={0.1}
-              minValue={0}
-              maxValue={10}
-              value={this.state.hoursOfSleep}
-              onSlidingComplete={(val) => this.setState({ hoursOfSleep: val })}
-            />
+          <CheckinSlider
+            title="How many hours of sleep did you get last night?"
+            step={0.1}
+            minValue={0}
+            maxValue={10}
+            value={this.state.hoursOfSleep}
+            onSlidingComplete={(val) => this.setState({ hoursOfSleep: val })}
+          />
 
-            <CheckinSlider
-              title="Are you happy?"
-              step={1}
-              minValue={0}
-              maxValue={1}
-              value={this.state.mood}
-              onSlidingComplete={(val) => this.setState({ mood: val })}
-            />
+          <CheckinSlider
+            title="Are you happy?"
+            step={1}
+            minValue={0}
+            maxValue={1}
+            value={this.state.mood}
+            onSlidingComplete={(val) => this.setState({ mood: val })}
+          />
 
-            <TextInput
-              style={{ height: 40 }}
-              multiline={true}
-              underlineColorAndroid = "transparent"
-              placeholder = "Journal Entry"
-              placeholderTextColor = "#000000"
-              autoCapitalize = "none"
-              onChangeText={(val) => this.setState({ journal: val })}
-              />
+          <CheckinTextInput
+            style={styles.textInputs}
+            title="Journal Entry"
+            titleColor="#000000"
+            multiline={true}
+            autocapital="none"
+            underlineColor="transparent"
+            finalText={this.state.journal}
+            onChangeText={(val) => this.setState({ journal: val })}
+          />
 
-            <Button
-              style={styles.submitButton}
-              title="Submit"
-              onPress={this.sendFormInfo}
-            />
+          <Button
+            title="Submit"
+            onPress={this.sendFormInfo}
+          />
 
-            <Button
-              style={styles.submitButton}
-              title="Display"
-              onPress={()=> {CheckinBackend.displayAllData()}}
-            />
+          <Button
+            title="Display"
+            onPress={() => { CheckinBackend.displayAllData(); }}
+          />
 
-            <Button
-              style={styles.submitButton}
-              title="Clear"
-              onPress={()=> {CheckinBackend.clearAllData()}}
-            />
+          <Button
+            title="Clear"
+            onPress={() => { CheckinBackend.clearAllData(); }}
+          />
 
-            <Button
-              style={styles.submitButton}
-              title="Add Question"
-              onPress={()=> {CheckinBackend.addQuestion("How?")}}
-            />
+          <Button
+            title="Add Question"
+            onPress={() => { CheckinBackend.addQuestion('How?', 'how'); }}
+          />
 
-            <Button
-              style={styles.submitButton}
-              title="Set Question True"
-              onPress={()=> {CheckinBackend.setQuestionUsage("How?", true)}}
-            />
+          <Button
+            title="Set Question True"
+            onPress={() => { CheckinBackend.setQuestionUsage('How?', true); }}
+          />
 
-            <Button
-              style={styles.submitButton}
-              title="Set Question False"
-              onPress={()=> {CheckinBackend.setQuestionUsage("How?", false)}}
-            />
+          <Button
+            title="Set Question False"
+            onPress={() => { CheckinBackend.setQuestionUsage('How?', false); }}
+          />
 
-            <Button
-              style={styles.submitButton}
-              title="Get All Questions"
-              onPress={()=> {CheckinBackend.getAllQuestions()}}
-            />
+          <Button
+            title="Get All Questions"
+            onPress={() => { CheckinBackend.getAllQuestions(); }}
+          />
 
-            <Button
-              style={styles.submitButton}
-              title="Get Used Question"
-              onPress={()=> {CheckinBackend.getUsedQuestions(true)}}
-            />
+          <Button
+            title="Get Used Question"
+            onPress={() => { CheckinBackend.getUsedQuestions(true); }}
+          />
 
-            <Button
-              style={styles.submitButton}
-              title="Get Non Used Question"
-              onPress={()=> {CheckinBackend.getUsedQuestions(false)}}
-            />
+          <Button
+            title="Get Non Used Question"
+            onPress={() => { CheckinBackend.getUsedQuestions(false); }}
+          />
 
         </ScrollView>
       </View>
@@ -140,14 +134,32 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     // borderColor: 'red',
+    // borderWidth: 2,
   },
-  // Without this the ScrollView is able to scroll past the header for an unknown reason
   questionScroll: {
-    // marginTop: 64,
     width,
   },
   submitButton: {
     paddingTop: 20,
+  },
+  textInputs: {
+    height: 100, // For dimensions
+    borderRadius: 2, // How round is the text box
+    borderWidth: 2, // Set border width.
+    borderColor: '#000000', // Set border Hex Color Code Here
+    color: '#000000', // Setting up Text Font Color.
+    backgroundColor : '#FFFFFF', // Setting Up Background Color of Text component.
+    padding : 2, // Adding padding on Text component.
+    fontSize: 14,
+    // textAlign: 'center',
+    margin: 10,
+  },
+  keyboard: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    borderColor: 'red',
+    borderWidth: 2,
   },
 });
 
