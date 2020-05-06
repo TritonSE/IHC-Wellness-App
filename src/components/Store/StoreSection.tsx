@@ -18,14 +18,14 @@ export default function StoreSection(props: IProps) {
         horizontal={true}
         data={props.plantItems}
         renderItem={(data: { item: IStoreItem }) => (
-            <StoreCard
-              name={data.item.name}
-              price={data.item.price}
-              sectionName={props.storageName}
-            />
-          )}
-          keyExtractor={(item, index) => index.toString()}
+          <StoreCard
+            name={data.item.name}
+            price={data.item.price}
+            sectionName={props.storageName}
           />
+        )}
+        keyExtractor={(item, index) => index.toString()}
+      />
     </View>
   );
 }

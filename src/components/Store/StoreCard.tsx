@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Image, Modal, StyleSheet, Text,
+import { Button, Image, ImageSourcePropType, Modal, StyleSheet, Text,
          TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
 import { IStoreItem, PlantImages } from '../../../constants/Plants';
@@ -18,7 +18,7 @@ class StoreCard extends React.Component<IProps, IState> {
   public readonly price: number = this.props.price;
   public readonly sectionName: string = this.props.sectionName;
 
-  private readonly image: object = PlantImages[this.name];
+  private readonly image: ImageSourcePropType = PlantImages[this.name];
 
   constructor(props: IProps) {
     super(props);

@@ -1,3 +1,5 @@
+// NOTE: plant names with whitespace or punctuation must be in quotation marks
+// Daisy is a valid key without quotes but 'Wild Rose' requires quotes
 export const PlantImages = Object.freeze({
   // HEADERS
   Daisy: require('app/assets/images/Plant_Header.png'),
@@ -5,7 +7,7 @@ export const PlantImages = Object.freeze({
 
   // BODIES
   Body: require('app/assets/images/Plant_Body.png'),
-  LongBody: require('app/assets/images/Plant_Body_Long.png'),
+  'Long Body': require('app/assets/images/Plant_Body_Long.png'),
   Stem: require('app/assets/images/cartoon_stem.png'),
 
   // FOOTERS
@@ -18,6 +20,8 @@ export interface IStoreItem {
   price: number;
 }
 
+// NOTE: name field in each item MUST match a key in PlantImages
+// Name mismatches mean item will not get rendered, duplicate names cause duplicate render
 export const PlantHeaders: ReadonlyArray<IStoreItem> = [
   {
     name: 'Daisy',
@@ -35,7 +39,7 @@ export const PlantBodies: ReadonlyArray<IStoreItem> = [
     price: 1.25,
   },
   {
-    name: 'LongBody',
+    name: 'Long Body',
     price: 2.50,
   },
   {
