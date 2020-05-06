@@ -15,14 +15,14 @@ export const PlantImages = Object.freeze({
   Terracotta: require('app/assets/images/terracotta.png'),
 });
 
-export interface IStoreItem {
+export interface IPlantItem {
   name: string;
   price: number;
 }
 
 // NOTE: name field in each item MUST match a key in PlantImages
 // Name mismatches mean item will not get rendered, duplicate names cause duplicate render
-export const PlantHeaders: ReadonlyArray<IStoreItem> = [
+export const PlantHeaders: ReadonlyArray<IPlantItem> = [
   {
     name: 'Daisy',
     price: 1.25,
@@ -33,7 +33,7 @@ export const PlantHeaders: ReadonlyArray<IStoreItem> = [
   },
 ];
 
-export const PlantBodies: ReadonlyArray<IStoreItem> = [
+export const PlantBodies: ReadonlyArray<IPlantItem> = [
   {
     name: 'Body',
     price: 1.25,
@@ -48,7 +48,7 @@ export const PlantBodies: ReadonlyArray<IStoreItem> = [
   },
 ];
 
-export const PlantFooters: ReadonlyArray<IStoreItem> = [
+export const PlantFooters: ReadonlyArray<IPlantItem> = [
   {
     name: 'Clay',
     price: 1.25,
