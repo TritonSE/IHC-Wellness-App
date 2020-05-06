@@ -1,113 +1,79 @@
 import * as React from 'react';
-import { Dimensions, FlatList, StyleSheet, View } from 'react-native';
-import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
+import { Dimensions, FlatList, Image, StyleSheet, View } from 'react-native';
 
 import PlantBackend from '../../Business/PlantBackend';
-import PlantCard, { Data } from '../PlantScreen/PlantCard';
-import PlantData from '../PlantScreen/PlantData';
-import PlantInfo from '../PlantScreen/PlantInfo';
 
 const { height, width } = Dimensions.get('window');
 
-export interface IState {
-  dataProvider: DataProvider;
+import { IStoreItem, PlantBodies, PlantFooters, PlantHeaders, PlantImages } from '../../../constants/Plants';
+import AppHeader from '../../components/AppHeader';
+
+// TODO narrow down these types, should be IStore___ or IPlant___
+interface IState {
+  plantBody: IStoreItem[];
+  plantFooter: IStoreItem;
+  plantHeader: IStoreItem;
 }
 
 export default class PlantPage extends React.Component<object, IState> {
-  public _layoutProvider: LayoutProvider;
-
   constructor(props: object) {
     super(props);
     this.state = {
-      dataProvider: new DataProvider((r1, r2) => {
-        return r1 !== r2;
-      }).cloneWithRows(PlantData),
+      // TODO clean backend functions and uncomment these
+      // plantBody: PlantBackend.getBody(0),
+      // plantFooter: PlantBackend.getFooter(0),
+      // plantHeader: PlantBackend.getHeader(0),
+      plantBody: [...PlantBodies],
+      plantFooter: PlantFooters[0],
+      plantHeader: PlantHeaders[0],
     };
 
-    this._layoutProvider = new LayoutProvider((i) => {
-      return this.state.dataProvider.getDataForIndex(i).type;
-    },                                        (type, dim) => {
-      switch (type) {
-        case 'HEADER':
-          dim.width = width;
-          dim.height = 400;
-          break;
-        case 'BODY':
-          dim.width = width;
-          dim.height = 430;
-          break;
-        case 'BODY_LONG':
-          dim.width = width;
-          dim.height = 1780;
-          break;
-        case 'FOOTER':
-          dim.width = width;
-          dim.height = 200;
-          break;
-        default:
-          dim.width = width;
-          dim.height = 0;
-      }
-    });
-
-    this.renderRow = this.renderRow.bind(this);
-  }
-
-  public renderRow(_type: any, data: Data) {
-    return <PlantCard data={data}/>;
-  }
-
-  public getListItems(array: any[]) {
-    const footer: number = array.filter(c => c.type === 'FOOTER').length;
-    const body: number = array.filter(c => c.type === 'BODY').length;
-    const bodyLong: number = array.filter(c => c.type === 'BODY_LONG').length;
-    const header: number = array.filter(c => c.type === 'HEADER').length;
-    return {
-      listItems: [
-        {
-          type: 'entypo',
-          name: 'flower',
-          amount: footer.toString(),
-        },
-        {
-          type: 'entypo',
-          name: 'leaf',
-          amount: body.toString(),
-        },
-        {
-          type: 'entypo',
-          name: 'tree',
-          amount: bodyLong.toString(),
-        },
-        {
-          type: 'ionicon',
-          name: 'ios-rose',
-          amount: header.toString(),
-        },
-      ],
-    };
   }
 
   public render() {
-    const array: any[] = this.state.dataProvider.getAllData();
-    const itemData = this.getListItems(array);
-
     return (
       <View style={styles.container}>
-        <View style={{ height, width }}>
-          <PlantInfo {...itemData} />
-          <RecyclerListView rowRenderer={this.renderRow} dataProvider={this.state.dataProvider}
-                            layoutProvider={this._layoutProvider}/>
-        </View>
-      </View>
+        <AppHeader title="Plant"/>
+        <FlatList
+          contentContainerStyle={styles.plantList}
+          data={this.state.plantBody}
+          ListHeaderComponent={ this.renderPlantItem(this.state.plantHeader) }
+          ListFooterComponent={ this.renderPlantItem(this.state.plantFooter) }
+          renderItem={(data) => {
+            const plant = data.item;
+            return this.renderPlantItem(plant);
+          }}
+          keyExtractor={(item, index) => index.toString()}
+        />
+     </View>
+    );
+  }
+
+  private renderPlantItem(plantItem: IStoreItem) {
+    return (
+      <Image
+        style={styles.plantItem}
+        source={ PlantImages[plantItem.name] }
+      />
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    height,
+    // height,
     width,
+    alignItems: 'center',
     flex: 1,
   },
+  plantItem: {
+    // borderColor: 'black',
+    // borderWidth: 3,
+    height: 100,
+    width: 100,
+  },
+  plantList: {
+    width,
+    alignItems: 'center',
+  }
 });
