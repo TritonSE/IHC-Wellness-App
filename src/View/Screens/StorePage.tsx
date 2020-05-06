@@ -1,20 +1,14 @@
 import * as React from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import StoreBackend from '../../Business/StoreBackend';
-
 import { IStoreItem, PlantBodies, PlantFooters, PlantHeaders } from 'app/constants/Plants';
-import StoreCard from 'app/src/components/StoreCard';
+
+import StoreSection from '../../../src/components/Store/StoreSection';
 import AppHeader from '../../components/AppHeader';
 
 export default class StorePage extends React.Component<object, object> {
   constructor(props: object) {
     super(props);
-    this.state = {
-      modalVisible: false,
-      item: { name: '' },
-      section: [],
-    };
   }
 
   public componentDidMount() {
@@ -23,61 +17,29 @@ export default class StorePage extends React.Component<object, object> {
 
   public render() {
     return (
-      <View style={styles.container}>
+      <View style={styles.pageContainer}>
         <AppHeader title="Store"/>
 
         <ScrollView>
-          {/*
-          <Button
-            title="createDefault"
-            onPress={ () => {
-              StoreBackend.createOwned();
-              PlantBackend.createDefaultPlantArray();
-            } }
-          />
-          */}
 
-          <FlatList
-            horizontal={true}
-            data={PlantHeaders}
-            renderItem={(plant: IStoreItem) => {
-              return (
-                <StoreCard
-                  name={plant.item.name}
-                  price={plant.item.price}
-                />
-              );
-            }}
-            keyExtractor={(item, index) => index.toString()}
+          <StoreSection
+            sectionTitle="Heads"
+            plantItems={PlantHeaders}
+            storageName="headers"
           />
 
-          <FlatList
-            horizontal={true}
-            data={PlantBodies}
-            renderItem={(plant: IStoreItem) => {
-              return (
-                <StoreCard
-                  name={plant.item.name}
-                  price={plant.item.price}
-                />
-              );
-            }}
-            keyExtractor={(item, index) => index.toString()}
+          <StoreSection
+            sectionTitle="Stems"
+            plantItems={PlantBodies}
+            storageName="bodies"
           />
 
-          <FlatList
-            horizontal={true}
-            data={PlantFooters}
-            renderItem={(plant: IStoreItem) => {
-              return (
-                <StoreCard
-                  name={plant.item.name}
-                  price={plant.item.price}
-                />
-              );
-            }}
-            keyExtractor={(item, index) => index.toString()}
+          <StoreSection
+            sectionTitle="Pots"
+            plantItems={PlantFooters}
+            storageName="footers"
           />
+
         </ScrollView>
       </View>
     );
@@ -85,16 +47,19 @@ export default class StorePage extends React.Component<object, object> {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  pageContainer: {
     alignItems: 'center',
     flex: 1,
     justifyContent: 'flex-start',
+  },
+  scrollContainer: {
+    padding: 20,
   },
   shopItem: {
     borderColor: 'red',
     borderWidth: 5,
     height: 100,
     width: 100,
-    padding: 5,
+    padding: 10,
   },
 });
