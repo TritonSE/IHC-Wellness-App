@@ -2,8 +2,8 @@ import * as React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { PlantBodies, PlantFooters, PlantHeaders } from '../../../constants/Plants';
-
 import StoreSection from '../../../src/components/Store/StoreSection';
+import StoreBackend from '../../Business/StoreBackend';
 import AppHeader from '../../components/AppHeader';
 
 export default class StorePage extends React.Component<object, object> {
@@ -19,7 +19,6 @@ export default class StorePage extends React.Component<object, object> {
     return (
       <View style={styles.pageContainer}>
         <AppHeader title="Store"/>
-
         <ScrollView>
 
           <StoreSection
@@ -50,6 +49,14 @@ const styles = StyleSheet.create({
   pageContainer: {
     alignItems: 'center',
     flex: 1,
+    justifyContent: 'flex-start',
+    paddingLeft: 30,
+    paddingRight: 30,
+    backgroundColor: 'green',
+  },
+  header: {
+    fontSize: 30,
+    flexDirection: 'column',
     justifyContent: 'flex-start',
   },
   scrollContainer: {
