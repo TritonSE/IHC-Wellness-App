@@ -1,43 +1,34 @@
+import * as React from 'react';
 import { AsyncStorage } from 'react-native';
 import { bodies, footers, headers } from './itemProperties.tsx';
 
-const plantHelper = {
+export default class PlantBackend extends React.Component<object, object> {
+  public static getInstance(): PlantBackend {
+    if (!PlantBackend.instance) {
+      PlantBackend.instance = new PlantBackend({});
+    }
+    return PlantBackend.instance;
+  }
 
-  createDefaultPlantArray : async () => {
-    headers[0].owned = 1;
-    headers[0].used = 1;
-    headers[0].available = headers[0].owned > headers[0].used;
+  private static readonly PLANT_ARRAY_KEY = 'PlantArray';
+  private static readonly OWNED_ITEMS_KEY = 'owned';
+  private static instance: PlantBackend | null = null;
 
-    bodies[0].owned = 1;
-    bodies[0].used = 1;
-    bodies[0].available = bodies[0].owned > bodies[0].used;
+  private constructor(props: {}) {
+    super(props);
+    console.log('PlantController created!');
+  }
 
-    footers[0].owned = 1;
-    footers[0].used = 1;
-    footers[0].available = footers[0].owned > footers[0].used;
-
-    const defaultPlant = { header : headers[0], body : [bodies[0]], footer : footers[0] };
-
-    let ownedValues = await AsyncStorage.getItem('owned');
-    ownedValues = JSON.parse(ownedValues);
-    ownedValues[0].push(footers[0]);
-    ownedValues[1].push(bodies[0]);
-    ownedValues[2].push(headers[0]);
-
-    await AsyncStorage.setItem('owned', JSON.stringify(ownedValues));
-
-    let temp = [defaultPlant];
-
-    temp = JSON.stringify(temp);
-    await AsyncStorage.setItem('PlantArray', temp);
-
-  },
-
-  async addBody (plantIndex, newBody) {
+  // TODO: add prevValues as parameters to replace calls to AsyncStorage.getItem() with prevValue
+  // TODO: define parameter types, e.g. plantIndex: number, newBody: either IPlantItem or IOwnedItem
+  public async addBody(plantIndex, newBody) {
     const ownedIndex = 1;
+    // TODO: avoid type mismatches, this string turns into an array. prevValue param will replace
+    // this but note that variable type changes are a code smell and const variables are preferred
     let ownedArray = await AsyncStorage.getItem('owned');
     ownedArray = JSON.parse(ownedArray);
 
+    // TODO replace these for loops with Array.find() or Array.findIndex()
         // loop through the body section of the ownedArray to find newBody
     for (let i = 0; i < ownedArray[ownedIndex].length; i ++) {
       if (ownedArray[ownedIndex][i].name === newBody) {
@@ -62,13 +53,17 @@ const plantHelper = {
         let currentPlant = plantArray[plantIndex];
         currentPlant.body.push(item);
         plantArray[plantIndex] = currentPlant;
+        // TODO we're looking to remove as many of these await operations as possible:
+        // instead, call the setItem method and return without waiting
+        // You can verify whether the operation completes with a setItem().then(callback)
+        // where the callback logs a success message
         await AsyncStorage.setItem('PlantArray', JSON.stringify(plantArray));
 
       }
     }
-  },
+  }
 
-  async changeBody (plantIndex, oldName, oldPlantIndex, newName) {
+  public async changeBody(plantIndex, oldName, oldPlantIndex, newName) {
     const ownedIndex = 1;
     let ownedArray = await AsyncStorage.getItem('owned');
     ownedArray = JSON.parse(ownedArray);
@@ -117,35 +112,36 @@ const plantHelper = {
       await AsyncStorage.setItem('PlantArray', JSON.stringify(plantArray));
 
     }
-  },
+  }
 
   // CHECK IF PLANT HAS BEEN CREATED
-  async getHeader (plantIndex) {
+  public async getHeader(plantIndex) {
 
     let plantArray = await AsyncStorage.getItem('PlantArray');
     plantArray = JSON.parse(plantArray);
     console.log(plantArray[plantIndex].header);
 
+    // TODO all CRUD operations should return the newly created, read, updated, or deleted data
     // return plantArray[plantIndex].header
-  },
+  }
 
-  async getBody (plantIndex) {
+  public async getBody(plantIndex) {
     let plantArray = await AsyncStorage.getItem('PlantArray');
     plantArray = JSON.parse(plantArray);
     console.log(plantArray[plantIndex].body);
 
     // return plantArray[plantIndex].body
-  },
+  }
 
-  async getFooter (plantIndex) {
+  public async getFooter(plantIndex) {
     let plantArray = await AsyncStorage.getItem('PlantArray');
     plantArray = JSON.parse(plantArray);
     console.log(plantArray[plantIndex].footer);
 
     // return plantArray[plantIndex].footer
-  },
+  }
 
-  async changeHeader (oldName, newName, plantIndex) {
+  public async changeHeader(oldName, newName, plantIndex) {
     console.log('running');
         // get ownedArray
     let ownedArray = await AsyncStorage.getItem('owned');
@@ -198,9 +194,9 @@ const plantHelper = {
       }
     }
     console.log('new item not found');
-  },
+  }
 
-  async changeFooter (oldName, newName, plantIndex) {
+  public async changeFooter(oldName, newName, plantIndex) {
           // get ownedArray
     let ownedArray = await AsyncStorage.getItem('owned');
     ownedArray = JSON.parse(ownedArray);
@@ -254,8 +250,36 @@ const plantHelper = {
       }
     }
     console.log('new item not found');
-  },
+  }
 
-};
+  private async createDefaultPlantArray() {
+    headers[0].owned = 1;
+    headers[0].used = 1;
+    headers[0].available = headers[0].owned > headers[0].used;
 
-export default plantHelper;
+    bodies[0].owned = 1;
+    bodies[0].used = 1;
+    bodies[0].available = bodies[0].owned > bodies[0].used;
+
+    footers[0].owned = 1;
+    footers[0].used = 1;
+    footers[0].available = footers[0].owned > footers[0].used;
+
+    const defaultPlant = { header : headers[0], body : [bodies[0]], footer : footers[0] };
+
+    let ownedValues = await AsyncStorage.getItem('owned');
+    ownedValues = JSON.parse(ownedValues);
+    ownedValues[0].push(footers[0]);
+    ownedValues[1].push(bodies[0]);
+    ownedValues[2].push(headers[0]);
+
+    await AsyncStorage.setItem('owned', JSON.stringify(ownedValues));
+
+    let temp = [defaultPlant];
+
+    temp = JSON.stringify(temp);
+    await AsyncStorage.setItem('PlantArray', temp);
+  }
+}
+
+// export default plantHelper;

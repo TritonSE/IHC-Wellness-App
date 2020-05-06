@@ -2,10 +2,10 @@ import * as React from 'react';
 import { Button, Image, ImageSourcePropType, Modal, StyleSheet, Text,
          TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
-import { IStoreItem, PlantImages } from '../../../constants/Plants';
+import { IPlantItem, PlantImages } from '../../../constants/Plants';
 import StoreBackend from '../../Business/StoreBackend';
 
-interface IProps extends IStoreItem {
+interface IProps extends IPlantItem {
   sectionName: string;
 }
 
