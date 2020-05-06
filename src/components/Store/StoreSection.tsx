@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
-import { IStoreItem } from 'app/constants/Plants';
-import StoreCard from 'app/src/components/Store/StoreCard';
+import { IStoreItem } from '../../../constants/Plants';
+import StoreCard from '../../../src/components/Store/StoreCard';
 
 interface IProps {
-  plantItems: IStoreItem[];
-  storageName: string;
-  sectionTitle: string;
+  readonly plantItems: IStoreItem[];
+  readonly storageName: string;
+  readonly sectionTitle: string;
 }
 
 export default function StoreSection(props: IProps) {
@@ -17,10 +17,10 @@ export default function StoreSection(props: IProps) {
       <FlatList
         horizontal={true}
         data={props.plantItems}
-        renderItem={(plant: IStoreItem) => (
+        renderItem={(data: { item: IStoreItem }) => (
             <StoreCard
-              name={plant.item.name}
-              price={plant.item.price}
+              name={data.item.name}
+              price={data.item.price}
               sectionName={props.storageName}
             />
           )}

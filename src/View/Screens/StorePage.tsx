@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { IStoreItem, PlantBodies, PlantFooters, PlantHeaders } from 'app/constants/Plants';
+import { PlantBodies, PlantFooters, PlantHeaders } from '../../../constants/Plants';
 
 import StoreSection from '../../../src/components/Store/StoreSection';
 import AppHeader from '../../components/AppHeader';
@@ -24,19 +24,19 @@ export default class StorePage extends React.Component<object, object> {
 
           <StoreSection
             sectionTitle="Heads"
-            plantItems={PlantHeaders}
+            plantItems={ PlantHeaders }
             storageName="headers"
           />
 
           <StoreSection
             sectionTitle="Stems"
-            plantItems={PlantBodies}
+            plantItems={ PlantBodies }
             storageName="bodies"
           />
 
           <StoreSection
             sectionTitle="Pots"
-            plantItems={PlantFooters}
+            plantItems={ PlantFooters }
             storageName="footers"
           />
 
