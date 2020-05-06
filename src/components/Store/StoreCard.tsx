@@ -61,8 +61,9 @@ class StoreCard extends React.Component<IProps, IState> {
                   style={styles.modalImage}
                   source={this.image}
                 />
+                <Text>{this.name}</Text>
                 <Button
-                  title={`Buy ${this.name}!`}
+                  title={`Buy for $${this.price}`}
                   onPress={() => {
                     console.log(`Attempting to buy ${this.name} for $${this.price}`);
                     StoreBackend.buyItem(this.name, this.sectionName);

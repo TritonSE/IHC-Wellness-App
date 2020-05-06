@@ -5,7 +5,7 @@ import { IStoreItem } from '../../../constants/Plants';
 import StoreCard from '../../../src/components/Store/StoreCard';
 
 interface IProps {
-  readonly plantItems: IStoreItem[];
+  readonly plantItems: ReadonlyArray<IStoreItem>;
   readonly storageName: string;
   readonly sectionTitle: string;
 }
@@ -17,14 +17,14 @@ export default function StoreSection(props: IProps) {
       <FlatList
         horizontal={true}
         data={props.plantItems}
-        renderItem={(data: { item: IStoreItem }) => (
+        renderItem={({ item }: { item: IStoreItem }) => (
           <StoreCard
-            name={data.item.name}
-            price={data.item.price}
+            name={item.name}
+            price={item.price}
             sectionName={props.storageName}
           />
         )}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(_, index) => index.toString()}
       />
     </View>
   );

@@ -58,8 +58,8 @@ const styles = StyleSheet.create({
   shopItem: {
     borderColor: 'red',
     borderWidth: 5,
+    padding: 10,
     height: 100,
     width: 100,
-    padding: 10,
   },
 });
