@@ -2,14 +2,8 @@ import * as React from 'react';
 import { AsyncStorage } from 'react-native';
 import { bodies, footers, headers } from './itemProperties.tsx';
 
+// tslint:disable: member-ordering
 export default class PlantBackend extends React.Component<object, object> {
-  public static getInstance(): PlantBackend {
-    if (!PlantBackend.instance) {
-      PlantBackend.instance = new PlantBackend({});
-    }
-    return PlantBackend.instance;
-  }
-
   private static readonly PLANT_ARRAY_KEY = 'PlantArray';
   private static readonly OWNED_ITEMS_KEY = 'owned';
   private static instance: PlantBackend | null = null;
@@ -17,6 +11,13 @@ export default class PlantBackend extends React.Component<object, object> {
   private constructor(props: {}) {
     super(props);
     console.log('PlantController created!');
+  }
+
+  public static getInstance(): PlantBackend {
+    if (!PlantBackend.instance) {
+      PlantBackend.instance = new PlantBackend({});
+    }
+    return PlantBackend.instance;
   }
 
   // TODO: add prevValues as parameters to replace calls to AsyncStorage.getItem() with prevValue
