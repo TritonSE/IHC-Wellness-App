@@ -1,6 +1,10 @@
-import { NavigationProp } from '@react-navigation/native';
 import * as React from 'react';
-import { Button, Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+import { Button, Dimensions, StyleSheet, View } from 'react-native';
+
+import { NavigationProp } from '@react-navigation/native';
+// TODO: Switch to using the KeyboardAwareFlatList once the question editing is implemented
+import { KeyboardAwareFlatList,
+         KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
@@ -59,7 +63,7 @@ class CheckinPage extends React.Component<IProps, IState> {
     return (
       <View style={styles.pageView}>
         <AppHeader title="Check-in" />
-        <ScrollView style={styles.questionScroll}>
+        <KeyboardAwareScrollView style={styles.questionScroll}>
           <CheckinSlider
             title="How healthy are you feeling today?"
             step={0.1}
@@ -126,7 +130,7 @@ class CheckinPage extends React.Component<IProps, IState> {
           <Button
             title="Set Question False"
             onPress={() => { CheckinBackend.setQuestionUsage('How?', false); }}
-          />
+            />
 
           <Button
             title="Get All Questions"
@@ -143,7 +147,7 @@ class CheckinPage extends React.Component<IProps, IState> {
             onPress={() => { CheckinBackend.getUsedQuestions(false); }}
           />
 
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </View>
     );
   }

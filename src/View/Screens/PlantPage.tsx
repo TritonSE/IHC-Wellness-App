@@ -3,8 +3,6 @@ import { Dimensions, FlatList, Image, StyleSheet, View } from 'react-native';
 
 import PlantBackend from '../../Business/PlantBackend';
 
-const { height, width } = Dimensions.get('window');
-
 import { IPlantItem,
          PlantBodies, PlantFooters, PlantHeaders,
          PlantImages } from '../../../constants/Plants';
@@ -16,6 +14,8 @@ interface IState {
   plantFooter: IPlantItem;
   plantHeader: IPlantItem;
 }
+  
+const { height, width } = Dimensions.get('window');
 
 export default class PlantPage extends React.Component<object, IState> {
   private readonly PlantController: PlantBackend = PlantBackend.getInstance();
@@ -42,10 +42,10 @@ export default class PlantPage extends React.Component<object, IState> {
         <FlatList
           contentContainerStyle={styles.plantList}
           data={this.state.plantBody}
-          ListHeaderComponent={ this.renderPlantItem(this.state.plantHeader) }
-          ListFooterComponent={ this.renderPlantItem(this.state.plantFooter) }
+          ListHeaderComponent={ this.renderPlantItem(this.state.plantHeader, styles.plantItem) }
+          ListFooterComponent={ this.renderPlantItem(this.state.plantFooter, styles.plantItem) }
           renderItem={({ item }) => {
-            return this.renderPlantItem(item);
+            return this.renderPlantItem(item, styles.plantItem);
           }}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -53,10 +53,10 @@ export default class PlantPage extends React.Component<object, IState> {
     );
   }
 
-  private renderPlantItem(plantItem: IPlantItem) {
+  private renderPlantItem(plantItem: IPlantItem, plantStyle: object) {
     return (
       <Image
-        style={styles.plantItem}
+        style={plantStyle}
         source={ PlantImages[plantItem.name] }
       />
     );
