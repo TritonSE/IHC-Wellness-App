@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'; // 6.2.2
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
 import * as React from 'react';
-import { createAppContainer, createBottomTabNavigator } from 'react-navigation';
 
 import CheckinPage from '../Screens/CheckinPage';
 import PlantPage from '../Screens/PlantPage';
@@ -16,8 +17,9 @@ const HomeIconWithBadge = (props: any) => {
   return <NavIcon {...props} badgeCount={3} />;
 };
 
-const getTabBarIcon = (navigation: any, _focused: boolean, tintColor: string | null) => {
-  const { routeName } = navigation.state;
+const getTabBarIcon = (route: any, _focused: boolean, tintColor: string | null) => {
+  // const { routeName } = navigation.state;
+  const routeName = route.name;
   let IconComponent = Ionicons;
   let iconName;
   if (routeName === 'CheckIn') {
@@ -36,23 +38,26 @@ const getTabBarIcon = (navigation: any, _focused: boolean, tintColor: string | n
   return <IconComponent name={iconName} size={25} color={tintColor} />;
 };
 
-export default createAppContainer(
-  createBottomTabNavigator(
-    {
-      CheckIn: { screen: CheckinPage },
-      Plant: { screen: PlantPage },
-      Store: { screen: StorePage },
-      User: { screen: UserPage },
-    },
-    {
-      defaultNavigationOptions: ({ navigation }) => ({
-        tabBarIcon: ({ focused, tintColor }) =>
-          getTabBarIcon(navigation, focused, tintColor),
-      }),
-      tabBarOptions: {
-        activeTintColor: 'tomato',
-        inactiveTintColor: 'gray',
-      },
-    },
-  ),
-);
+const Tab = createBottomTabNavigator();
+
+export default function Navigation() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) =>
+            getTabBarIcon(route, focused, color),
+        })}
+        tabBarOptions={{
+          activeTintColor: 'tomato',
+          inactiveTintColor: 'gray',
+        }}
+      >
+        <Tab.Screen name="CheckIn" component={CheckinPage} />
+        <Tab.Screen name="Plant"   component={PlantPage} />
+        <Tab.Screen name="Store"   component={StorePage} />
+        <Tab.Screen name="User"    component={UserPage} />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}

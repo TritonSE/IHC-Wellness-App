@@ -1,5 +1,4 @@
-import { AsyncStorage, ProgressViewIOSComponent } from 'react-native';
-import { string } from 'prop-types';
+import { AsyncStorage } from 'react-native';
 import {footers, bodies, headers} from './itemProperties.tsx';
 
 const storeHelper = {

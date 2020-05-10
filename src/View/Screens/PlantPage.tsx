@@ -5,7 +5,9 @@ import PlantBackend from '../../Business/PlantBackend';
 
 const { height, width } = Dimensions.get('window');
 
-import { IPlantItem, PlantBodies, PlantFooters, PlantHeaders, PlantImages } from '../../../constants/Plants';
+import { IPlantItem,
+         PlantBodies, PlantFooters, PlantHeaders,
+         PlantImages } from '../../../constants/Plants';
 import AppHeader from '../../components/AppHeader';
 
 // TODO narrow down these types, should be IStore___ or IPlant___
@@ -18,7 +20,7 @@ interface IState {
 export default class PlantPage extends React.Component<object, IState> {
   private readonly PlantController: PlantBackend = PlantBackend.getInstance();
 
-  constructor(props: object) {
+  constructor(props: any) {
     super(props);
     // this.PlantController = PlantBackend.getInstance();
     this.state = {
@@ -42,9 +44,8 @@ export default class PlantPage extends React.Component<object, IState> {
           data={this.state.plantBody}
           ListHeaderComponent={ this.renderPlantItem(this.state.plantHeader) }
           ListFooterComponent={ this.renderPlantItem(this.state.plantFooter) }
-          renderItem={(data) => {
-            const plant = data.item;
-            return this.renderPlantItem(plant);
+          renderItem={({ item }) => {
+            return this.renderPlantItem(item);
           }}
           keyExtractor={(item, index) => index.toString()}
         />
