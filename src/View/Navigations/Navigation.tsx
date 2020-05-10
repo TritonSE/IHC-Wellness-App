@@ -18,11 +18,10 @@ const HomeIconWithBadge = (props: any) => {
 };
 
 const getTabBarIcon = (route: any, _focused: boolean, tintColor: string | null) => {
-  // const { routeName } = navigation.state;
   const routeName = route.name;
   let IconComponent = Ionicons;
   let iconName;
-  if (routeName === 'CheckIn') {
+  if (routeName === 'Checkin') {
     iconName = 'ios-happy';
   } else if (routeName === 'Plant') {
     iconName = 'ios-leaf';
@@ -53,7 +52,7 @@ export default function Navigation() {
           inactiveTintColor: 'gray',
         }}
       >
-        <Tab.Screen name="CheckIn" component={CheckinPage} />
+        <Tab.Screen name="Checkin" component={CheckinPage} />
         <Tab.Screen name="Plant"   component={PlantPage} />
         <Tab.Screen name="Store"   component={StorePage} />
         <Tab.Screen name="User"    component={UserPage} />

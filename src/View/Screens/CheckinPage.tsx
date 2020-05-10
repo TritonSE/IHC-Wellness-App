@@ -1,3 +1,4 @@
+import { NavigationProp } from '@react-navigation/native';
 import * as React from 'react';
 import { Button, Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -8,6 +9,10 @@ import CheckinTextInput from '../../components/CheckinTextInput';
 
 const { height, width } = Dimensions.get('window');
 
+interface IProps {
+  navigation: NavigationProp<{}>;
+}
+
 interface IState {
   health: number;
   hoursOfSleep: number;
@@ -15,8 +20,18 @@ interface IState {
   journal: string;
 }
 
-class CheckinPage extends React.Component<object, IState> {
-  constructor(props: object) {
+class CheckinPage extends React.Component<IProps, IState> {
+  private readonly navigation: NavigationProp<{}> = this.props.navigation;
+
+  private removeEnterListener = this.navigation.addListener('focus', (e) => {
+    console.log('TODO: CheckinPage enter, check if user has already checked in');
+  });
+
+  private removeExitListener = this.navigation.addListener('blur', (e) => {
+    console.log('CheckinPage exit, nothing to do here');
+  });
+
+  constructor(props: IProps) {
     super(props);
     this.state = {
       health: 5,
@@ -24,6 +39,12 @@ class CheckinPage extends React.Component<object, IState> {
       mood: 1,
       journal: '',
     };
+  }
+
+  public componentWillUnmount() {
+    console.log('As a screen this component never unmounts, this is a weird scenario');
+    this.removeEnterListener();
+    this.removeExitListener();
   }
 
   public sendFormInfo = () => {

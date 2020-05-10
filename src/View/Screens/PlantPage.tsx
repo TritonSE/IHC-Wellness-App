@@ -20,7 +20,7 @@ interface IState {
 export default class PlantPage extends React.Component<object, IState> {
   private readonly PlantController: PlantBackend = PlantBackend.getInstance();
 
-  constructor(props: any) {
+  constructor(props: object) {
     super(props);
     // this.PlantController = PlantBackend.getInstance();
     this.state = {
