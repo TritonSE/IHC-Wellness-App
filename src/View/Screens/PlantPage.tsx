@@ -17,6 +17,8 @@ interface IState {
   
 const { height, width } = Dimensions.get('window');
 
+// This class is further from completion than StorePage,
+// but the elements needed to play around with style are here
 export default class PlantPage extends React.Component<object, IState> {
   private readonly PlantController: PlantBackend = PlantBackend.getInstance();
 
@@ -63,6 +65,7 @@ export default class PlantPage extends React.Component<object, IState> {
   }
 }
 
+// Element styling akin to CSS, check https://reactnative.dev/docs/flexbox for info
 const styles = StyleSheet.create({
   container: {
     // height,

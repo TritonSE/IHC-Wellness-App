@@ -47,6 +47,7 @@ export default class StorePage extends React.Component<object, object> {
   }
 }
 
+// Element styling akin to CSS, check https://reactnative.dev/docs/flexbox for info
 const styles = StyleSheet.create({
   pageContainer: {
     alignItems: 'center',
