@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Dimensions, StyleSheet, View } from 'react-native';
+import { Button, Dimensions, StyleSheet, View, ScrollView } from 'react-native';
 
 import { NavigationProp } from '@react-navigation/native';
 // TODO: Switch to using the KeyboardAwareFlatList once the question editing is implemented
@@ -63,90 +63,94 @@ class CheckinPage extends React.Component<IProps, IState> {
     return (
       <View style={styles.pageView}>
         <AppHeader title="Check-in" />
-        <KeyboardAwareScrollView style={styles.questionScroll}>
-          <CheckinSlider
-            title="How healthy are you feeling today?"
-            step={0.1}
-            minValue={0}
-            maxValue={10}
-            value={this.state.health}
-            onSlidingComplete={(val) => this.setState({ health: val })}
-          />
-
-          <CheckinSlider
-            title="How many hours of sleep did you get last night?"
-            step={0.1}
-            minValue={0}
-            maxValue={10}
-            value={this.state.hoursOfSleep}
-            onSlidingComplete={(val) => this.setState({ hoursOfSleep: val })}
-          />
-
-          <CheckinSlider
-            title="Are you happy?"
-            step={1}
-            minValue={0}
-            maxValue={1}
-            value={this.state.mood}
-            onSlidingComplete={(val) => this.setState({ mood: val })}
-          />
-
-          <CheckinTextInput
-            style={styles.textInputs}
-            title="Journal Entry"
-            titleColor="#000000"
-            multiline={true}
-            autocapital="none"
-            underlineColor="transparent"
-            finalText={this.state.journal}
-            onChangeText={(val) => this.setState({ journal: val })}
-          />
-
-          <Button
-            title="Submit"
-            onPress={this.sendFormInfo}
-          />
-
-          <Button
-            title="Display"
-            onPress={() => { CheckinBackend.displayAllData(); }}
-          />
-
-          <Button
-            title="Clear"
-            onPress={() => { CheckinBackend.clearAllData(); }}
-          />
-
-          <Button
-            title="Add Question"
-            onPress={() => { CheckinBackend.addQuestion('How?', 'how'); }}
-          />
-
-          <Button
-            title="Set Question True"
-            onPress={() => { CheckinBackend.setQuestionUsage('How?', true); }}
-          />
-
-          <Button
-            title="Set Question False"
-            onPress={() => { CheckinBackend.setQuestionUsage('How?', false); }}
+        <KeyboardAwareScrollView
+          style={styles.screenScroll}
+          contentContainerStyle={styles.questionContentContainer}
+        >
+          <ScrollView style={styles.questionWidth}>
+            <CheckinSlider
+              title="How healthy are you feeling today?"
+              step={0.1}
+              minValue={0}
+              maxValue={10}
+              value={this.state.health}
+              onSlidingComplete={(val) => this.setState({ health: val })}
             />
 
-          <Button
-            title="Get All Questions"
-            onPress={() => { CheckinBackend.getAllQuestions(); }}
-          />
+            <CheckinSlider
+              title="How many hours of sleep did you get last night?"
+              step={0.1}
+              minValue={0}
+              maxValue={10}
+              value={this.state.hoursOfSleep}
+              onSlidingComplete={(val) => this.setState({ hoursOfSleep: val })}
+            />
 
-          <Button
-            title="Get Used Question"
-            onPress={() => { CheckinBackend.getUsedQuestions(true); }}
-          />
+            <CheckinSlider
+              title="Are you happy?"
+              step={1}
+              minValue={0}
+              maxValue={1}
+              value={this.state.mood}
+              onSlidingComplete={(val) => this.setState({ mood: val })}
+            />
 
-          <Button
-            title="Get Non Used Question"
-            onPress={() => { CheckinBackend.getUsedQuestions(false); }}
-          />
+            <CheckinTextInput
+              style={styles.textInputs}
+              title="Journal Entry"
+              titleColor="#000000"
+              multiline={true}
+              autocapital="none"
+              underlineColor="transparent"
+              finalText={this.state.journal}
+              onChangeText={(val) => this.setState({ journal: val })}
+            />
 
+            <Button
+              title="Submit"
+              onPress={this.sendFormInfo}
+            />
+
+            <Button
+              title="Display"
+              onPress={() => { CheckinBackend.displayAllData(); }}
+            />
+
+            <Button
+              title="Clear"
+              onPress={() => { CheckinBackend.clearAllData(); }}
+            />
+
+            <Button
+              title="Add Question"
+              onPress={() => { CheckinBackend.addQuestion('How?', 'how'); }}
+            />
+
+            <Button
+              title="Set Question True"
+              onPress={() => { CheckinBackend.setQuestionUsage('How?', true); }}
+            />
+
+            <Button
+              title="Set Question False"
+              onPress={() => { CheckinBackend.setQuestionUsage('How?', false); }}
+              />
+
+            <Button
+              title="Get All Questions"
+              onPress={() => { CheckinBackend.getAllQuestions(); }}
+            />
+
+            <Button
+              title="Get Used Question"
+              onPress={() => { CheckinBackend.getUsedQuestions(true); }}
+            />
+
+            <Button
+              title="Get Non Used Question"
+              onPress={() => { CheckinBackend.getUsedQuestions(false); }}
+            />
+          </ScrollView>
         </KeyboardAwareScrollView>
       </View>
     );
@@ -161,7 +165,13 @@ const styles = StyleSheet.create({
     // borderColor: 'red',
     // borderWidth: 2,
   },
-  questionScroll: {
+  questionContentContainer: {
+    alignItems: 'center',
+  },
+  questionWidth: {
+    width: width * 0.8,
+  },
+  screenScroll: {
     width,
   },
   submitButton: {
