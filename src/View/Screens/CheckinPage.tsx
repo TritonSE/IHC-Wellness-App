@@ -1,10 +1,8 @@
 import * as React from 'react';
-import { Button, Dimensions, StyleSheet, View, ScrollView } from 'react-native';
+import { Button, Dimensions, FlatList, ScrollView, StyleSheet, View } from 'react-native';
 
 import { NavigationProp } from '@react-navigation/native';
-// TODO: Switch to using the KeyboardAwareFlatList once the question editing is implemented
-import { KeyboardAwareFlatList,
-         KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
@@ -67,6 +65,7 @@ class CheckinPage extends React.Component<IProps, IState> {
           style={styles.screenScroll}
           contentContainerStyle={styles.questionContentContainer}
         >
+          {/* TODO: Replace with FlatList, same style but dynamic content */}
           <ScrollView style={styles.questionWidth}>
             <CheckinSlider
               title="How healthy are you feeling today?"
