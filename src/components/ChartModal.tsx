@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, Modal, StyleSheet, Text, TouchableHighlight, View, Dimensions } from "react-native";
+import { Alert, Modal, StyleSheet, Text, TouchableHighlight, View, Dimensions, ScrollView } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 
 import ProfileBackend from '../Business/ProfileBackend';
@@ -9,6 +9,7 @@ interface IProps {
   transparent: boolean;
   animationType?: string;
   exit?: string;
+  columns: any;
 }
 
 interface IState {
@@ -48,7 +49,17 @@ class ChartModal extends React.Component<IProps, IState>  {
           >
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
-                <Text style={styles.modalText}>Charts</Text>
+                <Text style={styles.modalText}>{this.props.modalTitle}</Text>
+                <ScrollView
+                  horizontal
+                  contentContainerStyle={{
+                    alignItems: 'flex-end', // To keep chart elements at y-bottom
+                  }}
+                >
+                  {
+                    this.props.columns // Render the JSX in a ScrollView
+                  }
+                </ScrollView>
                 <TouchableHighlight
                   style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
                   onPress={() => {
@@ -114,9 +125,9 @@ class ChartModal extends React.Component<IProps, IState>  {
       textAlign: "center",
     },
     modalText: {
-      marginBottom: 15,
-      textAlign: "center",
-      padding: 100,
+      //marginBottom: 15,
+      //textAlign: "center",
+      //padding: 100,
     }
   });
   

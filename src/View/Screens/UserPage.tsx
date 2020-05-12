@@ -60,37 +60,25 @@ export default class UserPage extends React.Component<IProps, object> {
     return (
      <View style={styles.pageView}>
        <AppHeader title="Profile"/>
-       
        <ScrollView>
           <ChartModal
             modalTitle="Health Data"
             transparent={true}
+            columns={columns}
           />
 
           <ChartModal
             modalTitle="Sleep Data"
             transparent={true}
+            columns={columns}
           /> 
           
           <ChartModal
             modalTitle="Mood Data"
             transparent={true}
+            columns={columns}
           />
         </ScrollView>
-
-        <Text>Charts go below</Text>
-
-        <ScrollView
-          horizontal
-          contentContainerStyle={{
-            alignItems: 'flex-end', // To keep chart elements at y-bottom
-          }}
-        >
-          {
-            columns // Render the JSX in a ScrollView
-          }
-        </ScrollView>
-
      </View>
    );
         }
