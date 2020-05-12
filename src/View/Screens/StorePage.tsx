@@ -1,18 +1,20 @@
 import * as React from 'react';
-import { Button, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 
-import PlantBackend from '../../Business/PlantBackend';
+import { PlantBodies, PlantFooters, PlantHeaders } from '../../../constants/Plants';
+import StoreSection from '../../../src/components/Store/StoreSection';
 import StoreBackend from '../../Business/StoreBackend';
 import AppHeader from '../../components/AppHeader';
+
+const { height, width } = Dimensions.get('window');
 
 export default class StorePage extends React.Component<object, object> {
   constructor(props: object) {
     super(props);
-    this.state = {
-      modalVisible: false,
-      item: { name: '' },
-      section: [],
-    };
+  }
+
+  public componentDidMount() {
+    console.log('TODO StorePage needs to check whether default store arrays exist yet');
   }
 
   ItemCardRenderer = () => {
@@ -21,51 +23,27 @@ export default class StorePage extends React.Component<object, object> {
 
   public render() {
     return (
-      <View style={styles.container}>
+      <View style={styles.pageContainer}>
         <AppHeader title="Store"/>
+        <ScrollView style={styles.scrollContainer}>
 
-        <ScrollView>
-          <TouchableOpacity style={styles.shopItem}>
-            <Text>Sample TouchableOpacity</Text>
-          </TouchableOpacity>
-
-          <Button
-            title="Get Terracotta"
-            onPress={ async () => {
-              const info = await StoreBackend.getItemInfo('terracotta', 'footers');
-              console.log(info);
-            } }
+          <StoreSection
+            sectionTitle="Heads"
+            plantItems={ PlantHeaders }
+            storageName="headers"
           />
 
-          <Button
-            title="Buy Terracotta"
-            onPress={ () => { StoreBackend.buyItem('terracotta', 'footers'); } }
+          <StoreSection
+            sectionTitle="Stems"
+            plantItems={ PlantBodies }
+            storageName="bodies"
           />
 
-          <Button
-            title="Get Daisy"
-            onPress={ () => { StoreBackend.getItemInfo('daisy', 'headers'); } }
+          <StoreSection
+            sectionTitle="Pots"
+            plantItems={ PlantFooters }
+            storageName="footers"
           />
-
-          <Button
-            title="Buy Daisy"
-            onPress={ () => { StoreBackend.buyItem('daisy', 'headers'); } }
-          />
-
-          <Button
-          title="Change Header"
-          onPress={ () => { PlantBackend.changeHeader('sunflower', 'daisy', 0); } }
-          />
-
-          <Button
-            title="createDefault"
-            onPress={ () => { PlantBackend.createDefaultPlantArray(); } }
-          />
-
-          <Button
-            title="header"
-            onPress={ () => { PlantBackend.getHeader(0); } }
-         />
 
         </ScrollView>
       </View>
@@ -73,14 +51,30 @@ export default class StorePage extends React.Component<object, object> {
   }
 }
 
+// Element styling akin to CSS, check https://reactnative.dev/docs/flexbox for info
 const styles = StyleSheet.create({
-  container: {
+  pageContainer: {
     alignItems: 'center',
+    // backgroundColor: 'green',
     flex: 1,
     justifyContent: 'flex-start',
+    paddingLeft: 30,
+    paddingRight: 30,
+  },
+  header: {
+    fontSize: 30,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+  },
+  scrollContainer: {
+    width,
+    padding: 20,
   },
   shopItem: {
-    backgroundColor: 'blue',
-    padding: 5,
+    borderColor: 'red',
+    borderWidth: 5,
+    padding: 10,
+    height: 100,
+    width: 100,
   },
 });

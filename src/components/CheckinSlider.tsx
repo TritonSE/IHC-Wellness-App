@@ -19,6 +19,11 @@ interface IState {
   leftOff: number;
 }
 
+// Values used to track state.value to the slider position
+const deviceWidth = Dimensions.get('window').width;
+const sliderRadius = 9;
+const widthCorrection = 0.88;
+
 class CheckinSlider extends React.Component<IProps, IState> {
 
   public static defaultProps = {
@@ -27,24 +32,13 @@ class CheckinSlider extends React.Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
-        // this.slider = React.createRef();
+
     this.state = {
-      value: this.props.value,
-          // slider: null,
       leftOffset: 0,
+      value: this.props.value,
       width: 0,
       leftOff: 0,
     };
-  }
-
-  public componentDidMount() {
-        /*this.state.slider.current.measure( (fx, fy, width, height, px, py) => {
-            this.setState({
-                //slider: React.createRef(),
-                width: width,
-                leftOffset: px,
-            });
-        }); */
   }
 
   public change(value: string) {
@@ -56,23 +50,28 @@ class CheckinSlider extends React.Component<IProps, IState> {
   }
 
   public slider_bound=(event: any)=>{
-    var {x, y, width, height} = event.nativeEvent.layout;
+    const {x, y, width, height} = event.nativeEvent.layout;
     this.setState({width: width})
     }
 
   public render() {
-    
-    // Dimensions.get('window').width; scales the text offset too much
-    let valuePosition = this.state.leftOffset
-      + this.state.width
-      * (this.state.value / (this.props.maxValue - this.props.minValue));
+    const valuePosition = this.state.leftOffset - sliderRadius
+                          + this.state.width * widthCorrection
+                          * (this.state.value / (this.props.maxValue - this.props.minValue));
 
     return (
-        <View style={{ paddingTop: 30 }}>
+        <View style={{ paddingTop: 30 }}
+          onLayout={(event) => {
+            let { x, y, width, height } = event.nativeEvent.layout;
+            this.setState({
+              leftOffset: x,
+              width: width,
+            });
+          }}
+        >
           <Text>{this.props.title}</Text>
-          <Text style={{ width: 50, textAlign: 'left', left: this.state.leftOff}}>
+          <Text style={{ width: 50, textAlign: 'center', left: this.state.leftOff}}>
             {Math.floor(this.state.value)}</Text>
-          
           <Slider
             // ref={(slider) => { this.setState({ slider: slider, }) }}
             step={this.props.step}
