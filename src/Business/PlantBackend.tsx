@@ -1,16 +1,40 @@
 import * as React from 'react';
 import { AsyncStorage } from 'react-native';
 import { bodies, footers, headers } from './itemProperties.tsx';
+import { StoreBackend } from './StoreBackend.tsx';
+
+export interface IPlantItem{
+  name: string;
+  price: number;
+  img: string;
+  owned: number;
+  used: number;
+  available: boolean;
+}
+
+export interface IPlant{
+  header: [IPlantItem];
+  body: [[IPlantItem]];
+  footer: [IPlantItem];
+}
 
 // tslint:disable: member-ordering
 export default class PlantBackend extends React.Component<object, object> {
   private static readonly PLANT_ARRAY_KEY = 'PlantArray';
   private static readonly OWNED_ITEMS_KEY = 'owned';
   private static instance: PlantBackend | null = null;
+  private plantArray;
+  private ownedArray;
 
   private constructor(props: {}) {
     super(props);
     console.log('PlantController created!');
+    plantArray = AsyncStorage.getItem('PlantArray');
+    if(plantArray === null){
+      ownedArray = StoreBackend.createOwned();
+      plantArray = PlantBackend.createDefaultPlantArray();
+    }
+
   }
 
   public static getInstance(): PlantBackend {
@@ -20,48 +44,39 @@ export default class PlantBackend extends React.Component<object, object> {
     return PlantBackend.instance;
   }
 
-  // TODO: add prevValues as parameters to replace calls to AsyncStorage.getItem() with prevValue
-  // TODO: define parameter types, e.g. plantIndex: number, newBody: either IPlantItem or IOwnedItem
-  public async addBody(plantIndex, newBody) {
+  public async addBody(plantIndex: number, newBody: IPlantItem) {
     const ownedIndex = 1;
-    // TODO: avoid type mismatches, this string turns into an array. prevValue param will replace
-    // this but note that variable type changes are a code smell and const variables are preferred
-    let ownedArray = await AsyncStorage.getItem('owned');
-    ownedArray = JSON.parse(ownedArray);
+    const ownedString = await AsyncStorage.getItem('owned');
+    const ownedArray = JSON.parse(ownedString);
 
     // TODO replace these for loops with Array.find() or Array.findIndex()
         // loop through the body section of the ownedArray to find newBody
-    for (let i = 0; i < ownedArray[ownedIndex].length; i ++) {
-      if (ownedArray[ownedIndex][i].name === newBody) {
-        console.log('found body');
-        const item = ownedArray[ownedIndex][i];
-
-        // check for availability
-        if (!item.available) {
-          console.log("you don't own this item");
-          return;
-        }
-
-        // update item itself and dump it into ownedArray
-        item.used++;
-        item.available = item.owned > item.used;
-        ownedArray[ownedIndex][i] = item;
-        await AsyncStorage.setItem('owned', JSON.stringify(ownedArray));
-
-        // add this item to the end of the body array and dump it into plantArray
-        let plantArray = await AsyncStorage.getItem('PlantArray');
-        plantArray = JSON.parse(plantArray);
-        let currentPlant = plantArray[plantIndex];
-        currentPlant.body.push(item);
-        plantArray[plantIndex] = currentPlant;
-        // TODO we're looking to remove as many of these await operations as possible:
-        // instead, call the setItem method and return without waiting
-        // You can verify whether the operation completes with a setItem().then(callback)
-        // where the callback logs a success message
-        await AsyncStorage.setItem('PlantArray', JSON.stringify(plantArray));
-
-      }
+    const item = ownedArray[ownedIndex].find( (itemToCheck) => {
+      return itemToCheck.name === newBody.name;
+    });
+    if (item === undefined) {
+      console.log("you don't own this item");
+      return;
     }
+
+    // update item itself and dump it into ownedArray
+    item.used++;
+    item.available = item.owned > item.used;
+    ownedArray[ownedIndex][i] = item;
+
+    // add this item to the end of the body array and dump it into plantArray
+    let plantArray = await AsyncStorage.getItem('PlantArray');
+    plantArray = JSON.parse(plantArray);
+    const currentPlant = plantArray[plantIndex];
+    currentPlant.body.push(item);
+    plantArray[plantIndex] = currentPlant;
+
+    AsyncStorage.setItem('owned', JSON.stringify(ownedArray)).then(() => {
+      console.log("Successfully updated owned array");
+    });
+    AsyncStorage.setItem('PlantArray', JSON.stringify(plantArray)).then(() => {
+      console.log("Successfully updated plant array");
+    });
   }
 
   public async changeBody(plantIndex, oldName, oldPlantIndex, newName) {
@@ -73,7 +88,7 @@ export default class PlantBackend extends React.Component<object, object> {
 
         // find oldItem for later update
     for (let i = 0; i < ownedArray[ownedIndex].length; i ++) {
-      if (ownedArray[ownedIndex][i].name == oldName) {
+      if (ownedArray[ownedIndex][i].name === oldName) {
         console.log('found old bodyItem');
         oldItem = ownedArray[ownedIndex][i];
         oldIndex = i;
@@ -154,7 +169,7 @@ export default class PlantBackend extends React.Component<object, object> {
 
         // find oldItem for later update
     for (let i = 0; i < ownedArray[2].length; i ++) {
-      if (ownedArray[2][i].name == oldName) {
+      if (ownedArray[2][i].name === oldName) {
         console.log('found old header');
         oldItem = ownedArray[2][i];
         oldIndex = i;
@@ -198,10 +213,6 @@ export default class PlantBackend extends React.Component<object, object> {
   }
 
   public async changeFooter(oldName, newName, plantIndex) {
-          // get ownedArray
-    let ownedArray = await AsyncStorage.getItem('owned');
-    ownedArray = JSON.parse(ownedArray);
-
     // initialize holders
     let currentItem = null;
     let oldItem = null;
@@ -268,18 +279,21 @@ export default class PlantBackend extends React.Component<object, object> {
 
     const defaultPlant = { header : headers[0], body : [bodies[0]], footer : footers[0] };
 
-    let ownedValues = await AsyncStorage.getItem('owned');
-    ownedValues = JSON.parse(ownedValues);
-    ownedValues[0].push(footers[0]);
-    ownedValues[1].push(bodies[0]);
-    ownedValues[2].push(headers[0]);
-
-    await AsyncStorage.setItem('owned', JSON.stringify(ownedValues));
+    ownedArray[0].push(footers[0]);
+    ownedArray[1].push(bodies[0]);
+    ownedArray[2].push(headers[0]);
 
     let temp = [defaultPlant];
-
     temp = JSON.stringify(temp);
-    await AsyncStorage.setItem('PlantArray', temp);
+
+    AsyncStorage.setItem('PlantArray', temp).then(() => {
+      console.log("Successfully updated plant array");
+    });
+
+    AsyncStorage.setItem('owned', JSON.stringify(ownedArray)).then(() => {
+      console.log("Successfully updated owned array");
+    });
+    return temp;
   }
 }
 
