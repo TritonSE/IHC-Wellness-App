@@ -16,6 +16,7 @@ interface IState {
     // slider: any;
   leftOffset: number;
   width: number;
+  leftOff: number;
 }
 
 class CheckinSlider extends React.Component<IProps, IState> {
@@ -32,6 +33,7 @@ class CheckinSlider extends React.Component<IProps, IState> {
           // slider: null,
       leftOffset: 0,
       width: 0,
+      leftOff: 0,
     };
   }
 
@@ -53,17 +55,24 @@ class CheckinSlider extends React.Component<IProps, IState> {
     });
   }
 
+  public slider_bound=(event: any)=>{
+    var {x, y, width, height} = event.nativeEvent.layout;
+    this.setState({width: width})
+    }
+
   public render() {
-    const deviceWidth = Dimensions.get('window').width;
-    const valuePosition = this.state.leftOffset
-                          + this.state.width
-                          * (this.state.value / (this.props.maxValue - this.props.minValue));
+    
+    // Dimensions.get('window').width; scales the text offset too much
+    let valuePosition = this.state.leftOffset
+      + this.state.width
+      * (this.state.value / (this.props.maxValue - this.props.minValue));
 
     return (
         <View style={{ paddingTop: 30 }}>
           <Text>{this.props.title}</Text>
-          <Text style={{ width: 50, textAlign: 'center', left: valuePosition }}>
+          <Text style={{ width: 50, textAlign: 'left', left: this.state.leftOff}}>
             {Math.floor(this.state.value)}</Text>
+          
           <Slider
             // ref={(slider) => { this.setState({ slider: slider, }) }}
             step={this.props.step}
@@ -72,7 +81,8 @@ class CheckinSlider extends React.Component<IProps, IState> {
             value={this.props.value}
             thumbTintColor="rgb(252, 228, 149)"
             onSlidingComplete={this.props.onSlidingComplete}
-            onValueChange={(val) => this.setState({ value: val })}
+            onValueChange={(val) => this.setState({ value: val, leftOff: valuePosition })}
+            onLayout={(event)=>{this.slider_bound(event)}}
           />
         </View>
     );

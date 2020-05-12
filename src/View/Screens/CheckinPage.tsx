@@ -1,16 +1,19 @@
 import * as React from 'react';
-import { Button, ScrollView, StyleSheet, View, KeyboardAvoidingView } from 'react-native';
+import { Button, ScrollView, StyleSheet, View, KeyboardAvoidingView, Alert } from 'react-native';
+import ModalDropdown from 'react-native-modal-dropdown';
 
 import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
 import CheckinSlider from '../../components/CheckinSlider';
 import CheckinTextInput from '../../components/CheckinTextInput';
+import CustomQuestion from '../../components/CustomQuestion'
 
 interface IState {
   health: number;
   hoursOfSleep: number;
   mood: number;
   journal: string;
+  questionsActive: any[]
 }
 
 class CheckinPage extends React.Component<object, IState> {
@@ -21,6 +24,7 @@ class CheckinPage extends React.Component<object, IState> {
       hoursOfSleep: 8,
       mood: 1,
       journal: '',
+      questionsActive: ['health', 'hoursOfSleep', 'mood', 'journal']
     };
   }
 
@@ -30,6 +34,8 @@ class CheckinPage extends React.Component<object, IState> {
     CheckinBackend.saveData(formInfo);
   }
 
+  dropDownOnSelect(idx, value) { console.log(idx + '' + value) }
+
   public render() {
     return (
       <KeyboardAvoidingView 
@@ -37,6 +43,11 @@ class CheckinPage extends React.Component<object, IState> {
           style={styles.keyboard}>
         <View style={styles.pageView}>
           <AppHeader title="Check-in" />
+
+          <ModalDropdown 
+                options={this.state.questionsActive}
+                onSelect = {(idx, value) => this.dropDownOnSelect(idx, value)}
+          />
 
           <ScrollView style={styles.questions}>
               <CheckinSlider
@@ -59,22 +70,12 @@ class CheckinPage extends React.Component<object, IState> {
 
               <CheckinSlider
                 title="Are you happy?"
-                step={1}
+                step={0.01}
                 minValue={0}
                 maxValue={1}
                 value={this.state.mood}
                 onSlidingComplete={(val) => this.setState({ mood: val })}
-              />
-
-              {/*<TextInput
-                style={styles.textInputs}
-                multiline={true}
-                underlineColorAndroid = "transparent"
-                placeholder = "Journal Entry"
-                placeholderTextColor = "#000000"
-                autoCapitalize = "none"
-                onChangeText={(val) => this.setState({ journal: val })}
-              />*/}
+              />  
       
               <CheckinTextInput 
                 style={styles.textInputs}
@@ -87,12 +88,18 @@ class CheckinPage extends React.Component<object, IState> {
                 onChangeText={(val) => this.setState({ journal: val })}
               />
 
+              <CustomQuestion />
+
+              <Button
+                title="Add Custom Question"
+                onPress={()=>{this.state.questionsActive.push('new custom question')}}
+              />
+
               <Button
                 style={styles.submitButton}
                 title="Submit"
                 onPress={this.sendFormInfo}
               />
-
           </ScrollView>
         </View>
       </KeyboardAvoidingView>
