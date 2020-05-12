@@ -5,8 +5,6 @@ import ChartModal from '../../components/ChartModal';
 import AppHeader from '../../components/AppHeader';
 import ProfileBackend from '../../Business/ProfileBackend';
 
-import AppHeader from '../../components/AppHeader';
-
 export interface IProps {
   navigation: any;
 }
