@@ -1,22 +1,23 @@
 import * as React from 'react';
-import { Button, Modal, ScrollView, StyleSheet, Text, View, TouchableHighlight, Dimensions } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import ChartModal from '../../components/ChartModal';
-import AppHeader from '../../components/AppHeader';
 import ProfileBackend from '../../Business/ProfileBackend';
+import AppHeader from '../../components/AppHeader';
+import ChartModal from '../../components/ChartModal';
 
 export interface IProps {
   navigation: any;
 }
 
 export default class UserPage extends React.Component<IProps, object> {
-
-  public componentDidMount = () => {
+  public componentDidMount() {
     ProfileBackend.retrieveDataSet(30)
-      .then((value) => { 
+      .then((value) => {
+        // TODO use value in here
         console.log(JSON.stringify);
-        
-      }).catch();
+      })
+      // TODO add example catch code, talk about enter listener
+      .catch();
   }
 
   public render() {
@@ -56,7 +57,7 @@ export default class UserPage extends React.Component<IProps, object> {
         </View>
       );
     });
-    
+
     return (
      <View style={styles.pageView}>
        <AppHeader title="Profile"/>
@@ -71,8 +72,8 @@ export default class UserPage extends React.Component<IProps, object> {
             modalTitle="Sleep Data"
             transparent={true}
             columns={columns}
-          /> 
-          
+          />
+
           <ChartModal
             modalTitle="Mood Data"
             transparent={true}
@@ -80,8 +81,8 @@ export default class UserPage extends React.Component<IProps, object> {
           />
         </ScrollView>
      </View>
-   );
-        }
+    );
+  }
 
   /**
    * Returns the difference in days between dates in 'YYYY-MM-DD' format

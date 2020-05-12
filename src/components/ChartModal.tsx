@@ -1,14 +1,12 @@
 import * as React from 'react';
-import { Alert, Modal, StyleSheet, Text, TouchableHighlight, View, Dimensions, ScrollView } from "react-native";
-import { LineChart } from "react-native-chart-kit";
-
-import ProfileBackend from '../Business/ProfileBackend';
+import { Dimensions, Modal, ScrollView, StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
 interface IProps {
   modalTitle: string;
   transparent: boolean;
   animationType?: string;
   exit?: string;
+  // TODO pass data as prop and convert to JSX in this component
   columns: any;
 }
 
@@ -18,6 +16,7 @@ interface IState {
 }
 
 class ChartModal extends React.Component<IProps, IState>  {
+  // TODO fix style errors here
     public static defaultProps = {
       animationType: "slide",
       exit: "Close Graphs"
