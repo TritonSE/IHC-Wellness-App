@@ -1,15 +1,18 @@
 {
     "compilerOptions": {
       "baseUrl": ".",
-      "paths": { "*": ["types/*"] },
-        "target": "es5",
-        "lib": ["es2015", "esnext.asynciterable"],
-        "jsx": "react-native",
-        "strict": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "types": [
-            "jest"
-        ]
+      "paths": {
+	"app": ["./"],
+	"*": ["types/*"]
+      },
+      "target": "es5",
+      "lib": ["es2015", "esnext.asynciterable"],
+      "jsx": "react-native",
+      "strict": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "types": [
+          "jest"
+      ]
     }
 }
