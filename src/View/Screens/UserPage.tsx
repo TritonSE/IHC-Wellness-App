@@ -60,8 +60,8 @@ export default class UserPage extends React.Component<IProps, object> {
     });
     
     return (
-     <View style={styles.container}>
-       <AppHeader title="User"/>
+     <View style={styles.pageView}>
+       <AppHeader title="Profile"/>
        
        <ScrollView>
           <ChartModal
@@ -80,13 +80,6 @@ export default class UserPage extends React.Component<IProps, object> {
           />
         </ScrollView>
 
-     </View>
-   );
-
-    return (
-      <View style={styles.pageView}>
-        <AppHeader title="Profile" />
-
         <Text>Charts go below</Text>
 
         <ScrollView
@@ -99,9 +92,10 @@ export default class UserPage extends React.Component<IProps, object> {
             columns // Render the JSX in a ScrollView
           }
         </ScrollView>
-      </View>
-    );
-  }
+
+     </View>
+   );
+        }
 
   /**
    * Returns the difference in days between dates in 'YYYY-MM-DD' format
@@ -122,13 +116,6 @@ export default class UserPage extends React.Component<IProps, object> {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    borderColor: 'red',
-    borderWidth: 5,
-    flex: 1,
-    justifyContent: 'center',
-  },
   pageView: {
     alignItems: 'center',
     flex: 1,
