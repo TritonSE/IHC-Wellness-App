@@ -33,6 +33,7 @@ const storeHelper = {
       var item = [[],[],[]];
       item = JSON.stringify(item);
       await AsyncStorage.setItem("owned", item);
+      return item;
     },
 
     //takes in an item and updates it and its owned and available fields in all owned array in async
