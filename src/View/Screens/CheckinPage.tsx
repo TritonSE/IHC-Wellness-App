@@ -34,12 +34,23 @@ interface IState {
   questions: ICheckinQuestion[];
 }
 
+// TODO these hardcoded values are to test the frontend behavior
+// but they will need to be replaced with data from backend
+const hardcodedQuestions: ICheckinQuestion[] = [
+  {
+    title: 'How is your mood?',
+    key: 'mood',
+    active: true,
+    type: 'slider',
+  },
+];
+
 class CheckinPage extends React.Component<IProps, IState> {
   private readonly navigation: NavigationProp<{}> = this.props.navigation;
 
   private removeEnterListener = this.navigation.addListener('focus', (e) => {
     console.log('TODO: CheckinPage enter, check if user has already checked in');
-    Alert.alert('you have already checked in bud');
+    // Alert.alert('you have already checked in bud');
   });
 
   private removeExitListener = this.navigation.addListener('blur', (e) => {
@@ -53,7 +64,7 @@ class CheckinPage extends React.Component<IProps, IState> {
       hoursOfSleep: 8,
       mood: 1,
       journal: '',
-      questions: []
+      questions: hardcodedQuestions,
     };
   }
 
@@ -69,7 +80,7 @@ class CheckinPage extends React.Component<IProps, IState> {
     CheckinBackend.saveData(formInfo);
   }
 
-  public dropDownSelect(idx, value) {
+  public dropdownHandleSelect(idx, value) {
     // method removed during merge, remake
   }
 
@@ -84,10 +95,11 @@ class CheckinPage extends React.Component<IProps, IState> {
         >
           {/* TODO: Replace with FlatList, same style but in contentContainerStyle prop */}
           <ScrollView style={styles.questionWidth}>
-          <ModalDropdown 
-                options={this.state.questions}
-                onSelect = {(idx, value) => this.dropDownOnSelect(idx, value)}
-          />
+
+            <ModalDropdown 
+                  options={this.state.questions.map((q) => q.title)}
+                  onSelect = {(idx, value) => { this.dropdownHandleSelect(idx, value); }}
+            />
 
             <CheckinSlider
               title="How healthy are you feeling today?"
@@ -109,7 +121,7 @@ class CheckinPage extends React.Component<IProps, IState> {
 
               <CheckinSlider
                 title="Are you happy?"
-                step={0.01}
+                step={1}
                 minValue={0}
                 maxValue={1}
                 value={this.state.mood}
