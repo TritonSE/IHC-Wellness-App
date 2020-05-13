@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Dimensions, FlatList, ScrollView, StyleSheet, View } from 'react-native';
+import { Button, Dimensions, FlatList, ScrollView, StyleSheet, View, Alert } from 'react-native';
 
 import { NavigationProp } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -27,6 +27,7 @@ class CheckinPage extends React.Component<IProps, IState> {
 
   private removeEnterListener = this.navigation.addListener('focus', (e) => {
     console.log('TODO: CheckinPage enter, check if user has already checked in');
+    Alert.alert('you have already checked in bud');
   });
 
   private removeExitListener = this.navigation.addListener('blur', (e) => {

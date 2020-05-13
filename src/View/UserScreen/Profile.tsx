@@ -190,7 +190,7 @@ export default class Profile extends React.Component<IProps, IState> {
                       title="Confirm"
                       onPress={async () => {
                           this.setState({ modalVisible: false });
-                          ProfileBackend.retrieveDataSet(this.state.modalInput);
+                          ProfileBackend.retrieveCheckinSet(this.state.modalInput);
                         }
                       }
                     />

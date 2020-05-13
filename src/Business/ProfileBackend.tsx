@@ -1,29 +1,11 @@
-import { Alert, AsyncStorage } from 'react-native';
+import { AsyncStorage } from 'react-native';
 
-import CheckinBackend from './CheckinBackend.tsx';
+import CheckinBackend from './CheckinBackend';
 
+// Does not need to be a singleton as this logic is for queries, not state
 const ProfileBackend = {
 
-  // CHECKIN LOGIC
-  saveData: async (obj: any) => {
-    const date = CheckinBackend.getDate();
-    // checks if person already checked in today
-    const data = await CheckinBackend.retrieveData(date);
-    if (data === 'error' || data != null) {
-      Alert.alert('You have already checked in today');
-    } else {// adds new information to storage
-      try {
-        let checkInData = obj;
-        await AsyncStorage.setItem(date, JSON.stringify(checkInData));
-        CheckinBackend.updateDates(date);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-  },
-
-  retrieveDataSet: async (numDays: number) => {
+  retrieveCheckinSet: async (numDays: number) => {
     const dateSet = await ProfileBackend.retrieveDates(numDays);
     let dates;
     await AsyncStorage.multiGet(dateSet, (err, result) => {
@@ -33,6 +15,19 @@ const ProfileBackend = {
     return dates;
   },
 
+  retrieveCheckin: async (date: string) => {
+    try {
+      const asyncValue = await AsyncStorage.getItem(date);
+      return asyncValue;
+    } catch (error) {
+      console.log(error);
+      return 'error';
+    }
+  },
+
+  // TODO the call to getAllKeys() needs to be removed
+  // CheckinBackend says dates are stored at 'checkins', load that instead
+  // Remember to save JSON string and parse object in different variables
   getAllDates: async ()=>{
     const regex = /^([0-9]{4}-[0-9]{2}-[0-9]{2})$/;
     let dates = await AsyncStorage.getAllKeys();
@@ -45,10 +40,19 @@ const ProfileBackend = {
         acceptedKeys.push(currentKey);
       }
     }
-    console.log("all dates in storage " + acceptedKeys);
+    console.log(`all dates in storage ${acceptedKeys}`);
     return acceptedKeys;
   },
 
+  // TODO this logic can be made more efficient and less verbose
+  // Idea is: get all dates, get all dates within range of that
+  // Shorter and faster implementations would be 1 of 2 options:
+  // Option 1: Use .findIndex() to find first index in all dates that
+  //           is within range, then use .slice() to extract subarray
+  //           from this index to the end
+  // Option 2: Use .filter() to return a new array with only the dates
+  //           that are in range
+  // Option 1 would probably be easier and faster
   retrieveDates: async (numDays: number) => {
     const dates = await ProfileBackend.getAllDates();
     const today = new Date(CheckinBackend.getCurrentDate());

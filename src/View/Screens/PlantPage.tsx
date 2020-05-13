@@ -1,30 +1,31 @@
 import * as React from 'react';
 import { Dimensions, FlatList, Image, StyleSheet, View } from 'react-native';
 
-import PlantBackend from '../../Business/PlantBackend';
-
-import { IPlantItem,
+import { IStoreItem,
          PlantBodies, PlantFooters, PlantHeaders,
          PlantImages } from '../../../constants/Plants';
+import PlantBackend, { IPlantItem } from '../../Business/PlantBackend';
 import AppHeader from '../../components/AppHeader';
 
-// TODO narrow down these types, should be IStore___ or IPlant___
+// TODO refactor to use IPlantItem as type
 interface IState {
   plantBody: IPlantItem[];
   plantFooter: IPlantItem;
   plantHeader: IPlantItem;
 }
-  
-const { height, width } = Dimensions.get('window');
+
+const width = Dimensions.get('window').width;
 
 // This class is further from completion than StorePage,
 // but the elements needed to play around with style are here
 export default class PlantPage extends React.Component<object, IState> {
-  private readonly PlantController: PlantBackend = PlantBackend.getInstance();
+  private readonly plantController: PlantBackend = PlantBackend.getInstance();
 
   constructor(props: object) {
     super(props);
-    // this.PlantController = PlantBackend.getInstance();
+    // TODO use this.plantController to set initial state to initial values
+    // by calling its get methods and using setState with the resulting value
+    this.plantController = PlantBackend.getInstance();
     this.state = {
       // TODO clean backend functions and uncomment these
       // plantBody: PlantBackend.getBody(0),
@@ -34,7 +35,14 @@ export default class PlantPage extends React.Component<object, IState> {
       plantFooter: PlantFooters[0],
       plantHeader: PlantHeaders[0],
     };
-    // this.PlantController.getBody();
+    // this.plantController.getBody();
+  }
+
+  public async componentDidMount() {
+    // TODO componentDidMount can be async, if any async operations aren't
+    // 
+    // await this.PlantController.getInitialValues();
+    // this.setState();
   }
 
   public render() {

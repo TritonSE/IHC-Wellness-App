@@ -1,9 +1,10 @@
 import { Alert, AsyncStorage } from 'react-native';
 
+// TODO convert to singleton, only member is questionArray
 const CheckinBackend = {
 
   // CHECKIN LOGIC
-  // TODO define checkin type
+  // TODO define checkin type, if it exists already it will be in constants/Questions.ts
   saveData: async (checkin: any) => {
     const date = CheckinBackend.getCurrentDate();
     // checks if person already checked in today
@@ -22,16 +23,6 @@ const CheckinBackend = {
       }
     }
 
-  },
-
-  retrieveData: async (date: string) => {
-    try {
-      const asyncValue = await AsyncStorage.getItem(date);
-      return asyncValue;
-    } catch (error) {
-      console.log(error);
-      return 'error';
-    }
   },
 
   parseData: (dataString: string) => {
@@ -57,22 +48,6 @@ const CheckinBackend = {
         console.log('CURRENT STORAGE: ', myStorage);
       });
     });
-  },
-  displayPlant: async()=>{
-    var ownedArray = await AsyncStorage.getItem("owned")
-    if(ownedArray== null){
-      console.log("{}")
-      return;
-    }
-    ownedArray = ownedArray.split("}]")
-    console.log("owned")
-    for(var i = 0; i < ownedArray.length; i++){
-      console.log(ownedArray[i] + " ")
-    }
-    var plantArray = await AsyncStorage.getItem("PlantArray")
-    console.log("PlantArray: " + plantArray)
-    var money = await AsyncStorage.getItem("Money")
-    console.log("Money: " + money)
   },
 
   clearAllData: async () => {
@@ -115,7 +90,8 @@ const CheckinBackend = {
     return dateToCheck;
   },
 
-  createQuestionsAsync: async ()=>{
+  // TODO use starter questions in constants/Questions.ts to populate default array
+  createDefaultQuestionsArray: async ()=>{
     await AsyncStorage.setItem('questions', JSON.stringify([]));
   },
 
@@ -167,7 +143,7 @@ const CheckinBackend = {
     const questionArrayJson = await AsyncStorage.getItem('questions');
     let questionArray = questionArrayJson ? JSON.parse(questionArrayJson) : null;
     if(questionArray == null){
-      CheckinBackend.createQuestionsAsync();
+      CheckinBackend.createDefaultQuestionsArray();
       return [];
     }
     console.log(questionArray);
@@ -184,6 +160,7 @@ const CheckinBackend = {
       return [];
     }
 
+    // TODO this can be replaced with a .filter() call on questionArray
     //looks to find all the questions that are used (or not used)
     let matchingQuestion = [];
     for(var i = 0; i< questionArray.length; i++){

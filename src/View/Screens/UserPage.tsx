@@ -11,10 +11,10 @@ export interface IProps {
 
 export default class UserPage extends React.Component<IProps, object> {
   public componentDidMount() {
-    ProfileBackend.retrieveDataSet(30)
+    ProfileBackend.retrieveCheckinSet(30)
       .then((value) => {
         // TODO use value in here
-        console.log(JSON.stringify);
+        console.log(JSON.stringify(value));
       })
       // TODO add example catch code, talk about enter listener
       .catch();

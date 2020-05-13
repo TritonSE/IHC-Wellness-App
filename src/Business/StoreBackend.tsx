@@ -1,42 +1,43 @@
 import { AsyncStorage } from 'react-native';
-import {footers, bodies, headers} from './itemProperties.tsx';
 
-const storeHelper = {
-    getFooters : function() {
-        return footers;
-    },
+export interface IOwnedItem {
+  name: string;
+  owned: number;
+  used: number;
+  available: boolean;
+}
 
-    getBodies : function() {
-        return bodies;
-    },
+// TODO convert to singleton, members are money and ownedArrays
+const StoreBackend = {
+  // private money: number = 0;
+  // If it is easier you can change this back to an array, but an object
+  // with named keys might be easier as sectionName parameters can be
+  // directly used as a key to access an array
+  /*
+  private ownedArrays: {
+    headers: IOwnedItem[],
+    bodies: IOwnedItem[],
+    footers: IOwnedItem[],
+  } | null = null;
+  */
 
-    getHeaders : function() {
-        return headers;
-    },
-
-    getAllItems : function(){
-      var allItems = [];
-      allItems[0] = footers;
-      allItems[1] = bodies;
-      allItems[2] = headers;
-      return allItems;
-    },
-
-
-
-    addMoney: async function(amount: float) {
+    // TODO fix names or logic in functions like these, it is called addMoney
+    // but it is really setting money
+    // Methods should be getMoney() (getter) and addMoney() (that increases money)
+    addMoney: async function(amount: number) {
       await AsyncStorage.setItem("Money", amount.toString());
       return amount
     },
 
-    createOwned: async function(){
+    createDefaultOwnedArray: async function(){
+      // TODO replace all var keywords with let, const is even better if value does not change
       var item = [[],[],[]];
       item = JSON.stringify(item);
       await AsyncStorage.setItem("owned", item);
       return item;
     },
 
-    //takes in an item and updates it and its owned and available fields in all owned array in async
+    // takes in an item and updates it and its owned and available fields in all owned array in async
     handleOwned: async function(item, sectionIndex){
       var ownedArray = await AsyncStorage.getItem("owned");
       ownedArray = JSON.parse(ownedArray);
@@ -109,15 +110,15 @@ const storeHelper = {
         //create owned array if doesn't exist already
         if(ownedValue == null){
           console.log('created')
-          storeHelper.createOwned();
+          StoreBackend.createDefaultOwnedArray();
         }
 
         //add onto the previous array
-        let asyncValue = storeHelper.getAllItems();
+        let asyncValue = StoreBackend.getAllItems();
 
         var found = false
         //gets the index of the section
-        var sectionIndex = storeHelper.getListIndex(section);
+        var sectionIndex = StoreBackend.getListIndex(section);
 
         //looks for the item in a certain section
         for(var i = 0; i < asyncValue[sectionIndex].length; i++){
@@ -125,12 +126,12 @@ const storeHelper = {
           if(asyncValue[sectionIndex][i].name == item){
             found = true
             //adds to owned array
-            newItem = await storeHelper.handleOwned(asyncValue[sectionIndex][i],sectionIndex)
+            newItem = await StoreBackend.handleOwned(asyncValue[sectionIndex][i],sectionIndex)
 
             var plantArray = await AsyncStorage.getItem("PlantArray")
             plantArray = JSON.parse(plantArray);
 
-            storeHelper.handlePlants(newItem, plantArray, section)
+            StoreBackend.handlePlants(newItem, plantArray, section)
 
             var balance = await AsyncStorage.getItem("Money")
             balance = parseInt(balance, 10)
@@ -155,9 +156,9 @@ const storeHelper = {
 
     getItemInfo: async(item, list)=>{
       let temp = null;
-      let asyncValue = storeHelper.getAllItems();
+      let asyncValue = StoreBackend.getAllItems();
       //adds the Item array
-      var sectionIndex = storeHelper.getListIndex(list);
+      var sectionIndex = StoreBackend.getListIndex(list);
 
       for(var i = 0; i < asyncValue[sectionIndex].length; i++){
         //item was found
@@ -195,4 +196,4 @@ const storeHelper = {
     },
 }
 
-export default storeHelper
+export default StoreBackend;
