@@ -1,7 +1,9 @@
 import { AsyncStorage } from 'react-native';
 
-export interface IOwnedItem {
-  name: string;
+import { PlantBodies, PlantHeaders, PlantFooters, IStoreItem } from '../../constants/Plants';
+
+// Inherits name and price from IStoreItem
+export interface IOwnedItem extends IStoreItem {
   owned: number;
   used: number;
   available: boolean;
@@ -23,13 +25,26 @@ const StoreBackend = {
 
     // TODO fix names or logic in functions like these, it is called addMoney
     // but it is really setting money
-    // Methods should be getMoney() (getter) and addMoney() (that increases money)
+    // Methods should be getMoney() (getter), addMoney() (that increases money)
+    // and spendMoney() (that reduces money)
     addMoney: async function(amount: number) {
       await AsyncStorage.setItem("Money", amount.toString());
       return amount
     },
 
-    createDefaultOwnedArray: async function(){
+    createDefaultOwnedArrays: async function(){
+      // TODO refactor to use constants/Plants.ts instead of headers, bodies, footers
+      // Below is an example of how to use the map higher order function to get an
+      // IOwnedItem[] array from IStoreItem[] array
+      let ownedPlantHeaders: IOwnedItem[] = PlantHeaders.map((header: IStoreItem) => {
+        return {
+          ...header,
+          owned: 0,
+          used: 0,
+          available: false,
+        };
+      });
+
       // TODO replace all var keywords with let, const is even better if value does not change
       var item = [[],[],[]];
       item = JSON.stringify(item);
@@ -67,10 +82,13 @@ const StoreBackend = {
       return item;
     },
 
+    // TODO replace var with let, let that doesn't change with const, double == with triple ===
+    // TODO as this functions Updates the plant, move it to PlantBackend
+    // Also, rename functions named like this to be clearer: handle doesn't describe what change
+    // is happening, replace handle with a verb that describes the update (swap, add, delete etc.)
     handlePlants: async function(item, plantArray, section) {
       for(var i = 0; i < plantArray.length; i++) {
         var currentPlant = plantArray[i]
-
 
         if (section == "footers") {
           // footer
@@ -110,7 +128,7 @@ const StoreBackend = {
         //create owned array if doesn't exist already
         if(ownedValue == null){
           console.log('created')
-          StoreBackend.createDefaultOwnedArray();
+          StoreBackend.createDefaultOwnedArrays();
         }
 
         //add onto the previous array

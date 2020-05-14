@@ -276,18 +276,14 @@ class PlantBackend extends React.Component<object, object> {
   }
 
   private async createDefaultPlantArray() {
-    // TODO refactor to use constants/Plants.ts instead of headers, bodies, footers
-    // Below is an example of how to use the map higher order function to get an
-    // IPlantItem[] array from IStoreItem[] array
-    let ownedPlantHeaders: IPlantItem[] = PlantHeaders.map((header: IStoreItem) => {
-      return {
-        name: header.name,
-        owned: 0,
-        used: 0,
-        available: false,
-      };
-    });
+    const defaultPlant: IPlant = {
+      header : { name: PlantHeaders[0].name },
+      body : [{ name: PlantBodies[0].name }],
+      footer : { name: PlantFooters[0].name },
+    };
 
+    // TODO move owned logic to StoreBackend
+    // See example in StoreBackend.createDefaultOwnedArrays for refactored example
     headers[0].owned = 1;
     headers[0].used = 1;
     headers[0].available = headers[0].owned > headers[0].used;
@@ -299,12 +295,6 @@ class PlantBackend extends React.Component<object, object> {
     footers[0].owned = 1;
     footers[0].used = 1;
     footers[0].available = footers[0].owned > footers[0].used;
-
-    const defaultPlant: IPlant = {
-      header : { name: headers[0].name },
-      body : [{ name: bodies[0].name }],
-      footer : { name: footers[0].name },
-    };
 
     ownedArray[0].push(footers[0]);
     ownedArray[1].push(bodies[0]);
@@ -321,7 +311,9 @@ class PlantBackend extends React.Component<object, object> {
       console.log("Successfully updated owned array");
     });
 
-    // TODO do not return JSON string values, return the actual JSON objects like defaultPlant
+    // TODO do not return JSON string values, return the actual JSON objects like [defaultPlant]
+    // Remember to assign the results of Create operations by assigning the returned value to
+    // the corresponding class member in the constructor
     return temp;
   }
 }
