@@ -70,7 +70,8 @@ class CheckinSlider extends React.Component<IProps, IState> {
             minimumValue={this.props.minValue}
             maximumValue={this.props.maxValue}
             value={this.props.value}
-            thumbTintColor="rgb(252, 228, 149)"
+            thumbTintColor="#FFFFFF"
+            minimumTrackTintColor="#407578"
             onSlidingComplete={this.props.onSlidingComplete}
             onValueChange={(val) => this.setState({ value: val })}
           />

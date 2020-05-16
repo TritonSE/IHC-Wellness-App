@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Button, Dimensions, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Button, Dimensions, ScrollView, StyleSheet, TextInput, View, Text } from 'react-native';
 
 import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
 import CheckinSlider from '../../components/CheckinSlider';
+import NavAbsolute from '../Navigations/NavAbsolute';
 
 const { height, width } = Dimensions.get('window');
 
@@ -37,32 +38,42 @@ class CheckinPage extends React.Component<object, IState> {
         <AppHeader title="Check-in" />
 
         <ScrollView style={styles.questionScroll}>
-            <CheckinSlider
-              title="How healthy are you feeling today?"
-              step={0.1}
-              minValue={0}
-              maxValue={10}
-              value={this.state.health}
-              onSlidingComplete={(val) => this.setState({ health: val })}
-            />
 
-            <CheckinSlider
-              title="How many hours of sleep did you get last night?"
-              step={0.1}
-              minValue={0}
-              maxValue={10}
-              value={this.state.hoursOfSleep}
-              onSlidingComplete={(val) => this.setState({ hoursOfSleep: val })}
-            />
+            {/* <Text style={styles.header}>What's New?</Text>
+            <Text>Your Daily check-in</Text> */}
 
-            <CheckinSlider
-              title="Are you happy?"
-              step={1}
-              minValue={0}
-              maxValue={1}
-              value={this.state.mood}
-              onSlidingComplete={(val) => this.setState({ mood: val })}
-            />
+            <View style={styles.questionBackground}>
+              <CheckinSlider
+                title="How healthy are you feeling today?"
+                step={0.1}
+                minValue={0}
+                maxValue={10}
+                value={this.state.health}
+                onSlidingComplete={(val) => this.setState({ health: val })}
+              />
+            </View>
+
+            <View style={styles.questionBackground}>
+              <CheckinSlider
+                title="How many hours of sleep did you get last night?"
+                step={0.1}
+                minValue={0}
+                maxValue={10}
+                value={this.state.hoursOfSleep}
+                onSlidingComplete={(val) => this.setState({ hoursOfSleep: val })}
+              />
+            </View>
+
+            <View style={styles.questionBackground}>
+              <CheckinSlider
+                title="Are you happy?"
+                step={1}
+                minValue={0}
+                maxValue={1}
+                value={this.state.mood}
+                onSlidingComplete={(val) => this.setState({ mood: val })}
+              />
+            </View>
 
             <TextInput
               style={{ height: 40 }}
@@ -148,6 +159,20 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     paddingTop: 20,
+  },
+  questionBackground: {
+    width: 335,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    shadowColor: 'rgb(236, 236, 236)',
+    shadowOpacity: 25,
+    shadowRadius: 5,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    marginBottom: 16,
+    paddingLeft: 12,
+    paddingRight: 12,
   },
 });
 
