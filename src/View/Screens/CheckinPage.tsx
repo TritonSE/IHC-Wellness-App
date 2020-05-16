@@ -1,5 +1,8 @@
 import * as React from 'react';
-import { Button, Dimensions, ScrollView, StyleSheet, TextInput, View, Text } from 'react-native';
+import {  Dimensions, ScrollView, StyleSheet, TextInput, View, Text } from 'react-native';
+
+//extra styling
+import { Button } from 'react-native-elements';
 
 import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
@@ -86,49 +89,49 @@ class CheckinPage extends React.Component<object, IState> {
               />
 
             <Button
-              style={styles.submitButton}
+              buttonStyle={styles.submitButton}
               title="Submit"
               onPress={this.sendFormInfo}
             />
 
             <Button
-              style={styles.submitButton}
+              buttonStyle={styles.submitButton}
               title="Display"
               onPress={()=> {CheckinBackend.displayAllData()}}
             />
 
             <Button
-              style={styles.submitButton}
+              buttonStyle={styles.submitButton}
               title="Clear"
               onPress={()=> {CheckinBackend.clearAllData()}}
             />
 
             <Button
-              style={styles.submitButton}
+              buttonStyle={styles.submitButton}
               title="Add Question"
               onPress={()=> {CheckinBackend.addQuestion("How?")}}
             />
 
             <Button
-              style={styles.submitButton}
+              buttonStyle={styles.submitButton}
               title="Set Question True"
               onPress={()=> {CheckinBackend.setQuestionUsage("How?", true)}}
             />
 
             <Button
-              style={styles.submitButton}
+              buttonStyle={styles.submitButton}
               title="Set Question False"
               onPress={()=> {CheckinBackend.setQuestionUsage("How?", false)}}
             />
 
             <Button
-              style={styles.submitButton}
+              buttonStyle={styles.submitButton}
               title="Get All Questions"
               onPress={()=> {CheckinBackend.getAllQuestions()}}
             />
 
             <Button
-              style={styles.submitButton}
+              buttonStyle={styles.submitButton}
               title="Get Used Question"
               onPress={()=> {CheckinBackend.getUsedQuestions(true)}}
             />
@@ -158,7 +161,13 @@ const styles = StyleSheet.create({
     width,
   },
   submitButton: {
-    paddingTop: 20,
+    backgroundColor: "#407578",
+    borderRadius: 10,
+    width: 335,
+    height: 42,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    marginBottom: 20,
   },
   questionBackground: {
     width: 335,
