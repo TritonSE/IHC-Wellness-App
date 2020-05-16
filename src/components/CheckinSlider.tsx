@@ -62,7 +62,7 @@ class CheckinSlider extends React.Component<IProps, IState> {
     return (
         <View style={{ paddingTop: 30 }}>
           <Text>{this.props.title}</Text>
-          <Text style={{ width: 50, textAlign: 'center', left: valuePosition }}>
+          <Text style={{ width: 50, textAlign: 'center', left: valuePosition, color: "#407578", fontWeight: 'bold' }}>
             {Math.floor(this.state.value)}</Text>
           <Slider
             // ref={(slider) => { this.setState({ slider: slider, }) }}
@@ -94,6 +94,7 @@ const sliderStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    top: -10,
   },
   minContainer: {
     flex: 1,
