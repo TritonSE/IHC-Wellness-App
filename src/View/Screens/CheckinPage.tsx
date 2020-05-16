@@ -42,8 +42,8 @@ class CheckinPage extends React.Component<object, IState> {
 
         <ScrollView style={styles.questionScroll}>
 
-            {/* <Text style={styles.header}>What's New?</Text>
-            <Text>Your Daily check-in</Text> */}
+            <Text style={styles.header}>What's New?</Text>
+            <Text style={styles.subheader}>Your Daily check-in</Text>
 
             <View style={styles.questionBackground}>
               <CheckinSlider
@@ -149,6 +149,16 @@ class CheckinPage extends React.Component<object, IState> {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    fontSize: 36,
+    marginLeft: 20,
+    marginBottom: 6,
+  },
+  subheader: {
+    fontSize: 16,
+    marginLeft: 20,
+    marginBottom: 20,
+  },
   pageView: {
     alignItems: 'center',
     flex: 1,
