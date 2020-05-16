@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dimensions, Slider, Text, View } from 'react-native';
+import { Dimensions, Slider, Text, View, StyleSheet } from 'react-native';
 import { Header } from 'react-native-elements';
 
 interface IProps {
@@ -75,9 +75,37 @@ class CheckinSlider extends React.Component<IProps, IState> {
             onSlidingComplete={this.props.onSlidingComplete}
             onValueChange={(val) => this.setState({ value: val })}
           />
+          <View style={sliderStyles.labelContainer}>
+            <View style={sliderStyles.minContainer}>
+              <Text>{this.props.minValue}</Text>
+            </View>
+            <View style={sliderStyles.maxContainer}>
+              <Text>{this.props.maxValue}</Text>
+            </View>
+          </View>
         </View>
     );
   }
 }
+
+const sliderStyles = StyleSheet.create({
+  labelContainer: {
+    height: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  minContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  maxContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+})
 
 export default CheckinSlider;

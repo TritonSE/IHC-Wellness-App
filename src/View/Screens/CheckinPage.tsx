@@ -182,6 +182,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingLeft: 12,
     paddingRight: 12,
+    paddingBottom: 18,
   },
 });
 
