@@ -6,7 +6,7 @@ import { Button } from 'react-native-elements';
 
 import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
-import CheckinSlider from '../../components/CheckinSlider';
+import CheckinSlider from '../../components/CheckinSlider';``
 import NavAbsolute from '../Navigations/NavAbsolute';
 
 const { height, width } = Dimensions.get('window');
@@ -78,15 +78,53 @@ class CheckinPage extends React.Component<object, IState> {
               />
             </View>
 
-            <TextInput
-              style={{ height: 40 }}
-              multiline={true}
-              underlineColorAndroid = "transparent"
-              placeholder = "Journal Entry"
-              placeholderTextColor = "#000000"
-              autoCapitalize = "none"
-              onChangeText={(val) => this.setState({ journal: val })}
-              />
+            <View style={styles.questionBackground}>
+              <Text style={styles.questionText}>What is one thing you feel grateful for today?</Text>
+              <View style={[styles.freeResponse, {height: 60}]}>
+                <TextInput
+                  multiline={true}
+                  underlineColorAndroid = "transparent"
+                  placeholder = "Journal Entry"
+                  placeholderTextColor = "#B5B5B5"
+                  autoCapitalize = "none"
+                  onChangeText={(val) => this.setState({ journal: val })}
+                  />
+                </View>
+            </View>
+
+            <View style={styles.questionBackground}>
+              <Text style={styles.questionText}>What are three things you accomplished today?</Text>
+              <View style={[styles.freeResponse, {height: 30, marginBottom: 10}]}>
+                <TextInput
+                  multiline={true}
+                  underlineColorAndroid = "transparent"
+                  placeholder = "I finished..."
+                  placeholderTextColor = "#B5B5B5"
+                  autoCapitalize = "none"
+                  onChangeText={(val) => this.setState({ journal: val })}
+                  />
+                </View>
+                <View style={[styles.freeResponse, {height: 30, marginBottom: 10}]}>
+                <TextInput
+                  multiline={true}
+                  underlineColorAndroid = "transparent"
+                  placeholder = "I learned..."
+                  placeholderTextColor = "#B5B5B5"
+                  autoCapitalize = "none"
+                  onChangeText={(val) => this.setState({ journal: val })}
+                  />
+                </View>
+                <View style={[styles.freeResponse, {height: 30}]}>
+                <TextInput
+                  multiline={true}
+                  underlineColorAndroid = "transparent"
+                  placeholder = "I did..."
+                  placeholderTextColor = "#B5B5B5"
+                  autoCapitalize = "none"
+                  onChangeText={(val) => this.setState({ journal: val })}
+                  />
+                </View>
+            </View>
 
             <Button
               buttonStyle={styles.submitButton}
@@ -193,6 +231,23 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     paddingRight: 12,
     paddingBottom: 12,
+  },
+  questionText: {
+    fontSize: 16,
+    marginTop: 15,
+    marginBottom: 15,
+  },
+  freeResponse: {
+    width: 310,
+    backgroundColor: 'white',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#F1F1F1',
+    paddingLeft: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
   },
 });
 
