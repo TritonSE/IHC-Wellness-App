@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Alert, Modal, StyleSheet, Text, TouchableHighlight, View, Dimensions, ScrollView } from "react-native";
-import { LineChart } from "react-native-chart-kit";
+import { Modal, StyleSheet, Text, TouchableHighlight, View, Dimensions, ScrollView } from "react-native";
 
 import ProfileBackend from '../Business/ProfileBackend';
 
@@ -14,7 +13,6 @@ interface IProps {
 
 interface IState {
   modalVisible: boolean;
-  data: any;
 }
 
 class ChartModal extends React.Component<IProps, IState>  {
@@ -28,7 +26,7 @@ class ChartModal extends React.Component<IProps, IState>  {
         this.state = {
           modalVisible: false
         };
-      }
+    }
 
     public setModalVisible = (visible) => {
         this.setState({ modalVisible: visible });
@@ -43,13 +41,10 @@ class ChartModal extends React.Component<IProps, IState>  {
             animationType={this.props.animationType}
             transparent={this.props.transparent}
             visible={this.state.modalVisible}
-            //onRequestClose={() => {
-              //Alert.alert("Charts have been closed.");
-            //}}
           >
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
-                <Text style={styles.modalText}>{this.props.modalTitle}</Text>
+                <Text>{this.props.modalTitle}</Text>
                 <ScrollView
                   horizontal
                   contentContainerStyle={{
@@ -124,10 +119,5 @@ class ChartModal extends React.Component<IProps, IState>  {
       fontWeight: "bold",
       textAlign: "center",
     },
-    modalText: {
-      //marginBottom: 15,
-      //textAlign: "center",
-      //padding: 100,
-    }
   });
   
