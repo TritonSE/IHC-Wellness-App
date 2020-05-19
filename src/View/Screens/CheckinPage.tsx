@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Button, Dimensions, FlatList, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Button, Dimensions, FlatList, ScrollView, StyleSheet, View } from 'react-native';
 
+import ModalDropdown from 'react-native-modal-dropdown';
 import { NavigationProp } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -8,8 +9,16 @@ import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
 import CheckinSlider from '../../components/CheckinSlider';
 import CheckinTextInput from '../../components/CheckinTextInput';
+import CustomQuestion from '../../components/CustomQuestion'
 
 const { height, width } = Dimensions.get('window');
+
+interface ICheckinQuestion {
+  title: string;
+  key: string;
+  active: boolean;
+  type: 'slider' | 'text';
+}
 
 interface IProps {
   navigation: NavigationProp<{}>;
@@ -20,6 +29,7 @@ interface IState {
   hoursOfSleep: number;
   mood: number;
   journal: string;
+  questions: ICheckinQuestion[];
 }
 
 class CheckinPage extends React.Component<IProps, IState> {
@@ -40,6 +50,7 @@ class CheckinPage extends React.Component<IProps, IState> {
       hoursOfSleep: 8,
       mood: 1,
       journal: '',
+      questions: []
     };
   }
 
@@ -55,6 +66,10 @@ class CheckinPage extends React.Component<IProps, IState> {
     CheckinBackend.saveData(formInfo);
   }
 
+  public dropDownSelect(idx, value) {
+    // method removed during merge, remake
+  }
+
   // TODO: KeyboardAvoidingView did not work
   // Will probably want to use react-native-keyboard-aware-scroll-view instead
   public render() {
@@ -67,6 +82,11 @@ class CheckinPage extends React.Component<IProps, IState> {
         >
           {/* TODO: Replace with FlatList, same style but dynamic content */}
           <ScrollView style={styles.questionWidth}>
+          <ModalDropdown 
+                options={this.state.questions}
+                onSelect = {(idx, value) => this.dropDownOnSelect(idx, value)}
+          />
+
             <CheckinSlider
               title="How healthy are you feeling today?"
               step={0.1}
@@ -75,6 +95,7 @@ class CheckinPage extends React.Component<IProps, IState> {
               value={this.state.health}
               onSlidingComplete={(val) => this.setState({ health: val })}
             />
+
 
               <CheckinSlider
                 title="How many hours of sleep did you get last night?"
@@ -87,11 +108,34 @@ class CheckinPage extends React.Component<IProps, IState> {
 
               <CheckinSlider
                 title="Are you happy?"
-                step={1}
+                step={0.01}
                 minValue={0}
                 maxValue={1}
                 value={this.state.mood}
                 onSlidingComplete={(val) => this.setState({ mood: val })}
+              />  
+      
+              <CheckinTextInput 
+                style={styles.textInputs}
+                title="Journal Entry"
+                titleColor="#000000"
+                multiline={true}
+                autocapital="none"
+                underlineColor="transparent"
+                finalText={this.state.journal}
+                onChangeText={(val) => this.setState({ journal: val })}
+              />
+
+              <CustomQuestion />
+
+              <Button
+                title="Add Custom Question"
+                onPress={()=>{this.state.questions.push('new custom question')}}
+              />
+
+              <Button
+                title="Submit"
+                onPress={this.sendFormInfo}
               />
 
             <CheckinTextInput

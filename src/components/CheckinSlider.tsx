@@ -16,10 +16,11 @@ interface IState {
     // slider: any;
   leftOffset: number;
   width: number;
+  leftOff: number;
 }
 
 // Values used to track state.value to the slider position
-const { height: _, width: deviceWidth } = Dimensions.get('window');
+const deviceWidth = Dimensions.get('window').width;
 const sliderRadius = 9;
 const widthCorrection = 0.88;
 
@@ -36,6 +37,7 @@ class CheckinSlider extends React.Component<IProps, IState> {
       leftOffset: 0,
       value: this.props.value,
       width: 0,
+      leftOff: 0,
     };
   }
 
@@ -46,6 +48,11 @@ class CheckinSlider extends React.Component<IProps, IState> {
       };
     });
   }
+
+  public slider_bound=(event: any)=>{
+    const {x, y, width, height} = event.nativeEvent.layout;
+    this.setState({width: width})
+    }
 
   public render() {
     const valuePosition = this.state.leftOffset - sliderRadius
@@ -63,7 +70,7 @@ class CheckinSlider extends React.Component<IProps, IState> {
           }}
         >
           <Text>{this.props.title}</Text>
-          <Text style={{ width: 50, textAlign: 'center', left: valuePosition }}>
+          <Text style={{ width: 50, textAlign: 'center', left: this.state.leftOff}}>
             {Math.floor(this.state.value)}</Text>
           <Slider
             // ref={(slider) => { this.setState({ slider: slider, }) }}
@@ -73,7 +80,8 @@ class CheckinSlider extends React.Component<IProps, IState> {
             value={this.props.value}
             thumbTintColor="rgb(252, 228, 149)"
             onSlidingComplete={this.props.onSlidingComplete}
-            onValueChange={(val) => this.setState({ value: val })}
+            onValueChange={(val) => this.setState({ value: val, leftOff: valuePosition })}
+            onLayout={(event)=>{this.slider_bound(event)}}
           />
         </View>
     );
