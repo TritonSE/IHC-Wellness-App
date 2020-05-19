@@ -52,7 +52,7 @@ class PlantCards extends React.Component<IProps, IState> {
                   }}
                 >
                   {
-                    this.props.data /:/Render the JSX in a ScrollView
+                    this.props.data //Render the JSX in a ScrollView
                   }
                 </ScrollView>
               <TouchableHighlight
