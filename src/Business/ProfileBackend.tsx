@@ -7,9 +7,15 @@ const ProfileBackend = {
 
   retrieveCheckinSet: async (numDays: number) => {
     const dateSet = await ProfileBackend.retrieveDates(numDays);
-    let dates;
+    let dates = [];
     await AsyncStorage.multiGet(dateSet, (err, result) => {
-      dates = result;
+      for(var i = 0; i < result.length; i++){
+        let obj = {
+          date : result[i][0],
+          response : result[i][1],
+        }
+        dates.push(obj);
+      }
     });
     console.log(dates);
     return dates;

@@ -40,7 +40,7 @@ export default class PlantPage extends React.Component<object, IState> {
 
   public async componentDidMount() {
     // TODO componentDidMount can be async, if any async operations aren't
-    // 
+    //
     // await this.PlantController.getInitialValues();
     // this.setState();
   }

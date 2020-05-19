@@ -32,23 +32,26 @@ const StoreBackend = {
       return amount
     },
 
-    createDefaultOwnedArrays: async function(){
+    createDefaultOwnedArrays: function(){
       // TODO refactor to use constants/Plants.ts instead of headers, bodies, footers
       // Below is an example of how to use the map higher order function to get an
       // IOwnedItem[] array from IStoreItem[] array
-      let ownedPlantHeaders: IOwnedItem[] = PlantHeaders.map((header: IStoreItem) => {
-        return {
-          ...header,
-          owned: 0,
-          used: 0,
-          available: false,
-        };
-      });
+
+      // let ownedPlantHeaders: IOwnedItem[] = PlantHeaders.map((header: IStoreItem) => {
+      //   return {
+      //     ...header,
+      //     owned: 0,
+      //     used: 0,
+      //     available: false,
+      //   };
+      // });
 
       // TODO replace all var keywords with let, const is even better if value does not change
       var item = [[],[],[]];
       item = JSON.stringify(item);
-      await AsyncStorage.setItem("owned", item);
+      AsyncStorage.setItem("owned", item).then(()=>{
+        console.log("default owned array set")
+      });
       return item;
     },
 
