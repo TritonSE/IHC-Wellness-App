@@ -24,7 +24,6 @@ class ChartModal extends React.Component<IProps, IState>  {
   private readonly columns: Element[] | null = null;
   private readonly maxValue: number;
 
-  // TODO fix style errors here
   public static defaultProps = {
     exitText: 'Close',
   };
@@ -174,7 +173,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    height: deviceWidth * 3/4,
+    height: deviceWidth * 3 / 4,
     width: deviceWidth,
   },
   openButton: {
