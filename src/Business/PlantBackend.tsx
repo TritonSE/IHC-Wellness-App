@@ -28,7 +28,9 @@ export default class PlantBackend extends React.Component<object, object> {
   private static readonly PLANT_ARRAY_KEY = 'PlantArray';
   private static readonly OWNED_ITEMS_KEY = 'owned';
   private static instance: PlantBackend | null = null;
+  // TODO lots of this.plantArray references, change to PlantBackend.plantArray
   private static plantArray;
+  // TODO move this to StoreBackend and change it to an object
   private static ownedArray;
 
   private constructor(props: {}) {

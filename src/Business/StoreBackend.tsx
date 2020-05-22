@@ -19,7 +19,14 @@ Replace for loops with functions like .find() and .findIndex()
 Rename non-descriptive variable names (item, value, temp etc.)
 */
 export default class StoreBackend extends React.Component<object, object> {
-  private money: number = 0;
+  // TODO: a note about static members, in a non-static function the `this` keyword
+  // refers to the current instance of the object (the non-static instance) so you
+  // must use StoreBackend.money to access money. BUT, in a static method `this`
+  // refers to StoreBackend, the static class, so you can use either StoreBackend.money
+  // or this.money if you are inside of a static method. Just remember, static methods
+  // should be private helper functions, functions to be used for frontend should be
+  // public non-static so that frontend is forced to call getInstance() to use any logic in here
+  private static money: number = 0;
   /*
   private ownedItems: {
   headers: IOwnedItem[],
