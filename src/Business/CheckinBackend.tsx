@@ -1,43 +1,52 @@
-import { Alert, AsyncStorage } from 'react-native';
+import { AsyncStorage } from 'react-native';
 
-// TODO convert to singleton, only member is questionArray
+import { getCurrentDate, isUserCheckedIn } from './ProfileBackend';
+// TODO this interface will be moved to constants/Questions once frontend has an editing PoC
+import { ICheckinQuestion } from '../View/Screens/CheckinPage';
+
+/*
+TODO
+Ask Bobby about the frontend logic, it probably makes sense
+to use an MVVM (frontend-driven) pattern for certain CRUD
+operations on questionArray. This pattern would entail NOT
+converting this to a singleton as the frontend would get its
+initial state from here and make calls here to updates its state,
+but no data would need to be stored here; instead only having it handle
+saving a checkin, getting the current questions array from storage,
+and operations on a questions array passed as a parameter such as
+filtering the active questions and adding a new question
+
+This file would thus require the least refactoring, mostly replacing getItem calls
+with a parameter for the current value that getItem was getting as well as
+replacing for loops with calls to higher-order functions
+*/
 const CheckinBackend = {
 
   // CHECKIN LOGIC
-  // TODO define checkin type, if it exists already it will be in constants/Questions.ts
-  saveData: async (checkin: any) => {
-    const date = CheckinBackend.getCurrentDate();
+  saveData: async (checkin: object) => {
+    const date = getCurrentDate();
     // checks if person already checked in today
-    const data = await CheckinBackend.retrieveData(date);
-    if (data === 'error' || data != null) {
-      Alert.alert('You have already checked in today');
-    } else {
-      // add new information to storage
-      try {
-        let checkInData = checkin;
-        await AsyncStorage.setItem(date, JSON.stringify(checkInData));
-        CheckinBackend.updateDates(date);
-        return checkInData
-      } catch (error) {
-        console.log(error);
-      }
+    const userCheckedIn = await isUserCheckedIn();
+    if (userCheckedIn) return null;
+
+    // add new information to storage
+    try {
+      // Spread syntax to make copy of checkin
+      const checkInData = { ...checkin };
+      await AsyncStorage.setItem(date, JSON.stringify(checkInData));
+      CheckinBackend.addNewDate(date);
+      return checkInData;
+    } catch (error) {
+      console.log(error);
     }
 
-  },
-
-  parseData: (dataString: string) => {
-    if (dataString == null) {
-      return 'You did not check in that day';
-    }
-    const parsed = JSON.parse(dataString);
-    let text = '';
-    Object.keys(parsed).forEach((key) => {
-      text += `${key} : ${parsed[key]}\n`;
-    });
-    return text;
   },
 
   displayAllData: async () => {
+    // TODO nested then calls are undesirable, instead use promise chaining
+    // by returning .multiGet() inside the first .then() and calling .then()
+    // with the callback that already exists
+    // https://javascript.info/promise-chaining has good info
     AsyncStorage.getAllKeys().then((keyArray) => {
       AsyncStorage.multiGet(keyArray).then((keyValArray) => {
         const myStorage: any = {};
@@ -54,21 +63,7 @@ const CheckinBackend = {
     await AsyncStorage.clear();
   },
 
-  getCurrentDate: () => {
-    return CheckinBackend.parseDate();
-  },
-
-  parseDate: (dateInMilliseconds: number = new Date().getTime()) => {
-    // gets the current date or the date from time in milliseconds
-    const date = new Date(dateInMilliseconds);
-    const year = date.getFullYear();
-    const month = `0${date.getMonth() + 1}`.slice(-2);
-    const day = `0${date.getDate()}`.slice(-2);
-    const condensedDate = `${year}-${month}-${day}`;
-    return condensedDate;
-  },
-
-  updateDates: async (date: string) => {
+  addNewDate: async (date: string) => {
     // check if at least one date has already been recorded
     const checkinsJson = await AsyncStorage.getItem('checkins');
     let allDates = checkinsJson ? JSON.parse(checkinsJson) : null;
@@ -82,19 +77,16 @@ const CheckinBackend = {
     return allDates
   },
 
-  getPlaceholder: (dateToCheck: string) => {
-    console.log(dateToCheck);
-    if (dateToCheck === '') {
-      return 'select date';
-    }
-    return dateToCheck;
-  },
-
   // TODO use starter questions in constants/Questions.ts to populate default array
+  // For CRUD operations like these, return the created/updated values and any promises
+  // that the data will be saved
   createDefaultQuestionsArray: async ()=>{
     await AsyncStorage.setItem('questions', JSON.stringify([]));
   },
 
+  // TODO this function will still be needed in the MVVM model, but add
+  // the questions array parameter and return the updated array and the promise
+  // it will be saved to storage
   addQuestion: async (question: string, key: string)=>{
     //gets the question aray from asyncstorage
     const questionArrayJson = await AsyncStorage.getItem('questions');
@@ -114,7 +106,11 @@ const CheckinBackend = {
     return questionObject
   },
 
-  setQuestionUsage: async (key: string, using: boolean)=>{
+  // TODO this function might be unnecessary in the MVVM pattern where CheckinPage
+  // handles setting questions to be active or not. Ask Bobby, but the needed
+  // function will probably be storeAllQuestions that takes the questions array
+  // from frontend and returns the promise that it will be saved to storage
+  setQuestionActive: async (key: string, using: boolean)=>{
     //gets the question aray from asyncstorage
     const questionArrayJson = await AsyncStorage.getItem('questions');
     let questionArray = questionArrayJson ? JSON.parse(questionArrayJson) : null;
@@ -138,10 +134,10 @@ const CheckinBackend = {
     return questionObject
   },
 
-
   getAllQuestions: async ()=>{
     const questionArrayJson = await AsyncStorage.getItem('questions');
     let questionArray = questionArrayJson ? JSON.parse(questionArrayJson) : null;
+    // TODO refactor so that createDefault returns the array and the promise it will be saved
     if(questionArray == null){
       CheckinBackend.createDefaultQuestionsArray();
       return [];
@@ -150,6 +146,7 @@ const CheckinBackend = {
     return questionArray;
   },
 
+  // TODO add a questionsArray parameter and replace the for loops with a call to .filter()
   getUsedQuestions: async (used:boolean)=>{
     //gets the question aray from asyncstorage
     const questionArrayJson = await AsyncStorage.getItem('questions');
@@ -173,7 +170,6 @@ const CheckinBackend = {
     return matchingQuestion;
 
   }
-
 
 };
 
