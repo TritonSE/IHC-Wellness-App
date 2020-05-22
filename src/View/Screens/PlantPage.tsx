@@ -1,14 +1,12 @@
 import * as React from 'react';
 import { Dimensions, FlatList, ImageSourcePropType, StyleSheet, View } from 'react-native';
 
-import { IStoreItem,
-         PlantBodies, PlantFooters, PlantHeaders,
+import { PlantBodies, PlantFooters, PlantHeaders,
          PlantImages } from '../../../constants/Plants';
 import PlantBackend, { IPlantItem } from '../../Business/PlantBackend';
 import AppHeader from '../../components/AppHeader';
-import PlantCards from '../../components/PlantCards';
+import PlantCard from '../../components/PlantCard';
 
-// TODO refactor to use IPlantItem as type
 interface IState {
   plantBody: IPlantItem[];
   plantFooter: IPlantItem;
@@ -61,7 +59,7 @@ export default class PlantPage extends React.Component<object, IState> {
 
   public async componentDidMount() {
     // TODO componentDidMount can be async, if any async operations aren't
-    // 
+    //
     // await this.PlantController.getInitialValues();
     // this.setState();
   }
@@ -151,7 +149,7 @@ export default class PlantPage extends React.Component<object, IState> {
     let itemImage: ImageSourcePropType = PlantImages[plantItem.name];
 
     return (
-      <PlantCards
+      <PlantCard
         modalTitle={ plantItem.name }
         transparent={ true } 
         image={ itemImage }

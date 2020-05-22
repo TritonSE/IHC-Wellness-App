@@ -3,7 +3,7 @@ import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { NavigationProp } from '@react-navigation/native';
 
-import ProfileBackend from '../../Business/ProfileBackend';
+import { retrievePreviousCheckins } from '../../Business/ProfileBackend';
 import AppHeader from '../../components/AppHeader';
 import ChartModal, { IQueryDataPoint } from '../../components/ChartModal';
 
@@ -15,7 +15,7 @@ export default class UserPage extends React.Component<IProps, object> {
   public constructor(props: IProps) {
     super(props);
 
-    ProfileBackend.retrieveCheckinSet(30)
+    retrievePreviousCheckins(30)
       .then((value) => {
         // TODO use value in here
         console.log(JSON.stringify(value));

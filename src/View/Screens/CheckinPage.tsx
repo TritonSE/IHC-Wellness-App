@@ -19,7 +19,7 @@ interface ICheckinQuestion {
   title: string;
   key: string;
   active: boolean;
-  type: 'slider' | 'text';
+  type: 'numeric' | 'text';
 }
 
 interface IProps {
@@ -41,7 +41,7 @@ const hardcodedQuestions: ICheckinQuestion[] = [
     title: 'How is your mood?',
     key: 'mood',
     active: true,
-    type: 'slider',
+    type: 'numeric',
   },
 ];
 
@@ -74,10 +74,16 @@ class CheckinPage extends React.Component<IProps, IState> {
     this.removeExitListener();
   }
 
-  public sendFormInfo() {
-    const formInfo = Object.assign({}, this.state);
-    console.log(`Saving checkin response ${JSON.stringify(formInfo)}`);
-    CheckinBackend.saveData(formInfo);
+  public sendFormInfo = () => {
+    // Object destructuring and spread syntax to separate questions from rest of state object
+    const { questions, ...formData } = this.state;
+    console.log(`Saving checkin response ${JSON.stringify(formData)}`);
+    CheckinBackend.saveData(formData)
+    .then((result) => {
+      if (!result) {
+        Alert.alert('You have already checked in today');
+      }
+    });
   }
 
   public dropdownHandleSelect(idx, value) {
@@ -184,12 +190,12 @@ class CheckinPage extends React.Component<IProps, IState> {
 
             <Button
               title="Set Question True"
-              onPress={() => { CheckinBackend.setQuestionUsage('How?', true); }}
+              onPress={() => { CheckinBackend.setQuestionActive('How?', true); }}
             />
 
             <Button
               title="Set Question False"
-              onPress={() => { CheckinBackend.setQuestionUsage('How?', false); }}
+              onPress={() => { CheckinBackend.setQuestionActive('How?', false); }}
               />
 
             <Button
