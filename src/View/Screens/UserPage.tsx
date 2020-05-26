@@ -59,8 +59,8 @@ export default class UserPage extends React.Component<IProps, object> {
       { value: 3, date: '2020-4-21' },
       { value: 4, date: '2020-4-25' },
       { value: 7, date: '2020-5-1' },
-      { value: 2, date: '2020-5-9' },
-      { value: 6, date: '2020-5-10' },
+      { value: 2, date: '2020-5-6' },
+      { value: 6, date: '2020-5-8' },
       { value: 10, date: '2020-5-11' },
     ];
 

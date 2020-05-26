@@ -47,6 +47,8 @@ class ChartModal extends React.Component<IProps, IState>  {
           <View
             style={{
               backgroundColor: 'blue',
+              borderTopLeftRadius: 5,
+              borderTopRightRadius: 5,
               height: MAX_HEIGHT * (value / this.maxValue),
               marginRight: dateDiff * 20,
               width: 10,
