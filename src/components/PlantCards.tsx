@@ -1,17 +1,19 @@
 import * as React from 'react';
-import { Modal, StyleSheet, Text, TouchableHighlight, View, ScrollView, Image, TouchableOpacity } from "react-native";
+import { Modal, StyleSheet, Text, TouchableHighlight, View, ScrollView, Image, TouchableOpacity, ImageSourcePropType } from "react-native";
+
+import { PlantImages } from '../../constants/Plants';
 
 interface IProps {
   modalTitle: string;
   transparent: boolean;
   animationType?: string;
   exit?: string;
-  image: any;
   data: any;
 }
   
 interface IState {
   modalVisible: boolean;
+  plantImage: any;
 }
 
 class PlantCards extends React.Component<IProps, IState> {
@@ -25,15 +27,49 @@ class PlantCards extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       modalVisible: false,
+      plantImage: PlantImages[this.props.modalTitle],
     }
   }
 
   public setModalVisible = (visible) => {
     this.setState({ modalVisible: visible });
   }
+
+  public changePlantImage = (name) => {
+    let newPlant: ImageSourcePropType = PlantImages[name];
+    this.setState( { plantImage: newPlant } );
+  }
   
   render() {  
     const { modalVisible } = this.state;
+
+    const dataArr = this.props.data.map((item, i, arr) => {
+
+      let itemImage: ImageSourcePropType = PlantImages[item.name];
+
+      return (
+        <View key={i}>
+          <View
+            style={{
+              backgroundColor: 'white',
+              width: 100,
+            }}
+          >
+            <TouchableOpacity
+            style={styles.openButton}
+            onPress={() => {
+              this.changePlantImage(item.name);
+            }}
+          >
+            <Image
+                source={itemImage}
+                style={styles.plantStyle}
+            />
+          </TouchableOpacity>
+          </View>
+        </View>
+      )
+    });
 
     return (
       <View style={styles.centeredView}>
@@ -52,7 +88,7 @@ class PlantCards extends React.Component<IProps, IState> {
                   }}
                 >
                   {
-                    this.props.data //Render the JSX in a ScrollView
+                    dataArr //Render the JSX in a ScrollView
                   }
                 </ScrollView>
               <TouchableHighlight
@@ -75,7 +111,7 @@ class PlantCards extends React.Component<IProps, IState> {
             }}
           >
             <Image
-                source={this.props.image}
+                source={this.state.plantImage}
                 style={styles.plantStyle}
             />
           </TouchableOpacity>

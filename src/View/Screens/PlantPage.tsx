@@ -38,20 +38,23 @@ export default class PlantPage extends React.Component<object, IState> {
       plantBody: [...PlantBodies],
       plantFooter: PlantFooters[0],
       plantHeader: PlantHeaders[0],
+      // hard coded arrays
       headerItems: [
-        { name: 'headerOne', price: 10 },
-        { name: 'headerTwo', price: 20 },
-        { name: 'headerThree', price: 30 },
+        { name: "Sunflower", price: 1.25 },
+        { name: "Carnation", price: 1.25 },
+        { name: "redRose", price: 1.25 }
       ],
       bodyItems: [
-        { name: 'bodyOne', price: 10 },
-        { name: 'bodyTwo', price: 20 },
-        { name: 'bodyThree', price: 30 },
+        { name: "Body", price: 1.25 },
+        { name: "Long Body", price: 2.5 },
+        { name: "Stem", price: 1.25 }
       ],
       footerItems: [
-        { name: 'footerOne', price: 10 },
-        { name: 'footerTwo', price: 20 },
-        { name: 'footerThree', price: 30 },
+        { name: "Clay", price: 1.25 },
+        { name: "Terracotta", price: 1.25 },
+        { name: "linedVase", price: 1.25 },
+        { name: "redPot", price: 1.25 },
+        { name: "standardPot", price: 1.25 }
       ],
     };
     // this.PlantController.getBody();
@@ -59,77 +62,16 @@ export default class PlantPage extends React.Component<object, IState> {
 
   public render() {
 
-    // hard coded arrays
-    const headerItems = [
-      { name: 'headerOne', price: 10 },
-      { name: 'headerTwo', price: 20 },
-      { name: 'headerThree', price: 30 },
-    ];
-
-    const headerData = headerItems.map((item, i, arr) => {
-      return (
-        <View key={i}>
-          <View
-            style={{
-              backgroundColor: 'blue',
-              width: 10,
-            }}
-          >
-          </View>
-        </View>
-      )
-    });
-
-    const bodyItems = [
-      { name: 'bodyOne', price: 10 },
-      { name: 'bodyTwo', price: 20 },
-      { name: 'bodyThree', price: 30 },
-    ];
-
-    const bodyData = bodyItems.map((item, i, arr) => {
-      return (
-        <View key={i}>
-          <View
-            style={{
-              backgroundColor: 'blue',
-              width: 10,
-            }}
-          >
-          </View>
-        </View>
-      )
-    });
-
-    const footerItems = [
-      { name: 'footerOne', price: 10 },
-      { name: 'footerTwo', price: 20 },
-      { name: 'footerThree', price: 30 },
-    ];
-
-    const footerData = headerItems.map((item, i, arr) => {
-      return (
-        <View key={i}>
-          <View
-            style={{
-              backgroundColor: 'blue',
-              width: 10,
-            }}
-          >
-          </View>
-        </View>
-      )
-    });
-
     return (
       <View style={styles.container}>
         <AppHeader title="Plant"/>
         <FlatList
           contentContainerStyle={styles.plantList}
           data={this.state.plantBody}
-          ListHeaderComponent={ this.renderPlantItem(this.state.plantHeader, styles.plantItem, headerData) }
-          ListFooterComponent={ this.renderPlantItem(this.state.plantFooter, styles.plantItem, footerData) }
+          ListHeaderComponent={ this.renderPlantItem(this.state.plantHeader, styles.plantItem, this.state.headerItems) }
+          ListFooterComponent={ this.renderPlantItem(this.state.plantFooter, styles.plantItem, this.state.footerItems) }
           renderItem={({ item }) => {
-            return this.renderPlantItem(item, styles.plantItem, bodyData);
+            return this.renderPlantItem(item, styles.plantItem, this.state.bodyItems);
           }}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -139,13 +81,12 @@ export default class PlantPage extends React.Component<object, IState> {
 
   private renderPlantItem(plantItem: IPlantItem, plantStyle: object, data: any) {
 
-    let itemImage: ImageSourcePropType = PlantImages[plantItem.name];
+    //let itemImage: ImageSourcePropType = PlantImages[plantItem.name];
 
     return (
       <PlantCards
         modalTitle={ plantItem.name }
         transparent={ true } 
-        image={ itemImage }
         data={ data }
       />
     );
