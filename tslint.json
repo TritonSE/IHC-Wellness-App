@@ -15,6 +15,7 @@
 		true,
 		"variables-before-functions"
 	],
-	"ter-arrow-parens": [true, "always"]
+	"ter-arrow-parens": [true, "always"],
+	"no-console": false
     }
 }

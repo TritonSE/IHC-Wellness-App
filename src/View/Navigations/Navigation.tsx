@@ -14,7 +14,7 @@ const HomeIconWithBadge = (props: any) => {
    * You should pass down the badgeCount in some other ways like context, redux, mobx or
    * event emitters.
    */
-  return <NavIcon {...props} badgeCount={3} />;
+  return <NavIcon {...props} />; // For now, no badgeCount
 };
 
 const getTabBarIcon = (route: any, _focused: boolean, tintColor: string | null) => {

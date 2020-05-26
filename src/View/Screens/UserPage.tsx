@@ -1,17 +1,21 @@
 import * as React from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import ProfileBackend from '../../Business/ProfileBackend';
-import AppHeader from '../../components/AppHeader';
-import ChartModal from '../../components/ChartModal';
+import { NavigationProp } from '@react-navigation/native';
 
-export interface IProps {
-  navigation: any;
+import { retrievePreviousCheckins } from '../../Business/ProfileBackend';
+import AppHeader from '../../components/AppHeader';
+import ChartModal, { IQueryDataPoint } from '../../components/ChartModal';
+
+interface IProps {
+  navigation: NavigationProp<{}>;
 }
 
 export default class UserPage extends React.Component<IProps, object> {
-  public componentDidMount() {
-    ProfileBackend.retrieveCheckinSet(30)
+  public constructor(props: IProps) {
+    super(props);
+
+    retrievePreviousCheckins(30)
       .then((value) => {
         // TODO use value in here
         console.log(JSON.stringify(value));
@@ -21,9 +25,7 @@ export default class UserPage extends React.Component<IProps, object> {
   }
 
   public render() {
-
-    // Hardcoded data for PoC
-    const data = [
+    const healthData: ReadonlyArray<IQueryDataPoint> = [
       { value: 50, date: '2020-4-8' },
       { value: 10, date: '2020-4-9' },
       { value: 40, date: '2020-4-10' },
@@ -36,27 +38,31 @@ export default class UserPage extends React.Component<IProps, object> {
       { value: 50, date: '2020-5-11' },
     ];
 
-    // Similar to the renderItem method in a FlatList
-    const columns = data.map((item, i, arr) => {
-      const { value, date } = item;
-      const dateDiff = (i === arr.length - 1) ? 0 : this.datesDiff(date, arr[i + 1].date);
-      const [year, month, day] = date.split('-');
-      const displayDate = `${month}/${day}`;
-      return (
-        <View key={i}>
-          <View
-            style={{
-              backgroundColor: 'blue',
-              height: value,
-              marginRight: dateDiff * 20,
-              width: 10,
-            }}
-          >
-          </View>
-          <Text>{displayDate}</Text>
-        </View>
-      );
-    });
+    const moodData: ReadonlyArray<IQueryDataPoint> = [
+      { value: 10, date: '2020-4-1' },
+      { value: 1, date: '2020-4-5' },
+      { value: 5, date: '2020-4-10' },
+      { value: 8, date: '2020-4-15' },
+      { value: 3, date: '2020-4-21' },
+      { value: 4, date: '2020-4-25' },
+      { value: 7, date: '2020-5-1' },
+      { value: 2, date: '2020-5-9' },
+      { value: 6, date: '2020-5-10' },
+      { value: 10, date: '2020-5-11' },
+    ];
+
+    const sleepData: ReadonlyArray<IQueryDataPoint> = [
+      { value: 10, date: '2020-4-1' },
+      { value: 1, date: '2020-4-5' },
+      { value: 5, date: '2020-4-10' },
+      { value: 8, date: '2020-4-15' },
+      { value: 3, date: '2020-4-21' },
+      { value: 4, date: '2020-4-25' },
+      { value: 7, date: '2020-5-1' },
+      { value: 2, date: '2020-5-9' },
+      { value: 6, date: '2020-5-10' },
+      { value: 10, date: '2020-5-11' },
+    ];
 
     return (
      <View style={styles.pageView}>
@@ -64,41 +70,21 @@ export default class UserPage extends React.Component<IProps, object> {
        <ScrollView>
           <ChartModal
             modalTitle="Health Data"
-            transparent={true}
-            columns={columns}
+            data={healthData}
           />
 
           <ChartModal
             modalTitle="Sleep Data"
-            transparent={true}
-            columns={columns}
+            data={sleepData}
           />
 
           <ChartModal
             modalTitle="Mood Data"
-            transparent={true}
-            columns={columns}
+            data={moodData}
           />
         </ScrollView>
      </View>
     );
-  }
-
-  /**
-   * Returns the difference in days between dates in 'YYYY-MM-DD' format
-   * @param date1 First date, earlier than or same as second date
-   * @param date2 Second date, later than or same as first date
-   */
-  private datesDiff(date1: string, date2: string) {
-    const dayLengthInMilliseconds = 24 * 60 * 60 * 1000;
-
-    const [year1, month1, day1] = date1.split('-').map(s => parseInt(s, 10));
-    const [year2, month2, day2] = date2.split('-').map(s => parseInt(s, 10));
-
-    const firstDate = new Date(year1, month1, day1).getTime();
-    const secondDate = new Date(year2, month2, day2).getTime();
-
-    return Math.round((secondDate - firstDate) / dayLengthInMilliseconds);
   }
 }
 

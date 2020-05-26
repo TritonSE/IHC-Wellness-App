@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { AsyncStorage } from 'react-native';
-import { bodies, footers, headers } from './itemProperties.tsx';
+
+// TODO replace with constants/Plants
+import { PlantBodies,  PlantFooters, PlantHeaders } from '../constants/Plants';
+// import { bodies, footers, headers } from './itemProperties.tsx';
 import StoreBackend from './StoreBackend.tsx';
 
 export interface IPlantItem{
@@ -13,39 +16,48 @@ export interface IPlantItem{
   available: boolean;
 }
 
-export interface IPlant{
-  header: IPlantItem[];
-  body: IPlantItem[][];
-  footer: IPlantItem[];
+// Note: an IPlant refers to a single plant
+export interface IPlant {
+  header: IPlantItem;
+  body: IPlantItem[];
+  footer: IPlantItem;
 }
 
-// tslint:disable: member-ordering
+/*
+TODO
+Finish implementing singleton logic by writing the constructor to get the initial plant array
+and get the instance of the StoreBackend, call the private member storeController
+Move data and operations involving owned items to StoreBackend
+Use .find() and .findIndex() to replace for loops,
+add index as a parameter to the callback if it is needed (prob shouldn't be needed though)
+*/
 export default class PlantBackend extends React.Component<object, object> {
   private static readonly PLANT_ARRAY_KEY = 'PlantArray';
-  private static readonly OWNED_ITEMS_KEY = 'owned';
   private static instance: PlantBackend | null = null;
+  // TODO lots of this.plantArray references, change to PlantBackend.plantArray
   private static plantArray;
+  private storeController;
+  // TODO move this to StoreBackend and change it to an object
   private static ownedArray;
 
   private constructor(props: {}) {
     super(props);
     console.log('PlantController created!');
-    AsyncStorage.getItem('owned').then((result) => {
-      console.log('The owned array is currently ' + result);
-      PlantBackend.ownedArray = [[],[],[]];
-    });
+
+    // sets the storeController
+    storeController = StoreBackend.getInstance();
+    console.log("owned array is " + storeController.getOwnedArray())
 
     AsyncStorage.getItem('PlantArray').then((result) => {
       if (result === null) {
         PlantBackend.plantArray = PlantBackend.createDefaultPlantArray();
-      }
-      else{
+      } else {
         PlantBackend.plantArray = result;
       }
+      console.log('plantArray ' + PlantBackend.plantArray);
     });
 
-    console.log('plantArray' + this.plantArray);
-    console.log('ownedArray' + this.ownedArray);
+
   }
 
   public static getInstance(): PlantBackend {
@@ -55,10 +67,12 @@ export default class PlantBackend extends React.Component<object, object> {
     return PlantBackend.instance;
   }
 
-  public addBody(plantIndex: number = 0, newBody: IPlantItem) {
+  public addBody(plantIndex: number = 0, newBody) {
     // TODO replace these for loops with Array.find() or Array.findIndex()
-        // loop through the body section of the ownedArray to find newBody
-    const item = this.ownedArray[ownedIndex].find( (itemToCheck) => {
+    // loop through the body section of the ownedArray to find newBody
+    const bodyIndex = 1
+    let tempOwnedArray = storeController.getOwnedArray();
+    const item = tempOwnedArray[bodyIndex].find( (itemToCheck) => {
       return itemToCheck.name === newBody.name;
     });
 
@@ -70,46 +84,55 @@ export default class PlantBackend extends React.Component<object, object> {
     // update item itself and dump it into ownedArray
     item.used++;
     item.available = item.owned > item.used;
-    this.ownedArray[ownedIndex][i] = item;
+    tempOwnedArray[bodyIndex][i] = item;
 
     // add this item to the end of the body array and dump it into plantArray
-    const currentPlant = this.plantArray[plantIndex];
+    const currentPlant = PlantBackend.plantArray[plantIndex];
     currentPlant.body.push(item);
-    this.plantArray[plantIndex] = currentPlant;
+    PlantBackend.plantArray[plantIndex] = currentPlant;
 
-    AsyncStorage.setItem('owned', JSON.stringify(this.ownedArray)).then(() => {
-      console.log("Successfully updated owned array");
-    });
-    AsyncStorage.setItem('PlantArray', JSON.stringify(this.plantArray)).then(() => {
+    storeController.updateOwnedArray(tempOwnedArray);
+    AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray)).then(() => {
       console.log("Successfully updated plant array");
     });
-
+    console.log("the new owned array is " + storeController.getOwnedArray());
     // returns the body of the plant and owned array
     return {
-      newBody: this.plantArray[plantIndex].body,
-      newOwned: this.ownedArray,
+      newBody: PlantBackend.plantArray[plantIndex].body,
+      newOwned: storeController.getOwnedArray,
     };
   }
 
+  // TODO plantIndex can be assumed to be same for new and old, so plantIndex == oldPlantIndex
+  // making oldPlantIndex unnecessary
   public changeBody(plantIndex: number = 0, oldBody:IPlantItem,
-                    oldPlantIndex: number , newBody:IPlantItem) {
+                    oldPlantBodyIndex: number , newBody:IPlantItem) {
     const ownedIndex = 1;
     let oldItem = null;
     let oldIndex = 0;
 
     // find oldItem for later update
-    for (let i = 0; i < this.ownedArray[ownedIndex].length; i ++) {
-      if (this.ownedArray[ownedIndex][i].name === oldBody.name) {
+    const tempOwnedArray = storeController.getOwnedArray();
+    oldItem = tempOwnedArray[ownedIndex].find( (element, index) => {
+      if (element.name === oldBody.name){
+        oldIndex = index;
+        return true;
+      }
+    })
+    /*
+    for (let i = 0; i < tempOwnedArray[ownedIndex].length; i ++) {
+      if (tempOwnedArray[ownedIndex][i].name === oldBody.name) {
         console.log('found old bodyItem');
-        oldItem = this.ownedArray[ownedIndex][i];
+        oldItem = tempOwnedArray[ownedIndex][i];
         oldIndex = i;
       }
     }
+    */
 
-    for (let i = 0; i < this.ownedArray[ownedIndex].length; i ++) {
-      if (this.ownedArray[ownedIndex][i].name === newBody.name) {
+    for (let i = 0; i < tempOwnedArray[ownedIndex].length; i ++) {
+      if (tempOwnedArray[ownedIndex][i].name === newBody.name) {
         console.log('found newBody');
-        item = this.ownedArray[ownedIndex][i];
+        item = tempOwnedArray[ownedIndex][i];
       }
 
       // check for availability
@@ -124,44 +147,42 @@ export default class PlantBackend extends React.Component<object, object> {
       oldItem.available = oldItem.owned > oldItem.used;
 
       console.log('swap');
-      this.ownedArray[ownedIndex][i] = item;
-      this.ownedArray[ownedIndex][oldIndex] = oldItem;
+      tempOwnedArray[ownedIndex][i] = item;
+      tempOwnedArray[ownedIndex][oldIndex] = oldItem;
 
       // update plantArray
-      const currentPlant = this.plantArray[plantIndex];
-      currentPlant.body[oldPlantIndex] = item;
-      this.plantArray[plantIndex] = currentPlant;
+      const currentPlant = PlantBackend.plantArray[plantIndex];
+      currentPlant.body[oldPlantBodyIndex] = item;
+      PlantBackend.plantArray[plantIndex] = currentPlant;
 
       // replace updated items into async
-      AsyncStorage.setItem('owned', JSON.stringify(this.ownedArray)).then(() => {
-        console.log('New item successfully updated in owned');
-      });
+      storeController.updateOwnedArray(tempOwnedArray);
       AsyncStorage.setItem('PlantArray', JSON.stringify(this.ownedArray)).then(() => {
         console.log('New item successfully updated in PlantArray');
       });
 
       // returns the new body array and owned array
       return {
-        newBody: this.plantArray[plantIndex].body,
-        newOwned: this.ownedArray,
+        newBody: PlantBackend.plantArray[plantIndex].body,
+        newOwned: storeController.getOwnedArray(),
       };
     }
   }
 
   // CHECK IF PLANT HAS BEEN CREATED
   public getHeader(plantIndex: number = 0) {
-    console.log('The plant header is: ' + this.plantArray[plantIndex].header);
-    return this.plantArray[plantIndex].header;
+    console.log('The plant header is: ' + PlantBackend.plantArray[plantIndex].header);
+    return PlantBackend.plantArray[plantIndex].header;
   }
 
   public getBody(plantIndex: number = 0) {
-    console.log('The plant body is: ' + this.plantArray[plantIndex].body);
-    return this.plantArray[plantIndex].body;
+    console.log('The plant body is: ' + PlantBackend.plantArray[plantIndex].body);
+    return PlantBackend.plantArray[plantIndex].body;
   }
 
   public getFooter(plantIndex: number = 0) {
-    console.log('The plant footer is: ' + this.plantArray[plantIndex].footer);
-    return this.plantArray[plantIndex].footer
+    console.log('The plant footer is: ' + PlantBackend.plantArray[plantIndex].footer);
+    return PlantBackend.plantArray[plantIndex].footer
   }
 
   public changeHeader(plantIndex: number = 0, oldHeader:IPlantItem,
@@ -175,20 +196,21 @@ export default class PlantBackend extends React.Component<object, object> {
     let oldIndex = 0;
 
     // find oldItem for later update
-    for (let i = 0; i < this.ownedArray[HEADER_INDEX].length; i ++) {
-      if (this.ownedArray[2][i].name === oldHeader.name) {
+    let tempOwnedArray = storeController.getOwnedArray();
+    for (let i = 0; i < tempOwnedArray[HEADER_INDEX].length; i ++) {
+      if (tempOwnedArray[HEADER_INDEX][i].name === oldHeader.name) {
         console.log('found old header');
-        oldItem = this.ownedArray[HEADER_INDEX][i];
+        oldItem = tempOwnedArray[HEADER_INDEX][i];
         oldIndex = i;
       }
     }
 
     // find new item
-    for (let i = 0; i < this.ownedArray[HEADER_INDEX].length; i ++) {
+    for (let i = 0; i < tempOwnedArray[HEADER_INDEX].length; i ++) {
       console.log(newHeader.name);
-      console.log(this.ownedArray[HEADER_INDEX][i].name);
-      if (this.ownedArray[HEADER_INDEX][i].name === newHeader.name) {
-        currentItem = this.ownedArray[HEADER_INDEX][i];
+      console.log(tempOwnedArray[HEADER_INDEX][i].name);
+      if (tempOwnedArray[HEADER_INDEX][i].name === newHeader.name) {
+        currentItem = tempOwnedArray[HEADER_INDEX][i];
         if (!currentItem.available) {
           console.log('You do not have enough of this header item.');
           return null;
@@ -200,18 +222,16 @@ export default class PlantBackend extends React.Component<object, object> {
         oldItem.available = oldItem.owned > oldItem.used;
 
         console.log('swap');
-        this.ownedArray[HEADER_INDEX][i] = currentItem;
-        this.ownedArray[HEADER_INDEX][oldIndex] = oldItem;
+        tempOwnedArray[HEADER_INDEX][i] = currentItem;
+        tempOwnedArray[HEADER_INDEX][oldIndex] = oldItem;
 
 
         // updates PlantArray
-        this.plantArray[plantIndex].header = currentItem;
+        PlantBackend.plantArray[plantIndex].header = currentItem;
 
         // replace updated items into async
-        AsyncStorage.setItem('owned', JSON.stringify(this.ownedArray)).then(() => {
-          console.log('Owned array successfully updated');
-        });
-        AsyncStorage.setItem('PlantArray', JSON.stringify(this.plantArray)).then(
+        storeController.updateOwnedArray(tempOwnedArray);
+        AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray)).then(
           () => {
             console.log('PlantArray array successfully updated');
           },
@@ -219,8 +239,8 @@ export default class PlantBackend extends React.Component<object, object> {
 
         // returns the new header and owned array
         return{
-          newHeader: this.plantArray[plantIndex].header,
-          newOwned: this.ownedArray,
+          newHeader: PlantBackend.plantArray[plantIndex].header,
+          newOwned: storeController.getOwnedArray(),
         };
 
       }
@@ -237,20 +257,21 @@ export default class PlantBackend extends React.Component<object, object> {
 
     // find oldItem for later update
     const ownedIndex = 0;
-    for (let i = 0; i < this.ownedArray[ownedIndex].length; i ++) {
-      if (this.ownedArray[ownedIndex][i].name === oldFooter.name) {
+    let tempOwnedArray = storeController.getOwnedArray();
+    for (let i = 0; i < tempOwnedArray[ownedIndex].length; i ++) {
+      if (tempOwnedArray[ownedIndex][i].name === oldFooter.name) {
         console.log('found old footer');
-        oldItem = this.ownedArray[ownedIndex][i];
+        oldItem = tempOwnedArray[ownedIndex][i];
         oldIndex = i;
       }
     }
 
     // find new item
-    for (let i = 0; i < this.ownedArray[ownedIndex].length; i ++) {
+    for (let i = 0; i < tempOwnedArray[ownedIndex].length; i ++) {
       console.log(newFooter.name);
-      console.log(this.ownedArray[ownedIndex][i].name);
-      if (this.ownedArray[ownedIndex][i].name === newFooter.name) {
-        currentItem = this.ownedArray[ownedIndex][i];
+      console.log(tempOwnedArray[ownedIndex][i].name);
+      if (tempOwnedArray[ownedIndex][i].name === newFooter.name) {
+        currentItem = tempOwnedArray[ownedIndex][i];
         if (!currentItem.available) {
           console.log('You do not have enough of this footer item.');
           return null;
@@ -262,27 +283,24 @@ export default class PlantBackend extends React.Component<object, object> {
         oldItem.available = oldItem.owned > oldItem.used;
 
         console.log('swap');
-        this.ownedArray[ownedIndex][i] = currentItem;
-        this.ownedArray[ownedIndex][oldIndex] = oldItem;
+        tempOwnedArray[ownedIndex][i] = currentItem;
+        tempOwnedArray[ownedIndex][oldIndex] = oldItem;
 
 
         // updates PlantArray
-        this.plantArray[plantIndex].footer = currentItem;
+        PlantBackend.plantArray[plantIndex].footer = currentItem;
 
         // replace updated items into async
-        AsyncStorage.setItem('owned', JSON.stringify(this.ownedArray)).then(() => {
-          console.log('Owned array successfully updated');
-        });
-
-        AsyncStorage.setItem('PlantArray', JSON.stringify(this.plantArray)).then(
+        storeController.updateOwnedArray(tempOwnedArray);
+        AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray)).then(
           () => {
             console.log('Plant array successfully updated');
           }
         );
 
         return{
-          newFooter: this.plantArray[plantIndex].footer,
-          newOwned: this.ownedArray,
+          newFooter: PlantBackend.plantArray[plantIndex].footer,
+          newOwned: storeController.getOwnedArray(),
         };
 
       }
@@ -309,6 +327,8 @@ export default class PlantBackend extends React.Component<object, object> {
     PlantBackend.ownedArray[1].push(bodies[0]);
     PlantBackend.ownedArray[2].push(headers[0]);
 
+    // TODO temp is not a descriptive variable name,
+    // something like defaultPlantArray would be better
     const temp = [defaultPlant];
     const stringifiedTemp = JSON.stringify(temp);
 
@@ -322,5 +342,3 @@ export default class PlantBackend extends React.Component<object, object> {
     return temp;
   }
 }
-
-// export default plantHelper;

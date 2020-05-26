@@ -3,29 +3,75 @@ import { AsyncStorage } from 'react-native';
 
 import { PlantBodies, PlantHeaders, PlantFooters, IStoreItem } from '../../constants/Plants';
 
-// Inherits name and price from IStoreItem
-export interface IOwnedItem extends IStoreItem {
+export interface IOwnedItem {
+  name: string;
   owned: number;
   used: number;
   available: boolean;
 }
 
+/*
+TODO
+Finish implementing singleton logic: in constructor load owned object
+Keep CRUD operations on owned object here, owned object will be a private static member
+Refactor createDefault to use .map() to create the owned arrays
+Replace for loops with functions like .find() and .findIndex()
+Rename non-descriptive variable names (item, value, temp etc.)
+*/
 export default class StoreBackend extends React.Component<object, object> {
-  private money: number = 0;
+  // TODO: a note about static members, in a non-static function the `this` keyword
+  // refers to the current instance of the object (the non-static instance) so you
+  // must use StoreBackend.money to access money. BUT, in a static method `this`
+  // refers to StoreBackend, the static class, so you can use either StoreBackend.money
+  // or this.money if you are inside of a static method. Just remember, static methods
+  // should be private helper functions, functions to be used for frontend should be
+  // public non-static so that frontend is forced to call getInstance() to use any logic in here
+  private static money: number = 0;
   /*
-  private ownedArrays: {
+  private ownedItems: {
   headers: IOwnedItem[],
   bodies: IOwnedItem[],
   footers: IOwnedItem[],
 } | null = null;
 */
-private ownedArray = [[], [], []];
+// TODO convert this to an object
+// As an array it is not clear which is headers, bodies and footers
+private static ownedArray = [[], [], []];
 
 private constructor(props: {}) {
   super(props);
 }
 
-public setMoney(amount: number) {
+public static getInstance(): StoreBackend {
+  if (!StoreBackend.instance) {
+    StoreBackend.instance = new StoreBackend({});
+  }
+  return StoreBackend.instance;
+}
+
+public getOwnedArray() {
+  console.log("CALLED")
+  return StoreBackend.ownedArray;
+}
+
+public updateOwnedArray(newOwnedArray) {
+  // updates member variable
+  StoreBackend.ownedArray = newOwnedArray;
+  // updates async storage
+  AsyncStorage.setItem('owned', JSON.stringify(newOwnedArray)).then(() => {
+    console.log("Successfully updated owned array");
+  });
+}
+
+// Note on public vs private methods: public methods will be used by frontend,
+// private methods are to avoid code duplication within backend logic
+// What public methods are needed are driven by what frontend/the user needs
+// So since the frontend does not need to directly set money, only add money
+// and spend money, setMoney should be private and methods like addMoney and
+// spendMoney should be public but use setMoney to avoid code duplication
+// TODO: make setMoney private, add functions addMoney() that increases money
+// and spendMoney() that decreases money, they'll use setMoney as a helper function
+private static setMoney(amount: number) {
   this.money = amount;
   AsyncStorage.setItem('Money', amount.toString()).then(() => {
     console.log('Successfully updated money');
@@ -33,7 +79,7 @@ public setMoney(amount: number) {
   return amount;
 }
 
-public createDefaultOwnedArrays(){
+private static createDefaultOwnedArrays(){
   // TODO refactor to use constants/Plants.ts instead of headers, bodies, footers
   // Below is an example of how to use the map higher order function to get an
   // IOwnedItem[] array from IStoreItem[] array
@@ -46,6 +92,8 @@ public createDefaultOwnedArrays(){
   //     available: false,
   //   };
   // });
+  // ownedPlantHeaders[0].owned = 1;
+  // ownedPlantHeaders[0].used = 1;
 
   // TODO replace all var keywords with let, const is even better if value does not change
   const item = [[],[],[]];
@@ -58,8 +106,8 @@ public createDefaultOwnedArrays(){
 
 // takes in an item and updates it and its owned and available fields in all
 // owned array in async
-public updateOwned(sectionIndex: number, item: IStoreItem ){
-  const indexOwnedArray = this.ownedArray[sectionIndex];
+public updateOwned(sectionIndex: number, item: IOwnedItem ){
+  const indexOwnedArray = StoreBackend.ownedArray[sectionIndex];
   let found = false;
 
   for (let i = 0; i < indexOwnedArray.length; i++) {
@@ -80,12 +128,12 @@ public updateOwned(sectionIndex: number, item: IStoreItem ){
     item.available = item.owned > item.used;
     indexOwnedArray.push(item);
   }
-  this.ownedArray[sectionIndex] = indexOwnedArray;
-  AsyncStorage.setItem('owned', JSON.stringify(this.ownedArray)).then(() => {
+  StoreBackend.ownedArray[sectionIndex] = indexOwnedArray;
+  AsyncStorage.setItem('owned', JSON.stringify(StoreBackend.ownedArray)).then(() => {
     console.log('Successfully updated owned array')
   });
 
-  return this.ownedArray;
+  return StoreBackend.ownedArray;
 }
 
 // TODO replace var with let, let that doesn't change with const, double == with triple ===
@@ -131,14 +179,16 @@ public updateOwned(sectionIndex: number, item: IStoreItem ){
 
 public async buyItem(item: string, section: string) {
   let newItem = null;
+  // TODO move this to the constructor
   // create owned array if doesn't exist already
-  if (ownedArray == null){
+  if (StoreBackend.ownedArray == null){
     console.log('created default owned array');
     StoreBackend.createDefaultOwnedArrays();
   }
 
   // add onto the previous array
-  // TODO figure out what happened to getAllItems
+  // TODO getAll is a code smell, access the owned array member instead
+  // TODO asyncValue is not a descriptive variable name, use fn f2 to rename variables like these
   const asyncValue = StoreBackend.getAllItems();
 
   let found = false;
@@ -209,6 +259,7 @@ public async getItemInfo(item, list){
 
 }
 
+// TODO remove this function after converting owned to an object
 public getListIndex (section:string){
   switch (section) {
     case 'footers':
@@ -220,5 +271,3 @@ public getListIndex (section:string){
   }
 }
 }
-
-//export default StoreBackend;
