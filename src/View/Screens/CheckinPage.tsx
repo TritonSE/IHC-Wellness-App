@@ -2,7 +2,9 @@ import * as React from 'react';
 import { Alert, Button, Dimensions, FlatList, Modal, SafeAreaView, ScrollView,
          StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
+import { ListItem } from 'react-native-elements';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 // TODO replace interface in this file with this import after PoC editing questions is ready
@@ -13,8 +15,9 @@ import CheckinSlider from '../../components/CheckinSlider';
 import CheckinTextInput from '../../components/CheckinTextInput';
 import CustomQuestion from '../../components/CustomQuestion';
 
-const width = Dimensions.get('window').width;
+const { height, width } = Dimensions.get('window');
 
+// TODO add optional members for sliders, e.g. minValue?: number; maxValue?: number;
 interface ICheckinQuestion {
   title: string;
   key: string;
@@ -32,6 +35,8 @@ interface IState {
   mood: number;
   journal: string;
   questions: ICheckinQuestion[];
+  // TODO give this a better name as another modal will be added
+  // e.g. isToggleQuestionsModalActive & isAddQuestionModalActive
   isVisible: boolean;
 }
 
@@ -63,6 +68,10 @@ class CheckinPage extends React.Component<IProps, IState> {
     };
   }
 
+  // TODO this can be replaced with .filter()
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
+  // Something like:
+  // getActiveQuestions(questions: ICheckinQuestion[]) { return questions.filter((q) => q.active) }
   /* for filtering, but makes ts lint angry as is due to ordering
   private filter () {
     for(let i = this.state.questions.length; i >= 0; i--) {
@@ -152,21 +161,36 @@ class CheckinPage extends React.Component<IProps, IState> {
               />
 
             <Modal visible={this.state.isVisible} animationType={'fade'} transparent={true}>
-              <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff', margin: 25 }}>
+              <SafeAreaView style={{ height, width, flex: 1, backgroundColor: 'white' }}>
                 <FlatList
                   data={this.state.questions}
-                  renderItem={({ item, index, separators }) => (
-                    <View style={{padding: 5}}>
-                      <TouchableOpacity
-                        onPress={ () => console.log('pressed')}
-                      >
-                        <Text>Press me: {item.title}</Text>
-                      </TouchableOpacity>
+                  extraData={this.state}
+                  renderItem={({ item, index }) => (
+                    <View style={{ padding: 5 }}>
+                      <ListItem
+                        style={{ width }}
+                        title={item.title}
+                        rightIcon={
+                              (<Ionicons
+                                name="md-checkmark-circle"
+                                size={32}
+                                color={this.state.questions[index].active ? 'green' : 'white'}
+                              />)
+                        }
+                        onPress={(e) => {
+                          this.setState((prevState) => {
+                            const { questions: newQuestions, ...otherData } = prevState;
+                            const pressedQuestion = newQuestions[index];
+                            pressedQuestion.active = !pressedQuestion.active;
+                            return { questions: newQuestions, ...otherData };
+                          });
+                        }}
+                      />
                     </View>
                   )}
                 />
                 <Button
-                  title="hide modal"
+                  title="Close"
                   onPress={() => this.setState({ isVisible: false })}
                 />
               </SafeAreaView>
@@ -187,6 +211,12 @@ class CheckinPage extends React.Component<IProps, IState> {
               onPress={() => { CheckinBackend.clearAllData(); }}
             />
 
+            {/*
+              TODO change this to a full page modal, similar to Toggle Questions model
+              Modal contents should have a TextInput for question title and 2 buttons:
+              Cancel (for closing modal and not adding question, should reset state of TextInput)
+              Add (for adding question to this.state.questions, also resets state of TextInput)
+            */}
             <Button
               title="Add Question"
               onPress={() => { CheckinBackend.addQuestion('How?', 'how'); }}
