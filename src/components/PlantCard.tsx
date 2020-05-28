@@ -1,20 +1,27 @@
 import * as React from 'react';
-import { Modal, StyleSheet, Text, TouchableHighlight, View, ScrollView, Image, TouchableOpacity } from "react-native";
+import { Image, ImageSourcePropType, Modal, ScrollView, StyleSheet, Text,
+         TouchableHighlight, TouchableOpacity, View } from "react-native";
 
+import { PlantImages } from '../../constants/Plants';
+import { IOwnedItem } from '../Business/StoreBackend';
+
+// TODO change data to be IOwnedItem[]
 interface IProps {
   modalTitle: string;
   transparent: boolean;
   animationType?: string;
   exit?: string;
-  image: any;
   data: any;
 }
   
 interface IState {
   modalVisible: boolean;
+  plantImage: any;
 }
 
-class PlantCards extends React.Component<IProps, IState> {
+// TODO indentation issues, make sure TSLint (Microsoft) and ESLint (Dirk Baeumer) are installed
+// then use Cmd . to get suggested fixes, "Fix all auto-fixable tslint failures" is best
+class PlantCard extends React.Component<IProps, IState> {
   
   public static defaultProps = {
     animationType: "slide",
@@ -25,15 +32,49 @@ class PlantCards extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       modalVisible: false,
+      plantImage: PlantImages[this.props.modalTitle],
     }
   }
 
   public setModalVisible = (visible) => {
     this.setState({ modalVisible: visible });
   }
+
+  public changePlantImage = (name) => {
+    let newPlant: ImageSourcePropType = PlantImages[name];
+    this.setState( { plantImage: newPlant } );
+  }
   
   render() {  
     const { modalVisible } = this.state;
+
+    const dataArr = this.props.data.map((item, i, arr) => {
+
+      let itemImage: ImageSourcePropType = PlantImages[item.name];
+
+      return (
+        <View key={i}>
+          <View
+            style={{
+              backgroundColor: 'white',
+              width: 100,
+            }}
+          >
+            <TouchableOpacity
+            style={styles.openButton}
+            onPress={() => {
+              this.changePlantImage(item.name);
+            }}
+          >
+            <Image
+                source={itemImage}
+                style={styles.plantStyle}
+            />
+          </TouchableOpacity>
+          </View>
+        </View>
+      )
+    });
 
     return (
       <View style={styles.centeredView}>
@@ -52,7 +93,7 @@ class PlantCards extends React.Component<IProps, IState> {
                   }}
                 >
                   {
-                    this.props.data //Render the JSX in a ScrollView
+                    dataArr // Render the JSX in a ScrollView
                   }
                 </ScrollView>
               <TouchableHighlight
@@ -75,7 +116,7 @@ class PlantCards extends React.Component<IProps, IState> {
             }}
           >
             <Image
-                source={this.props.image}
+                source={this.state.plantImage}
                 style={styles.plantStyle}
             />
           </TouchableOpacity>
@@ -86,8 +127,6 @@ class PlantCards extends React.Component<IProps, IState> {
   }
 
 }
-
-export default PlantCards;
 
 const styles = StyleSheet.create({
     centeredView: {
@@ -135,3 +174,5 @@ const styles = StyleSheet.create({
       height: 100,
     }
   });
+
+export default PlantCard;

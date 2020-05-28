@@ -1,9 +1,9 @@
 import { AsyncStorage } from 'react-native';
 
+import { DefaultQuestions, ICheckinQuestion } from '../../constants/Questions'
 import { getCurrentDate, isUserCheckedIn } from './ProfileBackend';
 // TODO this interface will be moved to constants/Questions once frontend has an editing PoC
-import { ICheckinQuestion } from '../View/Screens/CheckinPage';
-import { DefaultQuestions } from '../../constants/Questions'
+// import { ICheckinQuestion } from '../View/Screens/CheckinPage';
 
 /*
 TODO
@@ -91,13 +91,15 @@ const CheckinBackend = {
   // TODO this function will still be needed in the MVVM model, but add
   // the questions array parameter and return the updated array and the promise
   // it will be saved to storage
-  addQuestion: async (questionArray: IcheckinQuestion[], question: string, key: string)=>{
-    let updatedQuestionArray;
+  addQuestion: async (questionArray: ICheckinQuestion[], question: string, key: string)=>{
+    let updatedQuestionArray: ICheckinQuestion[];
     if(questionArray == null){
       updatedQuestionArray = [];
+    } else {
+      updatedQuestionArray = [...questionArray];
     }
     // creates an object of the question
-    const questionObject = {
+    const questionObject: ICheckinQuestion = {
       question: question,
       used: false,
       key: key,
@@ -114,7 +116,7 @@ const CheckinBackend = {
   storeAllQuestions: (questionArray: ICheckinQuestion[]) => {
     const promise = AsyncStorage.setItem('questions', JSON.stringify(questionArray));
     return promise;
-  }
+  },
 
   // TODO this function might be unnecessary in the MVVM pattern where CheckinPage
   // handles setting questions to be active or not. Ask Bobby, but the needed
@@ -181,7 +183,7 @@ const CheckinBackend = {
     console.log(matchingQuestion);
     return matchingQuestion;
 
-  }
+  },
 
 };
 

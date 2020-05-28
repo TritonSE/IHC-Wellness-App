@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Button, Dimensions, FlatList, ImageSourcePropType, StyleSheet, View } from 'react-native';
+import { Button, Dimensions, FlatList, StyleSheet, View } from 'react-native';
 
-import { PlantBodies, PlantFooters, PlantHeaders,
-         PlantImages } from '../../../constants/Plants';
+import { PlantBodies, PlantFooters, PlantHeaders } from '../../../constants/Plants';
 import PlantBackend, { IPlantItem } from '../../Business/PlantBackend';
+import { IOwnedItem } from '../../Business/StoreBackend';
 import AppHeader from '../../components/AppHeader';
 import PlantCard from '../../components/PlantCard';
 
@@ -11,9 +11,11 @@ interface IState {
   plantBody: IPlantItem[];
   plantFooter: IPlantItem;
   plantHeader: IPlantItem;
-  headerItems: IPlantItem[];
-  bodyItems: IPlantItem[];
-  footerItems: IPlantItem[];
+
+  // Hardcoded values for owned items, will be replaced with backend calls
+  headerItems: IOwnedItem[];
+  bodyItems: IOwnedItem[];
+  footerItems: IOwnedItem[];
 }
 
 const width = Dimensions.get('window').width;
@@ -30,102 +32,36 @@ export default class PlantPage extends React.Component<object, IState> {
     this.plantController = PlantBackend.getInstance();
     this.state = {
       // TODO clean backend functions and uncomment these
-      // plantBody: PlantBackend.getBody(0),
-      // plantFooter: PlantBackend.getFooter(0),
-      // plantHeader: PlantBackend.getHeader(0),
+      // plantBody: this.plantController.getBody(),
+      // plantFooter: this.plantController.getFooter(),
+      // plantHeader: this.plantController.getHeader(),
       plantBody: [...PlantBodies],
       plantFooter: PlantFooters[0],
       plantHeader: PlantHeaders[0],
-      // TODO remove prices here, only name is needed for rendering
-      // so IPlantItem only has the name field
+
+      // hard coded arrays
       headerItems: [
-        { name: 'headerOne', price: 10 },
-        { name: 'headerTwo', price: 20 },
-        { name: 'headerThree', price: 30 },
+        { name: "Sunflower", owned: 5, used: 3, available: true },
+        { name: "Carnation", owned: 5, used: 3, available: true },
+        { name: "redRose", owned: 5, used: 3, available: true }
       ],
       bodyItems: [
-        { name: 'bodyOne', price: 10 },
-        { name: 'bodyTwo', price: 20 },
-        { name: 'bodyThree', price: 30 },
+        { name: "Body", owned: 5, used: 3, available: true },
+        { name: "Long Body", owned: 5, used: 3, available: true },
+        { name: "Stem", owned: 5, used: 3, available: true }
       ],
       footerItems: [
-        { name: 'footerOne', price: 10 },
-        { name: 'footerTwo', price: 20 },
-        { name: 'footerThree', price: 30 },
+        { name: "Clay", owned: 5, used: 3, available: true },
+        { name: "Terracotta", owned: 5, used: 3, available: true },
+        { name: "linedVase", owned: 5, used: 3, available: true },
+        { name: "redPot", owned: 5, used: 3, available: true },
+        { name: "standardPot", owned: 5, used: 3, available: true }
       ],
     };
     // this.plantController.getBody();
   }
 
-  public async componentDidMount() {
-    // TODO componentDidMount can be async, if any async operations aren't
-    //
-    // await this.PlantController.getInitialValues();
-    // this.setState();
-  }
-
   public render() {
-
-    // hard coded arrays
-    const headerItems = [
-      { name: 'headerOne', price: 10 },
-      { name: 'headerTwo', price: 20 },
-      { name: 'headerThree', price: 30 },
-    ];
-
-    const headerData = headerItems.map((item, i, arr) => {
-      return (
-        <View key={i}>
-          <View
-            style={{
-              backgroundColor: 'blue',
-              width: 10,
-            }}
-          >
-          </View>
-        </View>
-      )
-    });
-
-    const bodyItems = [
-      { name: 'bodyOne', price: 10 },
-      { name: 'bodyTwo', price: 20 },
-      { name: 'bodyThree', price: 30 },
-    ];
-
-    const bodyData = bodyItems.map((item, i, arr) => {
-      return (
-        <View key={i}>
-          <View
-            style={{
-              backgroundColor: 'blue',
-              width: 10,
-            }}
-          >
-          </View>
-        </View>
-      )
-    });
-
-    const footerItems = [
-      { name: 'footerOne', price: 10 },
-      { name: 'footerTwo', price: 20 },
-      { name: 'footerThree', price: 30 },
-    ];
-
-    const footerData = headerItems.map((item, i, arr) => {
-      return (
-        <View key={i}>
-          <View
-            style={{
-              backgroundColor: 'blue',
-              width: 10,
-            }}
-          >
-          </View>
-        </View>
-      )
-    });
 
     return (
       <View style={styles.container}>
@@ -133,10 +69,10 @@ export default class PlantPage extends React.Component<object, IState> {
         <FlatList
           contentContainerStyle={styles.plantList}
           data={this.state.plantBody}
-          ListHeaderComponent={ this.renderPlantItem(this.state.plantHeader, styles.plantItem, headerData) }
-          ListFooterComponent={ this.renderPlantItem(this.state.plantFooter, styles.plantItem, footerData) }
+          ListHeaderComponent={this.renderPlantItem(this.state.plantHeader, this.state.headerItems)}
+          ListFooterComponent={this.renderPlantItem(this.state.plantFooter, this.state.footerItems)}
           renderItem={({ item }) => {
-            return this.renderPlantItem(item, styles.plantItem, bodyData);
+            return this.renderPlantItem(item, this.state.bodyItems);
           }}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -148,15 +84,11 @@ export default class PlantPage extends React.Component<object, IState> {
     );
   }
 
-  private renderPlantItem(plantItem: IPlantItem, plantStyle: object, data: any) {
-    // TODO const is preferred to let in cases where the value does not change
-    let itemImage: ImageSourcePropType = PlantImages[plantItem.name];
-
+  private renderPlantItem(plantItem: IPlantItem, data: any) {
     return (
       <PlantCard
         modalTitle={ plantItem.name }
         transparent={ true }
-        image={ itemImage }
         data={ data }
       />
     );
@@ -180,5 +112,5 @@ const styles = StyleSheet.create({
   plantList: {
     width,
     alignItems: 'center',
-  }
+  },
 });
