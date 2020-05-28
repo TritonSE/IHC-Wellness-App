@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { Alert, Button, Dimensions, FlatList, ScrollView, StyleSheet, View } from 'react-native';
+import { Button, Dimensions, FlatList, Modal, ScrollView, StyleSheet, Text, TouchableOpacity  , View, SafeAreaView } from 'react-native';
 
-import ModalDropdown from 'react-native-modal-dropdown';
 import { NavigationProp } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import ModalDropdown from 'react-native-modal-dropdown';
 
 import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
 import CheckinSlider from '../../components/CheckinSlider';
 import CheckinTextInput from '../../components/CheckinTextInput';
-import CustomQuestion from '../../components/CustomQuestion'
+import CustomQuestion from '../../components/CustomQuestion';
 
 const { height, width } = Dimensions.get('window');
 
@@ -30,6 +30,7 @@ interface IState {
   mood: number;
   journal: string;
   questions: ICheckinQuestion[];
+  isVisible: boolean;
 }
 
 class CheckinPage extends React.Component<IProps, IState> {
@@ -48,11 +49,26 @@ class CheckinPage extends React.Component<IProps, IState> {
     this.state = {
       health: 5,
       hoursOfSleep: 8,
-      mood: 1,
+      isVisible: false,
       journal: '',
-      questions: []
+      mood: 1,
+      questions: [{ title: 'how healthy...', key: '0', active: true, type: 'slider' },
+                  { title: 'hours of sleep...', key: '1', active: true, type: 'slider' },
+                  { title: 'happiness', key: '2', active: true, type: 'slider' },
+                  { title: 'journal', key: '3', active: true, type: 'slider' },
+                  { title: 'custom q', key: 'placeholder custom q', active: true, type: 'slider' }],
     };
   }
+
+  /* 
+  /* for filtering, but makes ts lint angry as is due to ordering
+  private filter () {
+    for(let i = this.state.questions.length; i >= 0; i--) {
+      if(!this.state.questions[i].active) {
+        console.log('removing');
+      }
+    }
+  } */
 
   public componentWillUnmount() {
     console.log('As a screen this component never unmounts, this is a weird scenario');
@@ -64,10 +80,6 @@ class CheckinPage extends React.Component<IProps, IState> {
     const formInfo = Object.assign({}, this.state);
     console.log(`Saving checkin response ${JSON.stringify(formInfo)}`);
     CheckinBackend.saveData(formInfo);
-  }
-
-  public dropDownSelect(idx, value) {
-    // method removed during merge, remake
   }
 
   // TODO: KeyboardAvoidingView did not work
@@ -82,10 +94,6 @@ class CheckinPage extends React.Component<IProps, IState> {
         >
           {/* TODO: Replace with FlatList, same style but dynamic content */}
           <ScrollView style={styles.questionWidth}>
-          <ModalDropdown 
-                options={this.state.questions}
-                onSelect = {(idx, value) => this.dropDownOnSelect(idx, value)}
-          />
 
             <CheckinSlider
               title="How healthy are you feeling today?"
@@ -95,7 +103,6 @@ class CheckinPage extends React.Component<IProps, IState> {
               value={this.state.health}
               onSlidingComplete={(val) => this.setState({ health: val })}
             />
-
 
               <CheckinSlider
                 title="How many hours of sleep did you get last night?"
@@ -113,9 +120,9 @@ class CheckinPage extends React.Component<IProps, IState> {
                 maxValue={1}
                 value={this.state.mood}
                 onSlidingComplete={(val) => this.setState({ mood: val })}
-              />  
-      
-              <CheckinTextInput 
+              />
+
+              <CheckinTextInput
                 style={styles.textInputs}
                 title="Journal Entry"
                 titleColor="#000000"
@@ -130,7 +137,7 @@ class CheckinPage extends React.Component<IProps, IState> {
 
               <Button
                 title="Add Custom Question"
-                onPress={()=>{this.state.questions.push('new custom question')}}
+                onPress={() => {this.state.questions.push({ title: 'test', key: 'key', active: true, type: 'text' }); }}
               />
 
               <Button
@@ -138,20 +145,30 @@ class CheckinPage extends React.Component<IProps, IState> {
                 onPress={this.sendFormInfo}
               />
 
-            <CheckinTextInput
-              style={styles.textInputs}
-              title="Journal Entry"
-              titleColor="#000000"
-              multiline={true}
-              autocapital="none"
-              underlineColor="transparent"
-              finalText={this.state.journal}
-              onChangeText={(val) => this.setState({ journal: val })}
-            />
+            <Modal visible={this.state.isVisible} animationType={'fade'} transparent={true}>
+              <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff', margin: 25 }}>
+                <FlatList
+                  data={this.state.questions}
+                  renderItem={({ item, index, separators }) => (
+                    <View style={{padding: 5}}>
+                      <TouchableOpacity
+                        onPress={ () => console.log('pressed')}
+                      >
+                        <Text>Press me: {item.title}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                />
+                <Button
+                  title="hide modal"
+                  onPress={() => this.setState({ isVisible: false })}
+                />
+              </SafeAreaView>
+            </Modal>
 
             <Button
-              title="Submit"
-              onPress={this.sendFormInfo}
+              title="Toggle Questions"
+              onPress={() => this.setState({ isVisible: true })}
             />
 
             <Button
