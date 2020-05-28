@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dimensions, FlatList, ImageSourcePropType, StyleSheet, View } from 'react-native';
+import { Button, Dimensions, FlatList, ImageSourcePropType, StyleSheet, View } from 'react-native';
 
 import { PlantBodies, PlantFooters, PlantHeaders,
          PlantImages } from '../../../constants/Plants';
@@ -140,6 +140,10 @@ export default class PlantPage extends React.Component<object, IState> {
           }}
           keyExtractor={(item, index) => index.toString()}
         />
+        <Button
+          title="Add Body"
+          onPress={() => { PlantBackend.getInstance().addBody(0, {name:"long"}); }}
+        />
      </View>
     );
   }
@@ -151,7 +155,7 @@ export default class PlantPage extends React.Component<object, IState> {
     return (
       <PlantCard
         modalTitle={ plantItem.name }
-        transparent={ true } 
+        transparent={ true }
         image={ itemImage }
         data={ data }
       />
