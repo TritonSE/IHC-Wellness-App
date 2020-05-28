@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { NavigationProp } from '@react-navigation/native';
 
