@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Button, Dimensions, FlatList, Modal, ScrollView, StyleSheet, Text, TouchableOpacity  , View, SafeAreaView } from 'react-native';
+import { Button, Dimensions, FlatList, Modal, SafeAreaView, ScrollView, StyleSheet, Text  , TouchableOpacity, View, TextInput } from 'react-native';
 
 import { NavigationProp } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import ModalDropdown from 'react-native-modal-dropdown';
+import reactNativeModalDropdown from 'react-native-modal-dropdown';
 
 // TODO replace interface in this file with this import after PoC editing questions is ready
 // import { ICheckinQuestion } from '../../../constants/Questions';
@@ -33,6 +33,8 @@ interface IState {
   journal: string;
   questions: ICheckinQuestion[];
   isVisible: boolean;
+  addQuestionsIsVisible: boolean;
+  customQuestionText: string;
 }
 
 // TODO these hardcoded values are to test the frontend behavior
@@ -61,6 +63,8 @@ class CheckinPage extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
+      addQuestionsIsVisible: false,
+      customQuestionText: '',
       health: 5,
       hoursOfSleep: 8,
       isVisible: false,
@@ -69,20 +73,16 @@ class CheckinPage extends React.Component<IProps, IState> {
       questions: [{ title: 'how healthy...', key: '0', active: true, type: 'slider' },
                   { title: 'hours of sleep...', key: '1', active: true, type: 'slider' },
                   { title: 'happiness', key: '2', active: true, type: 'slider' },
+<<<<<<< HEAD
                   { title: 'journal', key: '3', active: true, type: 'slider' },
                   { title: 'custom q', key: 'placeholder custom q', active: true, type: 'slider' }],
+=======
+                  { title: 'journal', key: '3', active: true, type: 'slider' }]
+>>>>>>> d3d5e85e78011b2bf43ce7fc6ef9a9c27200ead3
     };
-  }
 
-  /* 
-  /* for filtering, but makes ts lint angry as is due to ordering
-  private filter () {
-    for(let i = this.state.questions.length; i >= 0; i--) {
-      if(!this.state.questions[i].active) {
-        console.log('removing');
-      }
-    }
-  } */
+    this.checkActiveStatus = this.checkActiveStatus.bind(this)
+  }
 
   public componentWillUnmount() {
     console.log('As a screen this component never unmounts, this is a weird scenario');
@@ -114,6 +114,7 @@ class CheckinPage extends React.Component<IProps, IState> {
         >
           {/* TODO: Replace with FlatList, same style but in contentContainerStyle prop */}
           <ScrollView style={styles.questionWidth}>
+<<<<<<< HEAD
 
             <CheckinSlider
               title="How healthy are you feeling today?"
@@ -163,18 +164,68 @@ class CheckinPage extends React.Component<IProps, IState> {
               <Button
                 title="Submit"
                 onPress={this.sendFormInfo}
+=======
+            <FlatList
+                data={this.state.questions}
+                renderItem={({ item }) => {
+                  if (item.title == 'how healthy...') {
+                    return <CheckinSlider
+                      title="How healthy are you feeling today?"
+                      step={0.1}
+                      minValue={0}
+                      maxValue={10}
+                      value={this.state.health}
+                      onSlidingComplete={(val) => this.setState({ health: val })}
+                    />
+                  } else if (item.title == 'hours of sleep...') {
+                    return <CheckinSlider
+                    title="How many hours of sleep did you get last night?"
+                    step={0.1}
+                    minValue={0}
+                    maxValue={10}
+                    value={this.state.hoursOfSleep}
+                    onSlidingComplete={(val) => this.setState({ hoursOfSleep: val })}
+                  />
+                  } else if (item.title == 'happiness') {
+                    return <CheckinSlider
+                    title="Are you happy?"
+                    step={0.01}
+                    minValue={0}
+                    maxValue={1}
+                    value={this.state.mood}
+                    onSlidingComplete={(val) => this.setState({ mood: val })}
+                  />
+                  } else if (item.title == 'journal') {
+                    return <CheckinTextInput
+                    style={styles.textInputs}
+                    title="Journal Entry"
+                    titleColor="#000000"
+                    multiline={true}
+                    autocapital="none"
+                    underlineColor="transparent"
+                    finalText={this.state.journal}
+                    onChangeText={(val) => this.setState({ journal: val })}
+                  />
+                  } else {
+                    return <CustomQuestion />
+                  }
+                }}
+                extraData={this.state}
+>>>>>>> d3d5e85e78011b2bf43ce7fc6ef9a9c27200ead3
               />
 
-            <Modal visible={this.state.isVisible} animationType={'fade'} transparent={true}>
+<Modal visible={this.state.isVisible} animationType={'fade'} transparent={true}>
               <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff', margin: 25 }}>
                 <FlatList
                   data={this.state.questions}
                   renderItem={({ item, index, separators }) => (
-                    <View style={{padding: 5}}>
+                    <View style={{ padding: 5 }}>
                       <TouchableOpacity
-                        onPress={ () => console.log('pressed')}
+                        onPress={ () => {
+                          this.state.questions[index].active =
+                          !this.state.questions[index].active; }}
                       >
-                        <Text>Press me: {item.title}</Text>
+                        <Text style={{backgroundColor: this.state.questions[index].active?'green':'red'}}>Question is currently {this.state.questions[index].active.toString()}</Text>
                       </TouchableOpacity>
                     </View>
                   )}
@@ -186,9 +237,49 @@ class CheckinPage extends React.Component<IProps, IState> {
               </SafeAreaView>
             </Modal>
 
-            <Button
-              title="Toggle Questions"
-              onPress={() => this.setState({ isVisible: true })}
+            <Modal
+              visible={this.state.addQuestionsIsVisible} animationType={'fade'} transparent={true}>
+              <SafeAreaView style={{flex:1, backgroundColor: '#ffffff', margin: 25, justifyContent: 'center' }}>
+                <TextInput
+                  style={{ borderColor: 'black', borderWidth: 1 }}
+                  placeholder={'Add q here'}
+                  onChangeText={ text =>
+                    {this.setState({ customQuestionText: text })} }
+                />
+                <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                  <Button
+                    title="Add"
+                    onPress={ () => {
+                      this.setState({ addQuestionsIsVisible: false })
+                      this.state.questions.push(
+                        { title: 'test', key: 'key', active: true, type: 'text' });}}
+                  />
+                  <Button
+                    title="Cancel"
+                    onPress={ () => this.setState({ addQuestionsIsVisible: false })}
+                  />
+                </View>
+              </SafeAreaView>
+            </Modal>
+
+              <Button
+                title="Add Custom Question"
+                onPress={() => this.setState({ addQuestionsIsVisible: true })}
+              />
+
+              <Button
+                title="Toggle Questions"
+                onPress={() => this.setState({ isVisible: true })}
+              />
+
+              <Button
+                title="Submit"
+                onPress={this.sendFormInfo}
+              />
+
+            <Button 
+              title="check active questions for debugging"
+              onPress={() => console.log(this.filter())}
             />
 
             <Button
@@ -235,6 +326,20 @@ class CheckinPage extends React.Component<IProps, IState> {
       </View>
     );
   }
+
+  // for filtering, but makes ts lint angry as is due to ordering
+  private filter () {
+    const activeQuestions = [];
+    for (let i = this.state.questions.length - 1; i >= 0; i--) {
+      if (this.state.questions[i].active) {
+        activeQuestions.push(this.state.questions[i]);
+      }
+    }
+
+    return activeQuestions;
+  }
+
+  private checkActiveStatus(index: number) {return this.state.questions[index].active;}
 }
 
 const styles = StyleSheet.create({
