@@ -1,9 +1,18 @@
 import * as React from 'react';
+<<<<<<< Updated upstream
 import { Dimensions, FlatList, ImageSourcePropType, StyleSheet, View } from 'react-native';
+=======
+import { Dimensions, FlatList, ImageSourcePropType, Image, StyleSheet, View, Alert, Text } from 'react-native';
+>>>>>>> Stashed changes
 
 import { PlantBodies, PlantFooters, PlantHeaders,
          PlantImages } from '../../../constants/Plants';
+<<<<<<< Updated upstream
 import PlantBackend, { IPlantItem } from '../../Business/PlantBackend';
+=======
+import { IOwnedItem } from '../../Business/StoreBackend';
+
+>>>>>>> Stashed changes
 import AppHeader from '../../components/AppHeader';
 import PlantCard from '../../components/PlantCard';
 
@@ -70,6 +79,24 @@ export default class PlantPage extends React.Component<object, IState> {
     // this.setState();
   }
 
+  public swapHeaderPlant(plant: IPlantItem) {
+    this.setState({
+      
+    })
+  }
+
+  public swapBodyPlant(index: number, plant: IPlantItem) {
+    this.setState({
+      
+    })
+  }
+
+  public swapFooterPlant(plant: IPlantItem) {
+    this.setState({
+      
+    })
+  }
+
   public render() {
 
     return (
@@ -78,10 +105,10 @@ export default class PlantPage extends React.Component<object, IState> {
         <FlatList
           contentContainerStyle={styles.plantList}
           data={this.state.plantBody}
-          ListHeaderComponent={ this.renderPlantItem(this.state.plantHeader, styles.plantItem, this.state.headerItems) }
+          ListHeaderComponent={ this.renderPlantItem(this.state.plantHeader, styles.plantItem, this.state.headerItems, "header") }
           ListFooterComponent={ this.renderPlantItem(this.state.plantFooter, styles.plantItem, this.state.footerItems) }
-          renderItem={({ item }) => {
-            return this.renderPlantItem(item, styles.plantItem, this.state.bodyItems);
+          renderItem={({ item, index }) => {
+            return this.renderPlantItem(item, styles.plantItem, this.state.bodyItems, index);
           }}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -89,6 +116,7 @@ export default class PlantPage extends React.Component<object, IState> {
     );
   }
 
+<<<<<<< Updated upstream
   private renderPlantItem(plantItem: IPlantItem, plantStyle: object, data: any) {
 <<<<<<< HEAD
 
@@ -97,12 +125,21 @@ export default class PlantPage extends React.Component<object, IState> {
     // TODO const is preferred to let in cases where the value does not change
     let itemImage: ImageSourcePropType = PlantImages[plantItem.name];
 >>>>>>> origin/master
+=======
+  private renderPlantItem(plantItem: IPlantItem, plantStyle: object, data: any, section: string, index?: number) {
+
+    //let itemImage: ImageSourcePropType = PlantImages[plantItem.name];
+    let swapHandler = section === "header" ? (swapItem: IOwnedItem) => this.swapHeaderPlant(plantItem)
+      : section === "bodies" ? () => this.swapBodyPlant(index, plantItem)
+      : () => this.swapFooterPlant(plantItem)
+>>>>>>> Stashed changes
 
     return (
       <PlantCard
         modalTitle={ plantItem.name }
         transparent={ true } 
         data={ data }
+        swapPlant={(plant) => this.swapPlant(index, plant)}
       />
     );
   }

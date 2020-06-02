@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { Modal, StyleSheet, Text, TouchableHighlight, View, ScrollView, Image, TouchableOpacity, ImageSourcePropType } from "react-native";
 
-import { PlantImages } from '../../constants/Plants';
+import { IPlantItem,
+  PlantBodies, PlantFooters, PlantHeaders,
+  PlantImages } from '../../constants/Plants';
 
 interface IProps {
   modalTitle: string;
@@ -9,6 +11,7 @@ interface IProps {
   animationType?: string;
   exit?: string;
   data: any;
+  swapPlant: (plant: IPlantItem) => void;
 }
   
 interface IState {
@@ -58,7 +61,8 @@ class PlantCards extends React.Component<IProps, IState> {
             <TouchableOpacity
             style={styles.openButton}
             onPress={() => {
-              this.changePlantImage(item.name);
+              //this.changePlantImage(item.name);
+              this.props.swapPlant(item)
             }}
           >
             <Image
