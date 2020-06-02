@@ -1,72 +1,65 @@
-import { Alert, AsyncStorage } from 'react-native';
+import { AsyncStorage } from 'react-native';
 
-import CheckinBackend from './CheckinBackend.tsx';
+export const retrievePreviousCheckins = async (numDays: number) => {
+  const dateSet = await retrieveDates(numDays);
 
-const ProfileBackend = {
-
-  // CHECKIN LOGIC
-  saveData: async (obj: any) => {
-    const date = CheckinBackend.getDate();
-    // checks if person already checked in today
-    const data = await CheckinBackend.retrieveData(date);
-    if (data === 'error' || data != null) {
-      Alert.alert('You have already checked in today');
-    } else {// adds new information to storage
-      try {
-        let checkInData = obj;
-        await AsyncStorage.setItem(date, JSON.stringify(checkInData));
-        CheckinBackend.updateDates(date);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-  },
-
-  retrieveDataSet: async (numDays: number) => {
-    const dateSet = await ProfileBackend.retrieveDates(numDays);
-    let dates;
-    await AsyncStorage.multiGet(dateSet, (err, result) => {
-      dates = result;
+  let dates = null;
+  await AsyncStorage.multiGet(dateSet, (err, result) => {
+    if (err || !result) return null;
+    dates = result.map((checkin) => {
+      const [date, response] = checkin;
+      return { date, response };
     });
-    console.log(dates);
-    return dates;
-  },
+  });
 
-  getAllDates: async ()=>{
-    const regex = /^([0-9]{4}-[0-9]{2}-[0-9]{2})$/;
-    let dates = await AsyncStorage.getAllKeys();
-    let acceptedKeys = [];
-    //loops through the keys to select all the dates
-    for( var i = 0; i < dates.length; i++){
-      let currentKey = dates[i];
-      let match = regex.test(currentKey);
-      if(match){
-        acceptedKeys.push(currentKey);
-      }
-    }
-    console.log("all dates in storage " + acceptedKeys);
-    return acceptedKeys;
-  },
-
-  retrieveDates: async (numDays: number) => {
-    const dates = await ProfileBackend.getAllDates();
-    const today = new Date(CheckinBackend.getCurrentDate());
-    const secondsLimit = (numDays - 1) * 24 * 60 * 60;
-    // loops through all dates the user checked in
-    let i = dates.length-1;
-    while (i >= 0) {
-      const dateToCheck = new Date(dates[i]);
-      const elapsedSeconds = (today.getTime() - dateToCheck.getTime()) / 1000;
-      // if the date is farther away then the number of days the user passed in
-      if (elapsedSeconds > secondsLimit) {
-        dates.splice(i, 1); // remove the date from array
-      }
-      i--;
-    }
-    return dates;
-  },
-
+  console.log(dates);
+  return dates;
 };
 
-export default ProfileBackend;
+export const isUserCheckedIn = async (): Promise<boolean> => {
+  const data = await getCheckinByDate(getCurrentDate());
+  return data === 'error' || data != null;
+};
+
+export const getCurrentDate = () => {
+  return parseDate();
+};
+
+const getCheckinByDate = async (date: string) => {
+  try {
+    const asyncValue = await AsyncStorage.getItem(date);
+    return asyncValue;
+  } catch (error) {
+    console.log(error);
+    return 'error';
+  }
+};
+
+const parseDate = (dateInMilliseconds: number = new Date().getTime()) => {
+  // gets the current date or the date from time in milliseconds
+  const date = new Date(dateInMilliseconds);
+  const year = date.getFullYear();
+  const month = `0${date.getMonth() + 1}`.slice(-2);
+  const day = `0${date.getDate()}`.slice(-2);
+  const condensedDate = `${year}-${month}-${day}`;
+  return condensedDate;
+};
+
+const getAllDates = async () => {
+  const stringifiedDates = await AsyncStorage.getItem('checkins') || '[]';
+  const dates = JSON.parse(stringifiedDates);
+  return dates;
+};
+
+const retrieveDates = async (numDays: number) => {
+  const allDates: string[] = await getAllDates();
+  const today = new Date(getCurrentDate());
+  const secondsLimit = (numDays - 1) * 24 * 60 * 60;
+
+  const firstValidIndex = allDates.findIndex((date) => {
+    const dateToCheck = new Date(date);
+    const elapsedSeconds = (today.getTime() - dateToCheck.getTime()) / 1000;
+    return elapsedSeconds <= secondsLimit;
+  });
+  return allDates.slice(firstValidIndex);
+};

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ScrollView, StyleSheet, Switch, Text, View, TextInput, Modal, Button } from 'react-native';
 import { Avatar, ListItem } from 'react-native-elements';
 
-import ProfileBackend from '../../Business/ProfileBackend';
+import { retrievePreviousCheckins } from '../../Business/ProfileBackend';
 
 import BaseIcon from './BaseIcon';
 import Chevron from './Chevron';
@@ -190,7 +190,7 @@ export default class Profile extends React.Component<IProps, IState> {
                       title="Confirm"
                       onPress={async () => {
                           this.setState({ modalVisible: false });
-                          ProfileBackend.retrieveDataSet(this.state.modalInput);
+                          retrievePreviousCheckins(this.state.modalInput);
                         }
                       }
                     />

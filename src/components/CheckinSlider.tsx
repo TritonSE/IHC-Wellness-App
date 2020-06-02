@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Dimensions, Slider, Text, View } from 'react-native';
-import { Header } from 'react-native-elements';
+import { Slider, Text, View, StyleSheet } from 'react-native';
 
 interface IProps {
   title: string;
@@ -13,16 +12,13 @@ interface IProps {
 
 interface IState {
   value: number;
-    // slider: any;
   leftOffset: number;
   width: number;
-  leftOff: number;
 }
 
 // Values used to track state.value to the slider position
-const deviceWidth = Dimensions.get('window').width;
 const sliderRadius = 9;
-const widthCorrection = 0.88;
+const widthCorrection = 0.87;
 
 class CheckinSlider extends React.Component<IProps, IState> {
 
@@ -37,7 +33,6 @@ class CheckinSlider extends React.Component<IProps, IState> {
       leftOffset: 0,
       value: this.props.value,
       width: 0,
-      leftOff: 0,
     };
   }
 
@@ -49,10 +44,13 @@ class CheckinSlider extends React.Component<IProps, IState> {
     });
   }
 
-  public slider_bound=(event: any)=>{
-    const {x, y, width, height} = event.nativeEvent.layout;
-    this.setState({width: width})
-    }
+  public sliderBound(event: any) {
+    const { x, y, width, height } = event.nativeEvent.layout;
+    this.setState({
+      width,
+      leftOffset: x,
+    });
+  }
 
   public render() {
     const valuePosition = this.state.leftOffset - sliderRadius
@@ -60,32 +58,30 @@ class CheckinSlider extends React.Component<IProps, IState> {
                           * (this.state.value / (this.props.maxValue - this.props.minValue));
 
     return (
-        <View style={{ paddingTop: 30 }}
-          onLayout={(event) => {
-            let { x, y, width, height } = event.nativeEvent.layout;
-            this.setState({
-              leftOffset: x,
-              width: width,
-            });
-          }}
+        <View style={styles.container}
+          onLayout={(event) => this.sliderBound(event) }
         >
           <Text>{this.props.title}</Text>
-          <Text style={{ width: 50, textAlign: 'center', left: this.state.leftOff}}>
+          <Text style={{ width: 50, textAlign: 'center', left: valuePosition }}>
             {Math.floor(this.state.value)}</Text>
           <Slider
-            // ref={(slider) => { this.setState({ slider: slider, }) }}
             step={this.props.step}
             minimumValue={this.props.minValue}
             maximumValue={this.props.maxValue}
             value={this.props.value}
             thumbTintColor="rgb(252, 228, 149)"
             onSlidingComplete={this.props.onSlidingComplete}
-            onValueChange={(val) => this.setState({ value: val, leftOff: valuePosition })}
-            onLayout={(event)=>{this.slider_bound(event)}}
+            onValueChange={(val) => this.setState({ value: val })}
           />
         </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: 30,
+  },
+});
 
 export default CheckinSlider;

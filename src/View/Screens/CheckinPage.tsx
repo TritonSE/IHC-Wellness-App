@@ -1,23 +1,25 @@
 import * as React from 'react';
 import { Alert, Button, Dimensions, FlatList, ScrollView, StyleSheet, View } from 'react-native';
 
-import ModalDropdown from 'react-native-modal-dropdown';
 import { NavigationProp } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import ModalDropdown from 'react-native-modal-dropdown';
 
+// TODO replace interface in this file with this import after PoC editing questions is ready
+// import { ICheckinQuestion } from '../../../constants/Questions';
 import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
 import CheckinSlider from '../../components/CheckinSlider';
 import CheckinTextInput from '../../components/CheckinTextInput';
-import CustomQuestion from '../../components/CustomQuestion'
+import CustomQuestion from '../../components/CustomQuestion';
 
-const { height, width } = Dimensions.get('window');
+const width = Dimensions.get('window').width;
 
 interface ICheckinQuestion {
   title: string;
   key: string;
   active: boolean;
-  type: 'slider' | 'text';
+  type: 'numeric' | 'text';
 }
 
 interface IProps {
@@ -32,11 +34,23 @@ interface IState {
   questions: ICheckinQuestion[];
 }
 
+// TODO these hardcoded values are to test the frontend behavior
+// but they will need to be replaced with data from backend
+const hardcodedQuestions: ICheckinQuestion[] = [
+  {
+    title: 'How is your mood?',
+    key: 'mood',
+    active: true,
+    type: 'numeric',
+  },
+];
+
 class CheckinPage extends React.Component<IProps, IState> {
   private readonly navigation: NavigationProp<{}> = this.props.navigation;
 
   private removeEnterListener = this.navigation.addListener('focus', (e) => {
     console.log('TODO: CheckinPage enter, check if user has already checked in');
+    // Alert.alert('you have already checked in bud');
   });
 
   private removeExitListener = this.navigation.addListener('blur', (e) => {
@@ -50,7 +64,7 @@ class CheckinPage extends React.Component<IProps, IState> {
       hoursOfSleep: 8,
       mood: 1,
       journal: '',
-      questions: []
+      questions: hardcodedQuestions,
     };
   }
 
@@ -61,17 +75,22 @@ class CheckinPage extends React.Component<IProps, IState> {
   }
 
   public sendFormInfo = () => {
-    const formInfo = Object.assign({}, this.state);
-    console.log(`Saving checkin response ${JSON.stringify(formInfo)}`);
-    CheckinBackend.saveData(formInfo);
+    // Object destructuring and spread syntax to separate questions from rest of state object
+    const { questions, ...formData } = this.state;
+    console.log(`Saving checkin response ${JSON.stringify(formData)}`);
+    CheckinBackend.saveData(formData)
+    .then((result) => {
+      if (!result) {
+        Alert.alert('You have already checked in today');
+      }
+    });
   }
 
-  public dropDownSelect(idx, value) {
+  public dropdownHandleSelect(idx, value) {
     // method removed during merge, remake
   }
 
-  // TODO: KeyboardAvoidingView did not work
-  // Will probably want to use react-native-keyboard-aware-scroll-view instead
+  // TODO render active ICheckinQuestions in a FlatList
   public render() {
     return (
       <View style={styles.pageView}>
@@ -80,12 +99,13 @@ class CheckinPage extends React.Component<IProps, IState> {
           style={styles.screenScroll}
           contentContainerStyle={styles.questionContentContainer}
         >
-          {/* TODO: Replace with FlatList, same style but dynamic content */}
+          {/* TODO: Replace with FlatList, same style but in contentContainerStyle prop */}
           <ScrollView style={styles.questionWidth}>
-          <ModalDropdown 
-                options={this.state.questions}
-                onSelect = {(idx, value) => this.dropDownOnSelect(idx, value)}
-          />
+
+            <ModalDropdown 
+                  options={this.state.questions.map((q) => q.title)}
+                  onSelect = {(idx, value) => { this.dropdownHandleSelect(idx, value); }}
+            />
 
             <CheckinSlider
               title="How healthy are you feeling today?"
@@ -95,7 +115,6 @@ class CheckinPage extends React.Component<IProps, IState> {
               value={this.state.health}
               onSlidingComplete={(val) => this.setState({ health: val })}
             />
-
 
               <CheckinSlider
                 title="How many hours of sleep did you get last night?"
@@ -108,13 +127,13 @@ class CheckinPage extends React.Component<IProps, IState> {
 
               <CheckinSlider
                 title="Are you happy?"
-                step={0.01}
+                step={1}
                 minValue={0}
                 maxValue={1}
                 value={this.state.mood}
                 onSlidingComplete={(val) => this.setState({ mood: val })}
-              />  
-      
+              />
+
               <CheckinTextInput 
                 style={styles.textInputs}
                 title="Journal Entry"
@@ -171,12 +190,12 @@ class CheckinPage extends React.Component<IProps, IState> {
 
             <Button
               title="Set Question True"
-              onPress={() => { CheckinBackend.setQuestionUsage('How?', true); }}
+              onPress={() => { CheckinBackend.setQuestionActive('How?', true); }}
             />
 
             <Button
               title="Set Question False"
-              onPress={() => { CheckinBackend.setQuestionUsage('How?', false); }}
+              onPress={() => { CheckinBackend.setQuestionActive('How?', false); }}
               />
 
             <Button
