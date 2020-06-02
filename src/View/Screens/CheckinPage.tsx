@@ -65,16 +65,12 @@ class CheckinPage extends React.Component<IProps, IState> {
       hoursOfSleep: 8,
       isVisible: false,
       journal: '',
-<<<<<<< HEAD
-      questions: hardcodedQuestions,
-=======
       mood: 1,
       questions: [{ title: 'how healthy...', key: '0', active: true, type: 'slider' },
                   { title: 'hours of sleep...', key: '1', active: true, type: 'slider' },
                   { title: 'happiness', key: '2', active: true, type: 'slider' },
                   { title: 'journal', key: '3', active: true, type: 'slider' },
                   { title: 'custom q', key: 'placeholder custom q', active: true, type: 'slider' }],
->>>>>>> 881c226f781e49dc44844116f71dffc4fce0d7df
     };
   }
 
@@ -106,16 +102,8 @@ class CheckinPage extends React.Component<IProps, IState> {
     });
   }
 
-<<<<<<< HEAD
-  public dropdownHandleSelect(idx, value) {
-    // method removed during merge, remake
-  }
-
-  // TODO render active ICheckinQuestions in a FlatList
-=======
   // TODO: KeyboardAvoidingView did not work
   // Will probably want to use react-native-keyboard-aware-scroll-view instead
->>>>>>> 881c226f781e49dc44844116f71dffc4fce0d7df
   public render() {
     return (
       <View style={styles.pageView}>
@@ -126,14 +114,6 @@ class CheckinPage extends React.Component<IProps, IState> {
         >
           {/* TODO: Replace with FlatList, same style but in contentContainerStyle prop */}
           <ScrollView style={styles.questionWidth}>
-<<<<<<< HEAD
-
-            <ModalDropdown 
-                  options={this.state.questions.map((q) => q.title)}
-                  onSelect = {(idx, value) => { this.dropdownHandleSelect(idx, value); }}
-            />
-=======
->>>>>>> 881c226f781e49dc44844116f71dffc4fce0d7df
 
             <CheckinSlider
               title="How healthy are you feeling today?"
@@ -162,11 +142,7 @@ class CheckinPage extends React.Component<IProps, IState> {
                 onSlidingComplete={(val) => this.setState({ mood: val })}
               />
 
-<<<<<<< HEAD
-              <CheckinTextInput 
-=======
               <CheckinTextInput
->>>>>>> 881c226f781e49dc44844116f71dffc4fce0d7df
                 style={styles.textInputs}
                 title="Journal Entry"
                 titleColor="#000000"
