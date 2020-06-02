@@ -1,20 +1,12 @@
 import * as React from 'react';
-<<<<<<< Updated upstream
-import { Dimensions, FlatList, ImageSourcePropType, StyleSheet, View } from 'react-native';
-=======
-import { Dimensions, FlatList, ImageSourcePropType, Image, StyleSheet, View, Alert, Text } from 'react-native';
->>>>>>> Stashed changes
+import { Dimensions, FlatList, ImageSourcePropType, StyleSheet, View, TouchableOpacity, Text, Button } from 'react-native';
 
 import { PlantBodies, PlantFooters, PlantHeaders,
          PlantImages } from '../../../constants/Plants';
-<<<<<<< Updated upstream
 import PlantBackend, { IPlantItem } from '../../Business/PlantBackend';
-=======
-import { IOwnedItem } from '../../Business/StoreBackend';
-
->>>>>>> Stashed changes
 import AppHeader from '../../components/AppHeader';
 import PlantCard from '../../components/PlantCard';
+import { IOwnedItem } from '../../Business/StoreBackend';
 
 interface IState {
   plantBody: IPlantItem[];
@@ -45,12 +37,9 @@ export default class PlantPage extends React.Component<object, IState> {
       plantBody: [...PlantBodies],
       plantFooter: PlantFooters[0],
       plantHeader: PlantHeaders[0],
-<<<<<<< HEAD
       // hard coded arrays
-=======
       // TODO remove prices here, only name is needed for rendering
       // so IPlantItem only has the name field
->>>>>>> origin/master
       headerItems: [
         { name: "Sunflower", price: 1.25 },
         { name: "Carnation", price: 1.25 },
@@ -79,36 +68,55 @@ export default class PlantPage extends React.Component<object, IState> {
     // this.setState();
   }
 
-  public swapHeaderPlant(plant: IPlantItem) {
-    this.setState({
-      
+  public swapBodyHandler(plantItem: IOwnedItem, index: number) {
+    this.setState( (prevState: IState) => {
+      let newBodies = [...prevState.bodyItems];
+      newBodies[index] = {name: plantItem.name}
+      return {
+        plantBody: newBodies,
+      };
     })
   }
 
-  public swapBodyPlant(index: number, plant: IPlantItem) {
-    this.setState({
-      
-    })
+  public swapHeaderHandler(plantItem: IOwnedItem) {
+    this.setState( (prevState: IState) => ({
+      plantHeader: {name: plantItem.name},
+    }));
   }
 
-  public swapFooterPlant(plant: IPlantItem) {
-    this.setState({
-      
-    })
+  public swapFooterHandler(plantItem: IOwnedItem) {
+    this.setState( (prevState: IState) => ({
+      plantFooter: {name: plantItem.name},
+    }));
   }
+
+  /*public addItem(plantItem: IPlantItem) {
+    this.setState( (prevState: IState) => {
+      let newBodies = [{name: plantItem.name},...prevState.bodyItems];
+      console.log(JSON.stringify(prevState.bodyItems));
+      return {
+        plantBody: newBodies,
+      };
+    })
+  }*/
 
   public render() {
 
     return (
       <View style={styles.container}>
         <AppHeader title="Plant"/>
+        <Button
+          title="Add Item"
+          //onPress={() => this.addItem({ ...PlantBodies[0]} )}
+        /> 
         <FlatList
           contentContainerStyle={styles.plantList}
           data={this.state.plantBody}
+          extraData={this.state}
           ListHeaderComponent={ this.renderPlantItem(this.state.plantHeader, styles.plantItem, this.state.headerItems, "header") }
-          ListFooterComponent={ this.renderPlantItem(this.state.plantFooter, styles.plantItem, this.state.footerItems) }
+          ListFooterComponent={ this.renderPlantItem(this.state.plantFooter, styles.plantItem, this.state.footerItems, "footer") }
           renderItem={({ item, index }) => {
-            return this.renderPlantItem(item, styles.plantItem, this.state.bodyItems, index);
+            return this.renderPlantItem(item, styles.plantItem, this.state.bodyItems, "body", index);
           }}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -116,30 +124,20 @@ export default class PlantPage extends React.Component<object, IState> {
     );
   }
 
-<<<<<<< Updated upstream
-  private renderPlantItem(plantItem: IPlantItem, plantStyle: object, data: any) {
-<<<<<<< HEAD
-
-    //let itemImage: ImageSourcePropType = PlantImages[plantItem.name];
-=======
-    // TODO const is preferred to let in cases where the value does not change
-    let itemImage: ImageSourcePropType = PlantImages[plantItem.name];
->>>>>>> origin/master
-=======
   private renderPlantItem(plantItem: IPlantItem, plantStyle: object, data: any, section: string, index?: number) {
 
     //let itemImage: ImageSourcePropType = PlantImages[plantItem.name];
-    let swapHandler = section === "header" ? (swapItem: IOwnedItem) => this.swapHeaderPlant(plantItem)
-      : section === "bodies" ? () => this.swapBodyPlant(index, plantItem)
-      : () => this.swapFooterPlant(plantItem)
->>>>>>> Stashed changes
+
+    let swapHandler = section === "body" ? (swapItem: IOwnedItem) => this.swapBodyHandler(swapItem, index) 
+      : section === "header" ? (swapItem: IOwnedItem) => this.swapHeaderHandler(swapItem)
+      : (swapItem: IOwnedItem) => this.swapFooterHandler(swapItem)
 
     return (
       <PlantCard
         modalTitle={ plantItem.name }
         transparent={ true } 
         data={ data }
-        swapPlant={(plant) => this.swapPlant(index, plant)}
+        swapPlant={ swapHandler }
       />
     );
   }

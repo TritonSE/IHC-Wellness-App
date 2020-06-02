@@ -16,7 +16,6 @@ interface IProps {
   
 interface IState {
   modalVisible: boolean;
-  plantImage: any;
 }
 
 class PlantCards extends React.Component<IProps, IState> {
@@ -30,17 +29,11 @@ class PlantCards extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       modalVisible: false,
-      plantImage: PlantImages[this.props.modalTitle],
     }
   }
 
   public setModalVisible = (visible) => {
     this.setState({ modalVisible: visible });
-  }
-
-  public changePlantImage = (name) => {
-    let newPlant: ImageSourcePropType = PlantImages[name];
-    this.setState( { plantImage: newPlant } );
   }
   
   render() {  
@@ -61,7 +54,6 @@ class PlantCards extends React.Component<IProps, IState> {
             <TouchableOpacity
             style={styles.openButton}
             onPress={() => {
-              //this.changePlantImage(item.name);
               this.props.swapPlant(item)
             }}
           >
@@ -115,7 +107,7 @@ class PlantCards extends React.Component<IProps, IState> {
             }}
           >
             <Image
-                source={this.state.plantImage}
+                source={PlantImages[this.props.modalTitle]}
                 style={styles.plantStyle}
             />
           </TouchableOpacity>
