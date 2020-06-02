@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { Modal, StyleSheet, Text, TouchableHighlight, View, ScrollView, Image, TouchableOpacity, ImageSourcePropType } from "react-native";
+import { Image, ImageSourcePropType, Modal, ScrollView, StyleSheet, Text,
+         TouchableHighlight, TouchableOpacity, View } from "react-native";
 
-import { IPlantItem,
-  PlantBodies, PlantFooters, PlantHeaders,
+import { IPlantItem, PlantBodies, PlantFooters, PlantHeaders,
   PlantImages } from '../../constants/Plants';
+import PlantBackend, { IPlantItem } from '../Business/PlantBackend';
 
+// TODO change data to be IOwnedItem[]
 interface IProps {
   modalTitle: string;
   transparent: boolean;
@@ -18,7 +20,9 @@ interface IState {
   modalVisible: boolean;
 }
 
-class PlantCards extends React.Component<IProps, IState> {
+// TODO indentation issues, make sure TSLint (Microsoft) and ESLint (Dirk Baeumer) are installed
+// then use Cmd . to get suggested fixes, "Fix all auto-fixable tslint failures" is best
+class PlantCard extends React.Component<IProps, IState> {
   
   public static defaultProps = {
     animationType: "slide",
@@ -84,7 +88,7 @@ class PlantCards extends React.Component<IProps, IState> {
                   }}
                 >
                   {
-                    dataArr //Render the JSX in a ScrollView
+                    dataArr // Render the JSX in a ScrollView
                   }
                 </ScrollView>
               <TouchableHighlight
@@ -118,8 +122,6 @@ class PlantCards extends React.Component<IProps, IState> {
   }
 
 }
-
-export default PlantCards;
 
 const styles = StyleSheet.create({
     centeredView: {
@@ -167,3 +169,5 @@ const styles = StyleSheet.create({
       height: 100,
     }
   });
+
+export default PlantCard;

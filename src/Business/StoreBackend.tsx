@@ -36,10 +36,31 @@ export default class StoreBackend extends React.Component<object, object> {
 */
 // TODO convert this to an object
 // As an array it is not clear which is headers, bodies and footers
-private ownedArray = [[], [], []];
+private static ownedArray = [[], [], []];
 
 private constructor(props: {}) {
   super(props);
+}
+
+public static getInstance(): StoreBackend {
+  if (!StoreBackend.instance) {
+    StoreBackend.instance = new StoreBackend({});
+  }
+  return StoreBackend.instance;
+}
+
+public getOwnedArray() {
+  console.log("CALLED")
+  return StoreBackend.ownedArray;
+}
+
+public updateOwnedArray(newOwnedArray) {
+  // updates member variable
+  StoreBackend.ownedArray = newOwnedArray;
+  // updates async storage
+  AsyncStorage.setItem('owned', JSON.stringify(newOwnedArray)).then(() => {
+    console.log("Successfully updated owned array");
+  });
 }
 
 // Note on public vs private methods: public methods will be used by frontend,
@@ -86,7 +107,7 @@ private static createDefaultOwnedArrays(){
 // takes in an item and updates it and its owned and available fields in all
 // owned array in async
 public updateOwned(sectionIndex: number, item: IOwnedItem ){
-  const indexOwnedArray = this.ownedArray[sectionIndex];
+  const indexOwnedArray = StoreBackend.ownedArray[sectionIndex];
   let found = false;
 
   for (let i = 0; i < indexOwnedArray.length; i++) {
@@ -107,12 +128,12 @@ public updateOwned(sectionIndex: number, item: IOwnedItem ){
     item.available = item.owned > item.used;
     indexOwnedArray.push(item);
   }
-  this.ownedArray[sectionIndex] = indexOwnedArray;
-  AsyncStorage.setItem('owned', JSON.stringify(this.ownedArray)).then(() => {
+  StoreBackend.ownedArray[sectionIndex] = indexOwnedArray;
+  AsyncStorage.setItem('owned', JSON.stringify(StoreBackend.ownedArray)).then(() => {
     console.log('Successfully updated owned array')
   });
 
-  return this.ownedArray;
+  return StoreBackend.ownedArray;
 }
 
 // TODO replace var with let, let that doesn't change with const, double == with triple ===
@@ -160,7 +181,7 @@ public async buyItem(item: string, section: string) {
   let newItem = null;
   // TODO move this to the constructor
   // create owned array if doesn't exist already
-  if (ownedArray == null){
+  if (StoreBackend.ownedArray == null){
     console.log('created default owned array');
     StoreBackend.createDefaultOwnedArrays();
   }
