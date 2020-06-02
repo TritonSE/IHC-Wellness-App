@@ -25,6 +25,11 @@ export default class PlantBackend extends React.Component<object, object> {
   private static plantArray: IPlant[];
   private storeController;
 
+  /**
+   * Constructor creates default plant array and sets storeController
+   * @param: none
+   * @returns : none
+   */
   private constructor(props: {}) {
     super(props);
     console.log('PlantController created!');
@@ -44,6 +49,11 @@ export default class PlantBackend extends React.Component<object, object> {
 
   }
 
+  /**
+   * Helper getInstance method that returns the plantBackend model
+   * @param: PlantBackend
+   * @returns: instance of plantBackend
+   */
   public static getInstance(): PlantBackend {
     if (!PlantBackend.instance) {
       PlantBackend.instance = new PlantBackend({});
@@ -51,11 +61,20 @@ export default class PlantBackend extends React.Component<object, object> {
     return PlantBackend.instance;
   }
 
+  /**
+   * @param: none
+   * @returns: plantArray of plantBackend model
+   */
   public getPlantArray(){
     return PlantBackend.plantArray;
   }
 
-  //updates plantItems when an item is bought
+  /**
+   * When an item is bought in store, need to update its presence in the plantArray
+   * @param sectionName either header, footer, or bodies so we konw which array to update
+   * @param item the item that we are trying to reflect the changes of
+   * @returns: null iff the item is invalid
+   */
   public handlePlants(sectionName: string, item: IOwnedItem | null) {
     if(item === null){
       console.log("The item passed in is invalid, plant array has not been changed");
@@ -102,7 +121,13 @@ export default class PlantBackend extends React.Component<object, object> {
     
   }
 
-
+  /**
+   * Adds a new body item to the plant
+   * @param plantIndex which plant to add to
+   * @param newBodyName name of new body item
+   * @return: null if failure to addBody
+   *          else, returns body of plant and new ownedArray
+   */
   public addBody(plantIndex: number = 0, newBodyName: string) {
     let tempOwnedArray:IOwnedArray = this.storeController.getOwnedArray();
     let itemIndex = 0;
@@ -147,7 +172,15 @@ export default class PlantBackend extends React.Component<object, object> {
     };
   }
 
-  //switches a body of the plant
+  /**
+   * Swaps out a body item in the plant's body array
+   * @param plantIndex which plant to update
+   * @param oldPlantBodyIndex which old body item we want to swap out
+   * @param oldBodyName name of that old body item
+   * @param newBodyName name of the new body item
+   * @returns: null if item is invalid
+   *           else returns the new body and owned arrays
+   */
   public changeBody(plantIndex: number = 0, oldPlantBodyIndex: number,
                     oldBodyName:string, newBodyName:string) {
 
@@ -223,7 +256,10 @@ export default class PlantBackend extends React.Component<object, object> {
     return null;
   }
 
-  // CHECK IF PLANT HAS BEEN CREATED
+  /**
+   * @returns header of plant at passed in index
+   * @param plantIndex index of plant whose header we want
+   */
   public getHeader(plantIndex: number = 0) {
     if(PlantBackend.plantArray != null){
       console.log('The plant header is: ' + PlantBackend.plantArray[plantIndex].header);
@@ -233,6 +269,10 @@ export default class PlantBackend extends React.Component<object, object> {
     return null;
   }
 
+  /**
+   * @returns body of plant at passed in index
+   * @param plantIndex index of plant whose body we want
+   */
   public getBody(plantIndex: number = 0) {
     if(PlantBackend.plantArray != null){
       console.log('The plant body is: ' + PlantBackend.plantArray[plantIndex].body);
@@ -242,6 +282,10 @@ export default class PlantBackend extends React.Component<object, object> {
     return null;
   }
 
+  /**
+   * @returns footer of plant at passed in index
+   * @param plantIndex index of plant whose footer we want
+   */
   public getFooter(plantIndex: number = 0) {
     if(PlantBackend.plantArray != null){
       console.log('The plant footer is: ' + PlantBackend.plantArray[plantIndex].footer);
@@ -251,6 +295,12 @@ export default class PlantBackend extends React.Component<object, object> {
     return null;
   }
 
+  /**
+   * @returns null if failure, new header and owned array if success
+   * @param plantIndex index of plant whose header we want to change
+   * @param oldHeaderName name of oldheader item
+   * @param newHeaderName name of new header item
+   */
   public changeHeader(plantIndex: number = 0, oldHeaderName:string,
                       newHeaderName:string ) {
 
@@ -314,6 +364,12 @@ export default class PlantBackend extends React.Component<object, object> {
     console.log('new item not found');
   }
 
+  /**
+   * @returns null if failure, new header and owned array if success
+   * @param plantIndex index of plant whose header we want to change
+   * @param oldFooterName name of old footer item
+   * @param newFooterName name of new footer item
+   */
   public changeFooter(plantIndex: number = 0, oldFooterName: string,
                       newFooterName:string ) {
     // initialize holders
@@ -374,6 +430,10 @@ export default class PlantBackend extends React.Component<object, object> {
     console.log('new item not found');
   }
 
+  /**
+   * internal helper method that sets up a default plant array with 
+   * 1 header, body, and footer
+   */
   private static createDefaultPlantArray() {
     const defaultPlantHeader = {
       name: PlantHeaders[0].name,

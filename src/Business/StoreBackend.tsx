@@ -17,7 +17,12 @@ export interface IOwnedArray {
   footers: IOwnedItem[],
 }
 
-/
+/**
+ * Class  for StoreBackend model
+ * has an instance of storebackend
+ * amount of money
+ * default ownedArray
+ */
 export default class StoreBackend extends React.Component<object, object> {
   private static instance: StoreBackend | null = null;
   private static money: number = 0;
@@ -27,6 +32,10 @@ export default class StoreBackend extends React.Component<object, object> {
     footers: IOwnedItem[],
   }; 
 
+/**
+ * Creates storeController and ownedArray
+ * @param props empty props list
+ */
 private constructor(props: {}) {
   super(props);
   console.log("StoreController created");
@@ -42,6 +51,9 @@ private constructor(props: {}) {
   });
 }
 
+/**
+ * @returns instance of store Backend in this model
+ */
 public static getInstance(): StoreBackend {
   if (!StoreBackend.instance) {
     StoreBackend.instance = new StoreBackend({});
@@ -49,11 +61,17 @@ public static getInstance(): StoreBackend {
   return StoreBackend.instance;
 }
 
+/**
+ * @returns current owned array
+ */
 public getOwnedArray() {
   console.log("Getting the owned array")
   return StoreBackend.ownedArray;
 }
 
+/**
+ * @param newOwnedArray new owned array to set to
+ */
 public setOwnedArray(newOwnedArray: IOwnedArray) {
   // sets member variable
   StoreBackend.ownedArray = newOwnedArray;
@@ -63,6 +81,10 @@ public setOwnedArray(newOwnedArray: IOwnedArray) {
   });
 }
 
+/**
+ * sets money amount
+ * @param amount new money amount
+ */
 private static setMoney(amount: number) {
   this.money = amount;
   AsyncStorage.setItem('Money', amount.toString()).then(() => {
@@ -71,16 +93,27 @@ private static setMoney(amount: number) {
   return this.money;
 }
 
+/**
+ * @returns current amount of money
+ */
 public getMoney(){
   return StoreBackend.money;
 }
 
+/**
+ * adds amount to money
+ * @param amount amount to add
+ */
 public addMoney(amount: number){
   const newAmount = StoreBackend.money + amount;
   return StoreBackend.setMoney(newAmount);
 }
 
-// if the user does not have enough money to spend, return null
+/**
+ * Spends user's money
+ * @returns new amount
+ * @param amount of money to spend
+ */
 public spendMoney(amount: number){
   const newAmount = StoreBackend.money - amount;
   if(newAmount < 0 ){
@@ -90,6 +123,9 @@ public spendMoney(amount: number){
   return StoreBackend.setMoney(newAmount);
 }
 
+/**
+ * creates a default owned array and @returns it
+ */
 private static createDefaultOwnedArrays(){
   //creates array of all the headers and set the first item to be used
   let ownedPlantHeaders: IOwnedItem[] = PlantHeaders.map((header: IStoreItem) => {
@@ -140,7 +176,11 @@ private static createDefaultOwnedArrays(){
   return defaultOwned;
 }
 
-// Simulates buying one item by increasing the owned amount by 1, returns the item that was updated
+/**
+ * Simulates buying one item by increasing the owned amount by 1, returns the item that was updated
+ * @param sectionName either headers, bodies, or footers
+ * @param item item to update by one
+ */
 private static updateOwnedBy1(sectionName: string, item: IOwnedItem ){
   //checks if section name is one of "headers, "bodies", "footers"
   if(sectionName != "headers" && sectionName != "bodies" && sectionName != "footers"){
@@ -179,7 +219,11 @@ private static updateOwnedBy1(sectionName: string, item: IOwnedItem ){
   return item;
 }
 
-
+/**
+ * @returns new item after update, null on error
+ * @param sectionName either header, bodies, or footers
+ * @param itemName name of item to buy
+ */
 public buyItem(sectionName: string, itemName: string) {
   //checks if section name is one of "headers, "bodies", "footers"
   if(sectionName != "headers" && sectionName != "bodies" && sectionName != "footers"){
@@ -251,7 +295,11 @@ public buyItem(sectionName: string, itemName: string) {
 }
 
 
-//gets a specific item from owned array 
+/**
+ * gets a specific item from owned array 
+ * @param sectionName either headers, bodies, or footers
+ * @param itemName name of item to @return 
+ */
   public getItemInfo(sectionName:string, itemName:string){
   //checks if section name is one of "headers, "bodies", "footers"
   if(sectionName != "headers" && sectionName != "bodies" && sectionName != "footers"){
