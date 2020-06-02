@@ -51,14 +51,12 @@ const CheckinBackend = {
     // by returning .multiGet() inside the first .then() and calling .then()
     // with the callback that already exists
     // https://javascript.info/promise-chaining has good info
-    AsyncStorage.getAllKeys().then((keyArray) => {
-      AsyncStorage.multiGet(keyArray).then((keyValArray) => {
-        const myStorage: any = {};
-        for (const keyVal of keyValArray) {
-          myStorage[keyVal[0]] = keyVal[1];
-        }
-
-        console.log('CURRENT STORAGE: ', myStorage);
+    AsyncStorage.getAllKeys((err, keys) => {
+      AsyncStorage.multiGet(keys, (error, stores) => {
+        stores.map((result, i, store) => {
+          console.log({ [store[i][0]]: store[i][1] });
+          return true;
+        });
       });
     });
   },
