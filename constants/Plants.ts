@@ -22,14 +22,14 @@ export const PlantImages = Object.freeze({
   standardPot: require("app/assets/images/_bottom_pot.png")
 });
 
-export interface IPlantItem {
+export interface IStoreItem {
   name: string;
   price: number;
 }
 
 // NOTE: name field in each item MUST match a key in PlantImages
 // Name mismatches mean item will not get rendered, duplicate names cause duplicate render
-export const PlantHeaders: ReadonlyArray<IPlantItem> = [
+export const PlantHeaders: ReadonlyArray<IStoreItem> = [
   /*
   {
     name: 'Daisy',
@@ -51,7 +51,7 @@ export const PlantHeaders: ReadonlyArray<IPlantItem> = [
   }
 ];
 
-export const PlantBodies: ReadonlyArray<IPlantItem> = [
+export const PlantBodies: ReadonlyArray<IStoreItem> = [
   {
     name: "Body",
     price: 1.25
@@ -66,7 +66,7 @@ export const PlantBodies: ReadonlyArray<IPlantItem> = [
   }
 ];
 
-export const PlantFooters: ReadonlyArray<IPlantItem> = [
+export const PlantFooters: ReadonlyArray<IStoreItem> = [
   {
     name: "Clay",
     price: 1.25
