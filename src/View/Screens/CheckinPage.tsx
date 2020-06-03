@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, Button, Dimensions, FlatList, Modal, SafeAreaView, ScrollView,
+import { Alert, Button, Dimensions, FlatList, Modal, SafeAreaView,
          StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';

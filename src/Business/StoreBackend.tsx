@@ -10,7 +10,7 @@ export interface IOwnedItem {
   available: boolean;
 }
 
-export interface IOwnedArray {
+export interface IOwnedObject {
   headers: IOwnedItem[];
   bodies: IOwnedItem[];
   footers: IOwnedItem[];
@@ -20,19 +20,19 @@ export interface IOwnedArray {
  * Class  for StoreBackend model
  * has an instance of storebackend
  * amount of money
- * default ownedArray
+ * default ownedObject
  */
 export default class StoreBackend extends React.Component<object, object> {
   private static instance: StoreBackend | null = null;
   private static money: number = 0;
-  private static ownedArray: {
+  private static ownedObject: {
     headers: IOwnedItem[],
     bodies: IOwnedItem[],
     footers: IOwnedItem[],
   };
 
   /**
-   * Creates storeController and ownedArray
+   * Creates storeController and ownedObject
    * @param props empty props list
    */
   private constructor(props: {}) {
@@ -42,11 +42,13 @@ export default class StoreBackend extends React.Component<object, object> {
     // gets the owned array from asyncstorage
     AsyncStorage.getItem('owned').then((result) => {
       if (result === null) {
-        StoreBackend.ownedArray = StoreBackend.createDefaultOwnedArrays();
+        StoreBackend.ownedObject = StoreBackend.createDefaultOwnedObject();
       } else {
-        StoreBackend.ownedArray = JSON.parse(result);
+        StoreBackend.ownedObject = JSON.parse(result);
       }
-      console.log('owned array is ${StoreBackend.ownedArray} ');
+      // TODO: Note, this will not work as single parens '' are used
+      // Template literal strings use backticks, ``
+      console.log('owned array is ${StoreBackend.ownedObject} ');
     });
 
     StoreBackend.setMoney(1000);
@@ -65,19 +67,19 @@ export default class StoreBackend extends React.Component<object, object> {
   /**
    * @returns current owned array
    */
-  public getOwnedArray() {
+  public getOwned() {
     console.log('Getting the owned array');
-    return StoreBackend.ownedArray;
+    return StoreBackend.ownedObject;
   }
 
   /**
-   * @param newOwnedArray new owned array to set to
+   * @param newOwned new owned object to set to
    */
-  public setOwnedArray(newOwnedArray: IOwnedArray) {
+  public setOwned(newOwnedObject: IOwnedObject) {
     // sets member variable
-    StoreBackend.ownedArray = newOwnedArray;
+    StoreBackend.ownedObject = newOwnedObject;
     // sets async storage
-    AsyncStorage.setItem('owned', JSON.stringify(newOwnedArray)).then(() => {
+    AsyncStorage.setItem('owned', JSON.stringify(newOwnedObject)).then(() => {
       console.log('Successfully set owned array');
     });
   }
@@ -112,8 +114,8 @@ export default class StoreBackend extends React.Component<object, object> {
 
   /**
    * Spends user's money
-   * @returns new amount
    * @param amount of money to spend
+   * @returns new amount
    */
   public spendMoney(amount: number) {
     const newAmount = StoreBackend.money - amount;
@@ -127,7 +129,7 @@ export default class StoreBackend extends React.Component<object, object> {
   /**
    * creates a default owned array and @returns it
    */
-  private static createDefaultOwnedArrays() {
+  private static createDefaultOwnedObject() {
     // creates array of all the headers and set the first item to be used
     const ownedPlantHeaders: IOwnedItem[] = PlantHeaders.map((header: IStoreItem) => {
       return {
@@ -164,7 +166,7 @@ export default class StoreBackend extends React.Component<object, object> {
     ownedPlantFooters[0].owned = 1;
     ownedPlantFooters[0].used = 1;
 
-    const defaultOwned: IOwnedArray = {
+    const defaultOwned: IOwnedObject = {
       headers: ownedPlantHeaders,
       bodies: ownedPlantBodies,
       footers: ownedPlantFooters,
@@ -190,7 +192,7 @@ export default class StoreBackend extends React.Component<object, object> {
     }
 
     // gets the section of the owned array we're interested in
-    const sectionArray = StoreBackend.ownedArray[sectionName];
+    const sectionArray = StoreBackend.ownedObject[sectionName];
     let found = false;
 
     for (let i = 0; i < sectionArray.length; i++) {
@@ -211,8 +213,8 @@ export default class StoreBackend extends React.Component<object, object> {
       item.available = item.owned > item.used;
       sectionArray.push(item);
     }
-    StoreBackend.ownedArray[sectionName] = sectionArray;
-    AsyncStorage.setItem('owned', JSON.stringify(StoreBackend.ownedArray)).then(() => {
+    StoreBackend.ownedObject[sectionName] = sectionArray;
+    AsyncStorage.setItem('owned', JSON.stringify(StoreBackend.ownedObject)).then(() => {
       console.log('Successfully updated owned array');
     });
 
@@ -248,7 +250,7 @@ export default class StoreBackend extends React.Component<object, object> {
     let found = false;
 
     // looks for the item in a certain section
-    const sectionArray = StoreBackend.ownedArray[sectionName];
+    const sectionArray = StoreBackend.ownedObject[sectionName];
     for (let i = 0; i < sectionArray.length; i++) {
       // item was found
       if (sectionArray[i].name === itemName) {
@@ -272,8 +274,8 @@ export default class StoreBackend extends React.Component<object, object> {
         // updates owned array
         if (itemAfterUpdate != null) {
           sectionArray[i] = itemAfterUpdate;
-          StoreBackend.ownedArray[sectionName] = sectionArray;
-          AsyncStorage.setItem('owned', JSON.stringify(StoreBackend.ownedArray)).then(() => {
+          StoreBackend.ownedObject[sectionName] = sectionArray;
+          AsyncStorage.setItem('owned', JSON.stringify(StoreBackend.ownedObject)).then(() => {
             console.log('owned array has been successfully updated in asyncstorage after an item purchase');
           });
         }
@@ -292,9 +294,9 @@ export default class StoreBackend extends React.Component<object, object> {
   }
 
   /**
-   * gets a specific item from owned array 
+   * gets a specific item from owned array
    * @param sectionName either headers, bodies, or footers
-   * @param itemName name of item to @return 
+   * @param itemName name of item to @return
    */
   public getItemInfo(sectionName: string, itemName: string) {
     // checks if section name is one of 'headers, 'bodies', 'footers'
@@ -304,7 +306,7 @@ export default class StoreBackend extends React.Component<object, object> {
     }
 
     let itemToFind = null;
-    const sectionArray = StoreBackend.ownedArray[sectionName];
+    const sectionArray = StoreBackend.ownedObject[sectionName];
 
     for (const element of sectionArray) {
       // item was found
