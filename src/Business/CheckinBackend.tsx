@@ -1,8 +1,9 @@
 import { AsyncStorage } from 'react-native';
 
+import { DefaultQuestions, ICheckinQuestion } from '../../constants/Questions'
 import { getCurrentDate, isUserCheckedIn } from './ProfileBackend';
 // TODO this interface will be moved to constants/Questions once frontend has an editing PoC
-import { ICheckinQuestion } from '../View/Screens/CheckinPage';
+// import { ICheckinQuestion } from '../View/Screens/CheckinPage';
 
 /*
 TODO
@@ -20,6 +21,9 @@ This file would thus require the least refactoring, mostly replacing getItem cal
 with a parameter for the current value that getItem was getting as well as
 replacing for loops with calls to higher-order functions
 */
+
+
+
 const CheckinBackend = {
 
   // CHECKIN LOGIC
@@ -81,29 +85,37 @@ const CheckinBackend = {
   // For CRUD operations like these, return the created/updated values and any promises
   // that the data will be saved
   createDefaultQuestionsArray: async ()=>{
-    await AsyncStorage.setItem('questions', JSON.stringify([]));
+    await AsyncStorage.setItem('questions', JSON.stringify([DefaultQuestions]));
   },
 
   // TODO this function will still be needed in the MVVM model, but add
   // the questions array parameter and return the updated array and the promise
   // it will be saved to storage
-  addQuestion: async (question: string, key: string)=>{
-    //gets the question aray from asyncstorage
-    const questionArrayJson = await AsyncStorage.getItem('questions');
-    let questionArray = questionArrayJson ? JSON.parse(questionArrayJson) : null;
+  addQuestion: async (questionArray: ICheckinQuestion[], question: string, key: string)=>{
+    let updatedQuestionArray: ICheckinQuestion[];
     if(questionArray == null){
-      questionArray = [];
+      updatedQuestionArray = [];
+    } else {
+      updatedQuestionArray = [...questionArray];
     }
-    //creates an object of the question
-    const questionObject = {
+    // creates an object of the question
+    const questionObject: ICheckinQuestion = {
       question: question,
       used: false,
       key: key,
     }
-    questionArray.push(questionObject);
+    updatedQuestionArray.push(questionObject);
     //adds the question to asyncstorage
-    await AsyncStorage.setItem("questions", JSON.stringify(questionArray));
-    return questionObject
+    const promise = AsyncStorage.setItem("questions", JSON.stringify(questionArray));
+    return {
+      newQuestionArray: updatedQuestionArray,
+      promise: promise,
+    }
+  },
+
+  storeAllQuestions: (questionArray: ICheckinQuestion[]) => {
+    const promise = AsyncStorage.setItem('questions', JSON.stringify(questionArray));
+    return promise;
   },
 
   // TODO this function might be unnecessary in the MVVM pattern where CheckinPage
@@ -147,10 +159,8 @@ const CheckinBackend = {
   },
 
   // TODO add a questionsArray parameter and replace the for loops with a call to .filter()
-  getUsedQuestions: async (used:boolean)=>{
+  getUsedQuestions: async (questionArray: ICheckinQuestion[], used:boolean)=>{
     //gets the question aray from asyncstorage
-    const questionArrayJson = await AsyncStorage.getItem('questions');
-    let questionArray = questionArrayJson ? JSON.parse(questionArrayJson) : null;
     if(questionArray == null){
       //ends function call if question array doesn't exist
       console.log("There are no questions saved");
@@ -159,17 +169,21 @@ const CheckinBackend = {
 
     // TODO this can be replaced with a .filter() call on questionArray
     //looks to find all the questions that are used (or not used)
-    let matchingQuestion = [];
+    let matchingQuestion = questionArray.filter( (question) => {
+      return question.used === used;
+    });
+
+    /*
     for(var i = 0; i< questionArray.length; i++){
       if(questionArray[i].used == used){
         //found the question that matches the sear criteria (used/not used)
         matchingQuestion.push(questionArray[i]);
       }
-    }
+    }*/
     console.log(matchingQuestion);
     return matchingQuestion;
 
-  }
+  },
 
 };
 

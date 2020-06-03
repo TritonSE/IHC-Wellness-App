@@ -47,6 +47,8 @@ class ChartModal extends React.Component<IProps, IState>  {
           <View
             style={{
               backgroundColor: 'blue',
+              borderTopLeftRadius: 5,
+              borderTopRightRadius: 5,
               height: MAX_HEIGHT * (value / this.maxValue),
               marginRight: dateDiff * 20,
               width: 10,
@@ -72,15 +74,15 @@ class ChartModal extends React.Component<IProps, IState>  {
             animationType="slide"
             transparent={true}
             visible={this.state.modalVisible}
-            onShow={() => this.graph?.scrollToEnd({ animated: false })}
+            onShow={() => this.graph?.scrollToEnd({ animated: true })}
           >
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
-                <Text style={styles.titleText}>{this.props.modalTitle}</Text>
+                <Text style={styles.textTitle}>{this.props.modalTitle}</Text>
                 <View style={styles.graphArea}>
-                <View style={styles.graphLegend}>
-                    <Text>{this.maxValue}-</Text>
-                    <Text>0-</Text>
+                  <View style={styles.graphLegend}>
+                    <Text style={styles.textAxis}>{this.maxValue}</Text>
+                    <Text style={styles.textAxis}>0</Text>
                   </View>
                   <ScrollView
                     horizontal
@@ -94,8 +96,8 @@ class ChartModal extends React.Component<IProps, IState>  {
                     }
                   </ScrollView>
                   <View style={styles.graphLegend}>
-                    <Text>-{this.maxValue}</Text>
-                    <Text>-0</Text>
+                    <Text style={styles.textAxis}>{this.maxValue}</Text>
+                    <Text style={styles.textAxis}>0</Text>
                   </View>
                 </View>
                 <TouchableHighlight
@@ -151,12 +153,17 @@ const styles = StyleSheet.create({
   },
   graphArea: {
     flexDirection: 'row',
+    marginTop: 6,
   },
   graphLegend: {
     alignItems: 'center',
+    borderColor: 'black',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
     flexDirection: 'column',
-    height: MAX_HEIGHT * 1.1,
+    height: MAX_HEIGHT,
     justifyContent: 'space-between',
+    marginBottom: 20, // NOTE: this must be equal to the column date text font size
   },
   modalView: {
     alignItems: 'center',
@@ -173,7 +180,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    height: deviceWidth * 3 / 4,
+    height: deviceWidth * 4 / 5,
     width: deviceWidth,
   },
   openButton: {
@@ -187,6 +194,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  titleText: {
+  textTitle: {
+  },
+  textAxis: {
+    fontSize: 8,
   },
 });

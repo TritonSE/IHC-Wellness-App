@@ -1,9 +1,11 @@
 import * as React from 'react';
-import { Button, Dimensions, FlatList, Modal, SafeAreaView, ScrollView, StyleSheet, Text  , TouchableOpacity, View, TextInput } from 'react-native';
+import { Alert, Button, Dimensions, FlatList, Modal, SafeAreaView, ScrollView,
+         StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
+import { ListItem } from 'react-native-elements';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import reactNativeModalDropdown from 'react-native-modal-dropdown';
 
 // TODO replace interface in this file with this import after PoC editing questions is ready
 // import { ICheckinQuestion } from '../../../constants/Questions';
@@ -13,13 +15,14 @@ import CheckinSlider from '../../components/CheckinSlider';
 import CheckinTextInput from '../../components/CheckinTextInput';
 import CustomQuestion from '../../components/CustomQuestion';
 
-const width = Dimensions.get('window').width;
+const { height, width } = Dimensions.get('window');
 
+// TODO add optional members for sliders, e.g. minValue?: number; maxValue?: number;
 interface ICheckinQuestion {
   title: string;
   key: string;
   active: boolean;
-  type: 'numeric' | 'text';
+  type: 'slider' | 'text';
 }
 
 interface IProps {
@@ -32,21 +35,12 @@ interface IState {
   mood: number;
   journal: string;
   questions: ICheckinQuestion[];
+  // TODO give this a better name as another modal will be added
+  // e.g. isToggleQuestionsModalActive & isAddQuestionModalActive
   isVisible: boolean;
   addQuestionsIsVisible: boolean;
   customQuestionText: string;
 }
-
-// TODO these hardcoded values are to test the frontend behavior
-// but they will need to be replaced with data from backend
-const hardcodedQuestions: ICheckinQuestion[] = [
-  {
-    title: 'How is your mood?',
-    key: 'mood',
-    active: true,
-    type: 'numeric',
-  },
-];
 
 class CheckinPage extends React.Component<IProps, IState> {
   private readonly navigation: NavigationProp<{}> = this.props.navigation;
@@ -75,8 +69,6 @@ class CheckinPage extends React.Component<IProps, IState> {
                   { title: 'happiness', key: '2', active: true, type: 'slider' },
                   { title: 'journal', key: '3', active: true, type: 'slider' }]
     };
-
-    this.checkActiveStatus = this.checkActiveStatus.bind(this)
   }
 
   public componentWillUnmount() {
@@ -97,8 +89,6 @@ class CheckinPage extends React.Component<IProps, IState> {
     });
   }
 
-  // TODO: KeyboardAvoidingView did not work
-  // Will probably want to use react-native-keyboard-aware-scroll-view instead
   public render() {
     return (
       <View style={styles.pageView}>
@@ -157,24 +147,37 @@ class CheckinPage extends React.Component<IProps, IState> {
                 extraData={this.state}
               />
 
-<Modal visible={this.state.isVisible} animationType={'fade'} transparent={true}>
-              <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff', margin: 25 }}>
+            <Modal visible={this.state.isVisible} animationType={'fade'} transparent={true}>
+              <SafeAreaView style={{ height, width, flex: 1, backgroundColor: 'white' }}>
                 <FlatList
                   data={this.state.questions}
-                  renderItem={({ item, index, separators }) => (
+                  extraData={this.state}
+                  renderItem={({ item, index }) => (
                     <View style={{ padding: 5 }}>
-                      <TouchableOpacity
-                        onPress={ () => {
-                          this.state.questions[index].active =
-                          !this.state.questions[index].active; }}
-                      >
-                        <Text style={{backgroundColor: this.state.questions[index].active?'green':'red'}}>Question is currently {this.state.questions[index].active.toString()}</Text>
-                      </TouchableOpacity>
+                      <ListItem
+                        style={{ width }}
+                        title={item.title}
+                        rightIcon={
+                              (<Ionicons
+                                name="md-checkmark-circle"
+                                size={32}
+                                color={this.state.questions[index].active ? 'green' : 'white'}
+                              />)
+                        }
+                        onPress={(e) => {
+                          this.setState((prevState) => {
+                            const { questions: newQuestions, ...otherData } = prevState;
+                            const pressedQuestion = newQuestions[index];
+                            pressedQuestion.active = !pressedQuestion.active;
+                            return { questions: newQuestions, ...otherData };
+                          });
+                        }}
+                      />
                     </View>
                   )}
                 />
                 <Button
-                  title="hide modal"
+                  title="Close"
                   onPress={() => this.setState({ isVisible: false })}
                 />
               </SafeAreaView>
@@ -235,6 +238,12 @@ class CheckinPage extends React.Component<IProps, IState> {
               onPress={() => { CheckinBackend.clearAllData(); }}
             />
 
+            {/*
+              TODO change this to a full page modal, similar to Toggle Questions model
+              Modal contents should have a TextInput for question title and 2 buttons:
+              Cancel (for closing modal and not adding question, should reset state of TextInput)
+              Add (for adding question to this.state.questions, also resets state of TextInput)
+            */}
             <Button
               title="Add Question"
               onPress={() => { CheckinBackend.addQuestion('How?', 'how'); }}

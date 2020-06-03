@@ -6,7 +6,7 @@ import StoreSection from '../../../src/components/Store/StoreSection';
 import StoreBackend from '../../Business/StoreBackend';
 import AppHeader from '../../components/AppHeader';
 
-const { height, width } = Dimensions.get('window');
+const width = Dimensions.get('window').width;
 
 export default class StorePage extends React.Component<object, object> {
   constructor(props: object) {
@@ -15,10 +15,6 @@ export default class StorePage extends React.Component<object, object> {
 
   public componentDidMount() {
     console.log('TODO StorePage needs to check whether default store arrays exist yet');
-  }
-
-  ItemCardRenderer = () => {
-    
   }
 
   public render() {

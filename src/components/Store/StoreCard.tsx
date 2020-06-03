@@ -54,24 +54,24 @@ class StoreCard extends React.Component<IProps, IState> {
           onRequestClose={() => this.setModalVisible(false)}
         >
           <TouchableWithoutFeedback onPress={() => this.setModalVisible(false)}>
-          <View style={styles.modalScreen}>
-            <TouchableWithoutFeedback onPress={() => {}}>
-              <View style={styles.modalCard}>
-                <Image
-                  style={styles.modalImage}
-                  source={this.image}
-                />
-                <Text>{this.name}</Text>
-                <Button
-                  title={`Buy for $${this.price}`}
-                  onPress={() => {
-                    console.log(`Attempting to buy ${this.name} for $${this.price}`);
-                    StoreBackend.buyItem(this.name, this.sectionName);
-                  }}
-                />
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
+            <View style={styles.modalScreen}>
+              <TouchableWithoutFeedback onPress={() => {/* here so modal doesn't close onPress */}}>
+                <View style={styles.modalCard}>
+                  <Image
+                    style={styles.modalImage}
+                    source={this.image}
+                  />
+                  <Text>{this.name}</Text>
+                  <Button
+                    title={`Buy for $${this.price}`}
+                    onPress={() => {
+                      console.log(`Not implemented: Attempting to buy ${this.name} for $${this.price}`);
+                      // StoreBackend.buyItem(this.name, this.sectionName);
+                    }}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
           </TouchableWithoutFeedback>
         </Modal>
       </View>
@@ -94,6 +94,8 @@ const styles = StyleSheet.create({
   modalImage: {
     height: 200,
     width: 200,
+    borderRadius: 15,
+    marginTop: 10,
   },
   modalScreen: {
     alignContent: 'center',

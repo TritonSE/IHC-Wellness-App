@@ -70,7 +70,7 @@ export default class PlantPage extends React.Component<object, IState> {
 
   public swapBodyHandler(plantItem: IOwnedItem, index: number) {
     this.setState( (prevState: IState) => {
-      let newBodies = [...prevState.bodyItems];
+      let newBodies = [...prevState.plantBody];
       newBodies[index] = {name: plantItem.name}
       return {
         plantBody: newBodies,
@@ -90,15 +90,15 @@ export default class PlantPage extends React.Component<object, IState> {
     }));
   }
 
-  /*public addItem(plantItem: IPlantItem) {
+  public addItem(plantItem: IPlantItem) {
     this.setState( (prevState: IState) => {
-      let newBodies = [{name: plantItem.name},...prevState.bodyItems];
+      let newBodies = [{name: plantItem.name},...prevState.plantBody];
       console.log(JSON.stringify(prevState.bodyItems));
       return {
         plantBody: newBodies,
       };
     })
-  }*/
+  }
 
   public render() {
 
@@ -107,7 +107,7 @@ export default class PlantPage extends React.Component<object, IState> {
         <AppHeader title="Plant"/>
         <Button
           title="Add Item"
-          //onPress={() => this.addItem({ ...PlantBodies[0]} )}
+          onPress={() => this.addItem({ ...PlantBodies[0]} )}
         /> 
         <FlatList
           contentContainerStyle={styles.plantList}
