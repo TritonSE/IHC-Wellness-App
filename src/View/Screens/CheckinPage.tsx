@@ -67,12 +67,7 @@ class CheckinPage extends React.Component<IProps, IState> {
       questions: [{ title: 'how healthy...', key: '0', active: true, type: 'slider' },
                   { title: 'hours of sleep...', key: '1', active: true, type: 'slider' },
                   { title: 'happiness', key: '2', active: true, type: 'slider' },
-<<<<<<< HEAD
-                  { title: 'journal', key: '3', active: true, type: 'slider' },
-                  { title: 'custom q', key: 'placeholder custom q', active: true, type: 'slider' }],
-=======
                   { title: 'journal', key: '3', active: true, type: 'slider' }]
->>>>>>> d3d5e85e78011b2bf43ce7fc6ef9a9c27200ead3
     };
   }
 
@@ -104,57 +99,6 @@ class CheckinPage extends React.Component<IProps, IState> {
         >
           {/* TODO: Replace with FlatList, same style but in contentContainerStyle prop */}
           <ScrollView style={styles.questionWidth}>
-<<<<<<< HEAD
-
-            <CheckinSlider
-              title="How healthy are you feeling today?"
-              step={0.1}
-              minValue={0}
-              maxValue={10}
-              value={this.state.health}
-              onSlidingComplete={(val) => this.setState({ health: val })}
-            />
-
-              <CheckinSlider
-                title="How many hours of sleep did you get last night?"
-                step={0.1}
-                minValue={0}
-                maxValue={10}
-                value={this.state.hoursOfSleep}
-                onSlidingComplete={(val) => this.setState({ hoursOfSleep: val })}
-              />
-
-              <CheckinSlider
-                title="Are you happy?"
-                step={1}
-                minValue={0}
-                maxValue={1}
-                value={this.state.mood}
-                onSlidingComplete={(val) => this.setState({ mood: val })}
-              />
-
-              <CheckinTextInput
-                style={styles.textInputs}
-                title="Journal Entry"
-                titleColor="#000000"
-                multiline={true}
-                autocapital="none"
-                underlineColor="transparent"
-                finalText={this.state.journal}
-                onChangeText={(val) => this.setState({ journal: val })}
-              />
-
-              <CustomQuestion />
-
-              <Button
-                title="Add Custom Question"
-                onPress={() => {this.state.questions.push({ title: 'test', key: 'key', active: true, type: 'text' }); }}
-              />
-
-              <Button
-                title="Submit"
-                onPress={this.sendFormInfo}
-=======
             <FlatList
                 data={this.state.questions}
                 renderItem={({ item }) => {
@@ -201,7 +145,6 @@ class CheckinPage extends React.Component<IProps, IState> {
                   }
                 }}
                 extraData={this.state}
->>>>>>> d3d5e85e78011b2bf43ce7fc6ef9a9c27200ead3
               />
 
             <Modal visible={this.state.isVisible} animationType={'fade'} transparent={true}>

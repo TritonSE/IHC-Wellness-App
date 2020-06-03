@@ -35,7 +35,7 @@ class PlantCards extends React.Component<IProps, IState> {
   public setModalVisible = (visible) => {
     this.setState({ modalVisible: visible });
   }
-  
+
   render() {  
     const { modalVisible } = this.state;
 
