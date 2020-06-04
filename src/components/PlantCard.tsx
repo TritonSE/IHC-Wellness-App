@@ -1,47 +1,46 @@
 import * as React from 'react';
-import { Modal, StyleSheet, Text, TouchableHighlight, View, ScrollView, Image, TouchableOpacity, ImageSourcePropType } from "react-native";
+import { Image, ImageSourcePropType, Modal, ScrollView, StyleSheet,
+         Text, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 
-import { IPlantItem,
-  PlantBodies, PlantFooters, PlantHeaders,
-  PlantImages } from '../../constants/Plants';
+import { PlantImages } from '../../constants/Plants';
+import { IPlantItem } from '../Business/PlantBackend';
+import StoreBackend, { IOwnedItem } from '../Business/StoreBackend';
 
 interface IProps {
   modalTitle: string;
   transparent: boolean;
-  animationType?: string;
   exit?: string;
-  data: any;
-  swapPlant: (plant: IPlantItem) => void;
+  data: any; // TODO replace this with a StoreBackend call
+  swapPlant: (plant: IOwnedItem) => void;
 }
-  
+
 interface IState {
   modalVisible: boolean;
 }
 
 class PlantCards extends React.Component<IProps, IState> {
-  
+
   public static defaultProps = {
-    animationType: "slide",
-    exit: "Close",
+    exit: 'Close',
   };
 
-  constructor(props) {
+  constructor(props: IProps) {
     super(props);
     this.state = {
       modalVisible: false,
-    }
+    };
   }
 
-  public setModalVisible = (visible) => {
+  public setModalVisible = (visible: boolean) => {
     this.setState({ modalVisible: visible });
   }
 
-  render() {  
+  public render() {
     const { modalVisible } = this.state;
 
-    const dataArr = this.props.data.map((item, i, arr) => {
+    const dataArr = this.props.data.map((item: IOwnedItem, i: number) => {
 
-      let itemImage: ImageSourcePropType = PlantImages[item.name];
+      const itemImage: ImageSourcePropType = PlantImages[item.name];
 
       return (
         <View key={i}>
@@ -54,7 +53,7 @@ class PlantCards extends React.Component<IProps, IState> {
             <TouchableOpacity
             style={styles.openButton}
             onPress={() => {
-              this.props.swapPlant(item)
+              this.props.swapPlant(item);
             }}
           >
             <Image
@@ -64,13 +63,13 @@ class PlantCards extends React.Component<IProps, IState> {
           </TouchableOpacity>
           </View>
         </View>
-      )
+      );
     });
 
     return (
       <View style={styles.centeredView}>
         <Modal
-          animationType={this.props.animationType}
+          animationType="slide"
           transparent={this.props.transparent}
           visible={this.state.modalVisible}
         >
@@ -84,11 +83,11 @@ class PlantCards extends React.Component<IProps, IState> {
                   }}
                 >
                   {
-                    dataArr //Render the JSX in a ScrollView
+                    dataArr // Render the JSX in a ScrollView
                   }
                 </ScrollView>
               <TouchableHighlight
-                  style={{ ...styles.closeButton, backgroundColor: "#2196F3" }}
+                  style={{ ...styles.closeButton, backgroundColor: '#2196F3' }}
                   onPress={() => {
                     this.setModalVisible(!modalVisible);
                   }}
@@ -112,7 +111,7 @@ class PlantCards extends React.Component<IProps, IState> {
             />
           </TouchableOpacity>
 
-      </View>  
+      </View>
 
     );
   }
@@ -122,48 +121,48 @@ class PlantCards extends React.Component<IProps, IState> {
 export default PlantCards;
 
 const styles = StyleSheet.create({
-    centeredView: {
-      //flex: 2,
-      justifyContent: "center",
-      alignItems: "center",
-      //marginTop: 20,
+  centeredView: {
+      // flex: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+      // marginTop: 20,
+  },
+  modalView: {
+    margin: 0,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    modalView: {
-      margin: 0,
-      backgroundColor: "white",
-      borderRadius: 20,
-      padding: 35,
-      alignItems: "center",
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5,
-      width: 350,
-      height: 350,
-    },
-    openButton: {
-      //backgroundColor: "#F194FF",
-      borderRadius: 20,
-      //padding: 10,
-      elevation: 2,
-    },
-    closeButton: {
-      backgroundColor: "#F194FF",
-      borderRadius: 20,
-      padding: 10,
-      elevation: 2,
-    },
-    textStyle: {
-      color: "black",
-      fontWeight: "bold",
-      textAlign: "center",
-    },
-    plantStyle: {
-      width: 100,
-      height: 100,
-    }
-  });
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    width: 350,
+    height: 350,
+  },
+  openButton: {
+      // backgroundColor: "#F194FF",
+    borderRadius: 20,
+      // padding: 10,
+    elevation: 2,
+  },
+  closeButton: {
+    backgroundColor: '#F194FF',
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  textStyle: {
+    color: 'black',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  plantStyle: {
+    width: 100,
+    height: 100,
+  },
+});

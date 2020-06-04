@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { Dimensions, FlatList, ImageSourcePropType, StyleSheet, View, TouchableOpacity, Text, Button } from 'react-native';
+import { Button, Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { PlantBodies, PlantFooters, PlantHeaders,
-         PlantImages } from '../../../constants/Plants';
+import { PlantBodies, PlantFooters, PlantHeaders, PlantImages } from '../../../constants/Plants';
 import PlantBackend, { IPlantItem } from '../../Business/PlantBackend';
+import { IOwnedItem } from '../../Business/StoreBackend';
 import AppHeader from '../../components/AppHeader';
 import PlantCard from '../../components/PlantCard';
-import { IOwnedItem } from '../../Business/StoreBackend';
 
 interface IState {
   plantBody: IPlantItem[];
@@ -37,25 +36,23 @@ export default class PlantPage extends React.Component<object, IState> {
       plantBody: [...PlantBodies],
       plantFooter: PlantFooters[0],
       plantHeader: PlantHeaders[0],
-      // hard coded arrays
-      // TODO remove prices here, only name is needed for rendering
-      // so IPlantItem only has the name field
+      // TODO remove these hard coded arrays
       headerItems: [
-        { name: "Sunflower", price: 1.25 },
-        { name: "Carnation", price: 1.25 },
-        { name: "redRose", price: 1.25 }
+        { name: 'Sunflower' },
+        { name: 'Carnation' },
+        { name: 'redRose' },
       ],
       bodyItems: [
-        { name: "Body", price: 1.25 },
-        { name: "Long Body", price: 2.5 },
-        { name: "Stem", price: 1.25 }
+        { name: 'Body' },
+        { name: 'Long Body' },
+        { name: 'Stem' },
       ],
       footerItems: [
-        { name: "Clay", price: 1.25 },
-        { name: "Terracotta", price: 1.25 },
-        { name: "linedVase", price: 1.25 },
-        { name: "redPot", price: 1.25 },
-        { name: "standardPot", price: 1.25 }
+        { name: 'Clay' },
+        { name: 'Terracotta' },
+        { name: 'linedVase' },
+        { name: 'redPot' },
+        { name: 'standardPot' },
       ],
     };
     // this.plantController.getBody();
@@ -69,35 +66,35 @@ export default class PlantPage extends React.Component<object, IState> {
   }
 
   public swapBodyHandler(plantItem: IOwnedItem, index: number) {
-    this.setState( (prevState: IState) => {
-      let newBodies = [...prevState.plantBody];
-      newBodies[index] = {name: plantItem.name}
+    this.setState((prevState: IState) => {
+      const newBodies = [...prevState.plantBody];
+      newBodies[index] = { name: plantItem.name };
       return {
         plantBody: newBodies,
       };
-    })
+    });
   }
 
   public swapHeaderHandler(plantItem: IOwnedItem) {
-    this.setState( (prevState: IState) => ({
-      plantHeader: {name: plantItem.name},
+    this.setState((prevState: IState) => ({
+      plantHeader: { name: plantItem.name },
     }));
   }
 
   public swapFooterHandler(plantItem: IOwnedItem) {
-    this.setState( (prevState: IState) => ({
-      plantFooter: {name: plantItem.name},
+    this.setState((prevState: IState) => ({
+      plantFooter: { name: plantItem.name },
     }));
   }
 
   public addItem(plantItem: IPlantItem) {
-    this.setState( (prevState: IState) => {
-      let newBodies = [{name: plantItem.name},...prevState.plantBody];
+    this.setState((prevState: IState) => {
+      const newBodies = [{ name: plantItem.name }, ...prevState.plantBody];
       console.log(JSON.stringify(prevState.bodyItems));
       return {
         plantBody: newBodies,
       };
-    })
+    });
   }
 
   public render() {
@@ -107,35 +104,42 @@ export default class PlantPage extends React.Component<object, IState> {
         <AppHeader title="Plant"/>
         <Button
           title="Add Item"
-          onPress={() => this.addItem({ ...PlantBodies[0]} )}
-        /> 
+          onPress={() => this.addItem({ ...PlantBodies[0] })}
+        />
         <FlatList
           contentContainerStyle={styles.plantList}
           data={this.state.plantBody}
           extraData={this.state}
-          ListHeaderComponent={ this.renderPlantItem(this.state.plantHeader, styles.plantItem, this.state.headerItems, "header") }
-          ListFooterComponent={ this.renderPlantItem(this.state.plantFooter, styles.plantItem, this.state.footerItems, "footer") }
-          renderItem={({ item, index }) => {
-            return this.renderPlantItem(item, styles.plantItem, this.state.bodyItems, "body", index);
-          }}
+          ListHeaderComponent={
+            this.renderPlantItem(this.state.plantHeader, styles.plantItem, this.state.headerItems, 'header')
+          }
+          ListFooterComponent={
+            this.renderPlantItem(this.state.plantFooter, styles.plantItem, this.state.footerItems, 'footer')
+          }
+          renderItem={
+            ({ item, index }) => this.renderPlantItem(item, styles.plantItem, this.state.bodyItems, 'body', index)
+          }
           keyExtractor={(item, index) => index.toString()}
         />
      </View>
     );
   }
 
+  // TODO remove data parameter, get data in PlantCard with call to StoreBackend
   private renderPlantItem(plantItem: IPlantItem, plantStyle: object, data: any, section: string, index?: number) {
 
-    //let itemImage: ImageSourcePropType = PlantImages[plantItem.name];
+    // let itemImage: ImageSourcePropType = PlantImages[plantItem.name];
 
-    let swapHandler = section === "body" ? (swapItem: IOwnedItem) => this.swapBodyHandler(swapItem, index) 
-      : section === "header" ? (swapItem: IOwnedItem) => this.swapHeaderHandler(swapItem)
-      : (swapItem: IOwnedItem) => this.swapFooterHandler(swapItem)
+    const swapHandler = section === 'body'
+                        ? (swapItem: IOwnedItem) => this.swapBodyHandler(swapItem, index || 0)
+                        : section === 'header'
+                        ? (swapItem: IOwnedItem) => this.swapHeaderHandler(swapItem)
+                        : (swapItem: IOwnedItem) => this.swapFooterHandler(swapItem);
 
     return (
       <PlantCard
         modalTitle={ plantItem.name }
-        transparent={ true } 
+        transparent={ true }
         data={ data }
         swapPlant={ swapHandler }
       />
@@ -160,5 +164,5 @@ const styles = StyleSheet.create({
   plantList: {
     width,
     alignItems: 'center',
-  }
+  },
 });

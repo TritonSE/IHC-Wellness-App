@@ -13,7 +13,6 @@ import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
 import CheckinSlider from '../../components/CheckinSlider';
 import CheckinTextInput from '../../components/CheckinTextInput';
-import CustomQuestion from '../../components/CustomQuestion';
 
 // TODO add a call to addMoney when user submits a checkin
 import StoreBackend from '../../Business/StoreBackend';
@@ -178,10 +177,10 @@ class CheckinPage extends React.Component<IProps, IState> {
                       }
                       onPress={(e) => {
                         this.setState((prevState) => {
-                          const { questions: newQuestions, ...otherData } = prevState;
+                          const { questions: newQuestions } = prevState;
                           const pressedQuestion = newQuestions[index];
                           pressedQuestion.active = !pressedQuestion.active;
-                          return { questions: newQuestions, ...otherData };
+                          return { questions: newQuestions };
                         });
                       }}
                     />
@@ -213,12 +212,10 @@ class CheckinPage extends React.Component<IProps, IState> {
                       active: true,
                       type: 'text',
                     };
-                    this.setState((prevState: IState) => {
-                      const { addModalVisible, questions, ...otherData } = prevState;
+                    this.setState((prevState) => {
                       return {
                         addModalVisible: false,
                         questions: [...prevState.questions, newQuestion],
-                        ...otherData,
                       };
                     });
                   }}
