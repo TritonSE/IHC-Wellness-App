@@ -10,11 +10,20 @@ export interface IOwnedItem {
   available: boolean;
 }
 
-export interface IOwnedObject {
+export interface IOwned {
   headers: IOwnedItem[];
   bodies: IOwnedItem[];
   footers: IOwnedItem[];
 }
+
+export enum OwnedSectionName {
+  headers = 'headers',
+  bodies = 'bodies',
+  footers = 'footers',
+}
+
+const OWNED_KEY = 'owned';
+const MONEY_KEY = 'Money';
 
 /**
  * Class  for StoreBackend model
@@ -23,13 +32,9 @@ export interface IOwnedObject {
  * default ownedObject
  */
 export default class StoreBackend extends React.Component<object, object> {
-  private static instance: StoreBackend | null = null;
-  private static money: number = 0;
-  private static ownedObject: {
-    headers: IOwnedItem[],
-    bodies: IOwnedItem[],
-    footers: IOwnedItem[],
-  };
+  private static instance: StoreBackend;
+  private static money: number = -1;
+  private static ownedObject: IOwned;
 
   /**
    * Creates storeController and ownedObject
@@ -39,18 +44,7 @@ export default class StoreBackend extends React.Component<object, object> {
     super(props);
     console.log('StoreController created');
 
-    // gets the owned array from asyncstorage
-    AsyncStorage.getItem('owned').then((result) => {
-      if (result === null) {
-        StoreBackend.ownedObject = StoreBackend.createDefaultOwnedObject();
-      } else {
-        StoreBackend.ownedObject = JSON.parse(result);
-      }
-      // TODO: Note, this will not work as single parens '' are used
-      // Template literal strings use backticks, ``
-      console.log('owned array is ${StoreBackend.ownedObject} ');
-    });
-
+    // TODO replace with logic similar to the above getItem
     StoreBackend.setMoney(1000);
   }
 
@@ -67,39 +61,44 @@ export default class StoreBackend extends React.Component<object, object> {
   /**
    * @returns current owned array
    */
-  public getOwned() {
-    console.log('Getting the owned array');
+  public async getOwned() {
+    console.log(`StoreBackend getOwned(): ${StoreBackend.ownedObject}`);
+    if (StoreBackend.ownedObject) return StoreBackend.ownedObject;
+
+    console.log('Getting the owned object from storage');
+
+    // gets the owned array from asyncstorage
+    const ownedString = await AsyncStorage.getItem(OWNED_KEY);
+    if (ownedString === null) {
+      StoreBackend.ownedObject = StoreBackend.createDefaultOwnedObject();
+    } else {
+      StoreBackend.ownedObject = JSON.parse(ownedString);
+    }
+
+    console.log(`owned array is ${JSON.stringify(StoreBackend.ownedObject)}`);
     return StoreBackend.ownedObject;
   }
 
   /**
-   * @param newOwned new owned object to set to
+   * @param newOwnedObject new owned object to set to
    */
-  public setOwned(newOwnedObject: IOwnedObject) {
+  public setOwned(newOwnedObject: IOwned): Promise<void> {
     // sets member variable
     StoreBackend.ownedObject = newOwnedObject;
-    // sets async storage
-    AsyncStorage.setItem('owned', JSON.stringify(newOwnedObject)).then(() => {
-      console.log('Successfully set owned array');
-    });
-  }
 
-  /**
-   * sets money amount
-   * @param amount new money amount
-   */
-  private static setMoney(amount: number) {
-    this.money = amount;
-    AsyncStorage.setItem('Money', amount.toString()).then(() => {
-      console.log('Successfully updated money. Current money owned: ${this.money}');
-    });
-    return this.money;
+    // sets async storage
+    return AsyncStorage.setItem(OWNED_KEY, JSON.stringify(newOwnedObject));
   }
 
   /**
    * @returns current amount of money
    */
-  public getMoney() {
+  public async getMoney() {
+    if (StoreBackend.money < 0) {
+      const moneyString = await AsyncStorage.getItem(MONEY_KEY);
+      StoreBackend.money = JSON.parse(moneyString || '0');
+    }
+
     return StoreBackend.money;
   }
 
@@ -127,55 +126,72 @@ export default class StoreBackend extends React.Component<object, object> {
   }
 
   /**
+   * sets money amount
+   * @param amount new money amount
+   */
+  private static setMoney(amount: number) {
+    this.money = amount;
+    AsyncStorage.setItem(MONEY_KEY, amount.toString()).then(() => {
+      console.log(`Successfully updated money. Current money owned: ${this.money}`);
+    });
+    return this.money;
+  }
+
+  /**
    * creates a default owned array and @returns it
    */
   private static createDefaultOwnedObject() {
     // creates array of all the headers and set the first item to be used
     const ownedPlantHeaders: IOwnedItem[] = PlantHeaders.map((header: IStoreItem) => {
       return {
-        ...header,
+        name: header.name,
         owned: 0,
         used: 0,
         available: false,
       };
     });
-    ownedPlantHeaders[0].owned = 1;
+    ownedPlantHeaders[0].owned = 2;
     ownedPlantHeaders[0].used = 1;
+    ownedPlantHeaders[0].available = true;
+    console.log(`createDefaultOwnedObject: ${JSON.stringify(ownedPlantHeaders[0])}`);
 
     // creates array of all the bodies and set the first item to be used
     const ownedPlantBodies: IOwnedItem[] = PlantBodies.map((body: IStoreItem) => {
       return {
-        ...body,
+        name: body.name,
         owned: 0,
         used: 0,
         available: false,
       };
     });
-    ownedPlantBodies[0].owned = 1;
+    ownedPlantBodies[0].owned = 2;
     ownedPlantBodies[0].used = 1;
+    ownedPlantBodies[0].available = true;
 
     // creates array of all the footers and set the first item to be used
     const ownedPlantFooters: IOwnedItem[] = PlantFooters.map((footer: IStoreItem) => {
       return {
-        ...footer,
+        name: footer.name,
         owned: 0,
         used: 0,
         available: false,
       };
     });
-    ownedPlantFooters[0].owned = 1;
+    ownedPlantFooters[0].owned = 2;
     ownedPlantFooters[0].used = 1;
+    ownedPlantFooters[0].available = true;
 
-    const defaultOwned: IOwnedObject = {
+    const defaultOwned: IOwned = {
       headers: ownedPlantHeaders,
       bodies: ownedPlantBodies,
       footers: ownedPlantFooters,
     };
+
     const stringifiedItem = JSON.stringify(defaultOwned);
-    AsyncStorage.setItem('owned', stringifiedItem).then(() => {
+    AsyncStorage.setItem(OWNED_KEY, stringifiedItem).then(() => {
       console.log('default owned array set');
     });
-    console.log('Create Default Owned Array was called');
+
     return defaultOwned;
   }
 
@@ -214,7 +230,7 @@ export default class StoreBackend extends React.Component<object, object> {
       sectionArray.push(item);
     }
     StoreBackend.ownedObject[sectionName] = sectionArray;
-    AsyncStorage.setItem('owned', JSON.stringify(StoreBackend.ownedObject)).then(() => {
+    AsyncStorage.setItem(OWNED_KEY, JSON.stringify(StoreBackend.ownedObject)).then(() => {
       console.log('Successfully updated owned array');
     });
 
@@ -264,7 +280,7 @@ export default class StoreBackend extends React.Component<object, object> {
         }
 
         StoreBackend.money -= cost;
-        AsyncStorage.setItem('Money', StoreBackend.money.toString()).then(() => {
+        AsyncStorage.setItem(MONEY_KEY, StoreBackend.money.toString()).then(() => {
           console.log('Cost of item has been successfully deducted from your balance');
         });
 
@@ -275,7 +291,7 @@ export default class StoreBackend extends React.Component<object, object> {
         if (itemAfterUpdate != null) {
           sectionArray[i] = itemAfterUpdate;
           StoreBackend.ownedObject[sectionName] = sectionArray;
-          AsyncStorage.setItem('owned', JSON.stringify(StoreBackend.ownedObject)).then(() => {
+          AsyncStorage.setItem(OWNED_KEY, JSON.stringify(StoreBackend.ownedObject)).then(() => {
             console.log('owned array has been successfully updated in asyncstorage after an item purchase');
           });
         }

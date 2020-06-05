@@ -51,7 +51,7 @@ class CheckinPage extends React.Component<IProps, IState> {
   });
 
   private removeExitListener = this.navigation.addListener('blur', (e) => {
-    console.log('CheckinPage exit, nothing to do here');
+    // console.log('CheckinPage exit, nothing to do here');
   });
 
   constructor(props: IProps) {
@@ -153,7 +153,7 @@ class CheckinPage extends React.Component<IProps, IState> {
                     // TODO no dynamic keys yet
                     // this.setState({customQuestion: val})
                   }}
-                />
+                />;
               }
             }}
           />
@@ -175,7 +175,7 @@ class CheckinPage extends React.Component<IProps, IState> {
                               color={this.state.questions[index].active ? 'green' : 'white'}
                             />)
                       }
-                      onPress={(e) => {
+                      onPress={() => {
                         this.setState((prevState) => {
                           const { questions: newQuestions } = prevState;
                           const pressedQuestion = newQuestions[index];
@@ -204,7 +204,7 @@ class CheckinPage extends React.Component<IProps, IState> {
               <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                 <Button
                   title="Add"
-                  onPress={(e) => {
+                  onPress={() => {
                     const newQuestion = {
                       title: this.state.customQuestionText,
                       // TODO need a proper key, number should be index not random
@@ -286,12 +286,12 @@ class CheckinPage extends React.Component<IProps, IState> {
 
           <Button
             title="Get Used Question"
-            onPress={() => { CheckinBackend.getUsedQuestions(this.state.questions, true); }}
+            onPress={() => { CheckinBackend.getQuestionsByActive(this.state.questions, true); }}
           />
 
           <Button
             title="Get Non Used Question"
-            onPress={() => { CheckinBackend.getUsedQuestions(this.state.questions, false); }}
+            onPress={() => { CheckinBackend.getQuestionsByActive(this.state.questions, false); }}
           />
         </KeyboardAwareScrollView>
       </View>

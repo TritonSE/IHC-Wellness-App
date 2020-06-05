@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { NavigationProp } from '@react-navigation/native';
 
@@ -23,17 +23,19 @@ export default class StorePage extends React.Component<IProps, IState> {
   private storeController: StoreBackend = StoreBackend.getInstance();
 
   private removeEnterListener = this.navigation.addListener('focus', (e) => {
-    const currMoney: number = this.storeController.getMoney();
-    if (currMoney !== this.state.money) {
-      this.setState(() => ({ money: currMoney }));
-    }
+    this.storeController.getMoney()
+    .then((currMoney) => {
+      if (currMoney !== this.state.money) {
+        this.setState(() => ({ money: currMoney }));
+      }
+    });
   });
 
   constructor(props: IProps) {
     super(props);
 
     this.state = {
-      money: this.storeController.getMoney(),
+      money: 0,
     };
   }
 
@@ -45,6 +47,7 @@ export default class StorePage extends React.Component<IProps, IState> {
     return (
       <View style={styles.pageContainer}>
         <AppHeader title="Store"/>
+        <Text>Money: ${this.state.money}</Text>
         <ScrollView style={styles.scrollContainer}>
 
           <StoreSection

@@ -1,16 +1,14 @@
 import * as React from 'react';
 import { Image, ImageSourcePropType, Modal, ScrollView, StyleSheet,
-         Text, TouchableHighlight, TouchableOpacity, View } from 'react-native';
+         Text, TouchableHighlight, TouchableOpacity, View, Dimensions } from 'react-native';
 
 import { PlantImages } from '../../constants/Plants';
-import { IPlantItem } from '../Business/PlantBackend';
-import StoreBackend, { IOwnedItem } from '../Business/StoreBackend';
+import { IOwnedItem } from '../Business/StoreBackend';
 
 interface IProps {
-  modalTitle: string;
+  plantName: string;
   transparent: boolean;
-  exit?: string;
-  data: any; // TODO replace this with a StoreBackend call
+  data: IOwnedItem[]; // TODO replace this with a StoreBackend call
   swapPlant: (plant: IOwnedItem) => void;
 }
 
@@ -18,12 +16,9 @@ interface IState {
   modalVisible: boolean;
 }
 
+const width = Dimensions.get('window').width;
+
 class PlantCards extends React.Component<IProps, IState> {
-
-  public static defaultProps = {
-    exit: 'Close',
-  };
-
   constructor(props: IProps) {
     super(props);
     this.state = {
@@ -75,12 +70,10 @@ class PlantCards extends React.Component<IProps, IState> {
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Text>{this.props.modalTitle}</Text>
+              <Text>{this.props.plantName}</Text>
               <ScrollView
                   horizontal
-                  contentContainerStyle={{
-                    alignItems: 'flex-end',
-                  }}
+                  contentContainerStyle={styles.ownedList}
                 >
                   {
                     dataArr // Render the JSX in a ScrollView
@@ -92,7 +85,7 @@ class PlantCards extends React.Component<IProps, IState> {
                     this.setModalVisible(!modalVisible);
                   }}
                 >
-                  <Text style={styles.textStyle}>{this.props.exit}</Text>
+                  <Text style={styles.textStyle}>Close</Text>
                 </TouchableHighlight>
 
               </View>
@@ -106,7 +99,7 @@ class PlantCards extends React.Component<IProps, IState> {
             }}
           >
             <Image
-                source={PlantImages[this.props.modalTitle]}
+                source={PlantImages[this.props.plantName]}
                 style={styles.plantStyle}
             />
           </TouchableOpacity>
@@ -145,10 +138,15 @@ const styles = StyleSheet.create({
     height: 350,
   },
   openButton: {
-      // backgroundColor: "#F194FF",
+    // backgroundColor: "#F194FF",
     borderRadius: 20,
-      // padding: 10,
+    // padding: 10,
     elevation: 2,
+  },
+  ownedList: {
+    width,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   closeButton: {
     backgroundColor: '#F194FF',

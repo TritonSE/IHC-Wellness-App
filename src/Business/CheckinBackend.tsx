@@ -47,7 +47,6 @@ const CheckinBackend = Object.freeze({
         promise: asyncPromise,
       };
     }
-    console.log(questionArray);
     return questionArray;
   },
 
@@ -166,7 +165,6 @@ const CheckinBackend = Object.freeze({
     // looks to find all the questions that are used (or not used)
     const matchingQuestions = questionArray.filter((question) => question.active === active);
 
-    console.log(matchingQuestions);
     return matchingQuestions;
 
   },

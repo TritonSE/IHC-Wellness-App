@@ -2,7 +2,7 @@ import * as React from 'react';
 import { AsyncStorage } from 'react-native';
 
 import { PlantBodies,  PlantFooters, PlantHeaders } from '../../constants/Plants';
-import StoreBackend, { IOwnedItem, IOwnedObject } from './StoreBackend';
+import StoreBackend, { IOwnedItem, IOwned } from './StoreBackend';
 
 export interface IPlantItem {
   name: string;
@@ -13,6 +13,12 @@ export interface IPlant {
   header: IPlantItem;
   body: IPlantItem[];
   footer: IPlantItem;
+}
+
+export enum PlantSectionName {
+  header = 'header',
+  body = 'body',
+  footer = 'footer',
 }
 
 export default class PlantBackend extends React.Component<object, object> {
@@ -31,16 +37,6 @@ export default class PlantBackend extends React.Component<object, object> {
 
     // sets the storeController
     this.storeController = StoreBackend.getInstance();
-
-    AsyncStorage.getItem('PlantArray')
-    .then((result) => {
-      if (result === null) {
-        PlantBackend.plantArray = PlantBackend.createDefaultPlantArray();
-      } else {
-        PlantBackend.plantArray = JSON.parse(result);
-      }
-      console.log('plantArray ${PlantBackend.plantArray}');
-    });
   }
 
   /**
@@ -58,10 +54,22 @@ export default class PlantBackend extends React.Component<object, object> {
   /**
    * Gets the a specific plant from the plant array
    * @param: the index of the plant you want
-   * @returns: the plant at specific index
+   * @returns: the promise of the plant at specific index
    */
-  public getPlant(index: number = 0) {
-    return PlantBackend.plantArray[index];
+  public async getPlant(index: number = 0) {
+    if (PlantBackend.plantArray && PlantBackend.plantArray[index]) {
+      return PlantBackend.plantArray[index];
+    }
+
+    return AsyncStorage.getItem('PlantArray')
+    .then((result) => {
+      if (result === null) {
+        PlantBackend.plantArray = PlantBackend.createDefaultPlantArray();
+      } else {
+        PlantBackend.plantArray = JSON.parse(result);
+      }
+      return PlantBackend.plantArray[index];
+    });
   }
 
   /**
@@ -121,7 +129,7 @@ export default class PlantBackend extends React.Component<object, object> {
    *          else, returns body of plant and new ownedArray
    */
   public addBody(plantIndex: number = 0, newBodyName: string) {
-    const tempOwned: IOwnedObject = this.storeController.getOwned();
+    const tempOwned: IOwned = this.storeController.getOwned();
     let itemIndex = 0;
     const item = tempOwned.bodies.find((itemToCheck: IOwnedItem, index: number) => {
       if (itemToCheck.name === newBodyName) {
@@ -295,7 +303,7 @@ export default class PlantBackend extends React.Component<object, object> {
     let oldIndex = 0;
 
     // find oldItem for later update
-    const tempOwnedArray: IOwnedObject = this.storeController.getOwned();
+    const tempOwnedArray: IOwned = this.storeController.getOwned();
     for (let i = 0; i < tempOwnedArray.headers.length; i ++) {
       if (tempOwnedArray.headers[i].name === oldHeaderName) {
         console.log('found old header');
@@ -360,7 +368,7 @@ export default class PlantBackend extends React.Component<object, object> {
     let oldIndex = 0;
 
     // find oldItem for later update
-    const tempOwnedArray: IOwnedObject = this.storeController.getOwned();
+    const tempOwnedArray: IOwned = this.storeController.getOwned();
     for (let i = 0; i < tempOwnedArray.footers.length; i ++) {
       if (tempOwnedArray.footers[i].name === oldFooterName) {
         console.log('found old footer');

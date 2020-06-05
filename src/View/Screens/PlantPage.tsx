@@ -1,68 +1,65 @@
 import * as React from 'react';
-import { Button, Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, Dimensions, FlatList, StyleSheet, View } from 'react-native';
 
-import { PlantBodies, PlantFooters, PlantHeaders, PlantImages } from '../../../constants/Plants';
-import PlantBackend, { IPlantItem } from '../../Business/PlantBackend';
-import { IOwnedItem } from '../../Business/StoreBackend';
+import { PlantBodies, PlantFooters, PlantHeaders } from '../../../constants/Plants';
+import PlantBackend, { IPlant, IPlantItem } from '../../Business/PlantBackend';
+import StoreBackend, { IOwned, IOwnedItem } from '../../Business/StoreBackend';
 import AppHeader from '../../components/AppHeader';
 import PlantCard from '../../components/PlantCard';
 
 interface IState {
+  // Members of the plant
   plantBody: IPlantItem[];
   plantFooter: IPlantItem;
   plantHeader: IPlantItem;
-  headerItems: IPlantItem[];
-  bodyItems: IPlantItem[];
-  footerItems: IPlantItem[];
+
+  // Members of the owned items that can be applied to the plant
+  ownedHeaders: IOwnedItem[];
+  ownedBodies: IOwnedItem[];
+  ownedFooters: IOwnedItem[];
 }
 
 const width = Dimensions.get('window').width;
 
-// This class is further from completion than StorePage,
-// but the elements needed to play around with style are here
 export default class PlantPage extends React.Component<object, IState> {
   private readonly plantController: PlantBackend = PlantBackend.getInstance();
+  private readonly storeController: StoreBackend = StoreBackend.getInstance();
 
   constructor(props: object) {
     super(props);
-    // TODO use this.plantController to set initial state to initial values
-    // by calling its get methods and using setState with the resulting value
-    this.plantController = PlantBackend.getInstance();
+
+    // Set state to incorrect values before actual values are loaded in componentDidMount()
     this.state = {
-      // TODO clean backend functions and uncomment these
-      // plantBody: PlantBackend.getBody(0),
-      // plantFooter: PlantBackend.getFooter(0),
-      // plantHeader: PlantBackend.getHeader(0),
       plantBody: [...PlantBodies],
       plantFooter: PlantFooters[0],
       plantHeader: PlantHeaders[0],
-      // TODO remove these hard coded arrays
-      headerItems: [
-        { name: 'Sunflower' },
-        { name: 'Carnation' },
-        { name: 'redRose' },
-      ],
-      bodyItems: [
-        { name: 'Body' },
-        { name: 'Long Body' },
-        { name: 'Stem' },
-      ],
-      footerItems: [
-        { name: 'Clay' },
-        { name: 'Terracotta' },
-        { name: 'linedVase' },
-        { name: 'redPot' },
-        { name: 'standardPot' },
-      ],
+
+      ownedHeaders: [{ name: 'Loading', owned: 0, used: 0, available: false }],
+      ownedBodies: [{ name: 'Loading', owned: 0, used: 0, available: false }],
+      ownedFooters: [{ name: 'Loading', owned: 0, used: 0, available: false }],
     };
-    // this.plantController.getBody();
   }
 
-  public async componentDidMount() {
-    // TODO componentDidMount can be async, if any async operations aren't
-    //
-    // await this.PlantController.getInitialValues();
-    // this.setState();
+  public componentDidMount() {
+    this.plantController.getPlant()
+    .then((plant: IPlant) => {
+      this.setState((prevState: IState) => ({
+        plantHeader: plant.header,
+        plantBody: plant.body,
+        plantFooter: plant.footer,
+      }));
+    });
+
+    this.storeController.getOwned()
+    .then((owned: IOwned) => {
+      this.setState((prevState: IState) => ({
+        ownedHeaders: owned.headers.filter((o) => o.available),
+        ownedBodies: owned.bodies.filter((o) => o.available),
+        ownedFooters: owned.footers.filter((o) => o.available),
+      }));
+    });
+
+    setTimeout(() => console.log(`ownedHeaders: ${JSON.stringify(this.state.ownedHeaders)}`), 1000);
   }
 
   public swapBodyHandler(plantItem: IOwnedItem, index: number) {
@@ -90,7 +87,7 @@ export default class PlantPage extends React.Component<object, IState> {
   public addItem(plantItem: IPlantItem) {
     this.setState((prevState: IState) => {
       const newBodies = [{ name: plantItem.name }, ...prevState.plantBody];
-      console.log(JSON.stringify(prevState.bodyItems));
+      console.log(JSON.stringify(prevState.ownedBodies));
       return {
         plantBody: newBodies,
       };
@@ -111,13 +108,13 @@ export default class PlantPage extends React.Component<object, IState> {
           data={this.state.plantBody}
           extraData={this.state}
           ListHeaderComponent={
-            this.renderPlantItem(this.state.plantHeader, styles.plantItem, this.state.headerItems, 'header')
+            this.renderPlantItem(this.state.plantHeader, styles.plantItem, this.state.ownedHeaders, 'header')
           }
           ListFooterComponent={
-            this.renderPlantItem(this.state.plantFooter, styles.plantItem, this.state.footerItems, 'footer')
+            this.renderPlantItem(this.state.plantFooter, styles.plantItem, this.state.ownedFooters, 'footer')
           }
           renderItem={
-            ({ item, index }) => this.renderPlantItem(item, styles.plantItem, this.state.bodyItems, 'body', index)
+            ({ item, index }) => this.renderPlantItem(item, styles.plantItem, this.state.ownedBodies, 'body', index)
           }
           keyExtractor={(item, index) => index.toString()}
         />
@@ -138,7 +135,7 @@ export default class PlantPage extends React.Component<object, IState> {
 
     return (
       <PlantCard
-        modalTitle={ plantItem.name }
+        plantName={ plantItem.name }
         transparent={ true }
         data={ data }
         swapPlant={ swapHandler }
