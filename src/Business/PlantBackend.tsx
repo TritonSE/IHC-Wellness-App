@@ -32,7 +32,8 @@ export default class PlantBackend extends React.Component<object, object> {
     // sets the storeController
     this.storeController = StoreBackend.getInstance();
 
-    AsyncStorage.getItem('PlantArray').then((result) => {
+    AsyncStorage.getItem('PlantArray')
+    .then((result) => {
       if (result === null) {
         PlantBackend.plantArray = PlantBackend.createDefaultPlantArray();
       } else {
@@ -59,7 +60,7 @@ export default class PlantBackend extends React.Component<object, object> {
    * @param: the index of the plant you want
    * @returns: the plant at specific index
    */
-  public getPlantArray (index: number) {
+  public getPlant(index: number = 0) {
     return PlantBackend.plantArray[index];
   }
 
@@ -106,7 +107,8 @@ export default class PlantBackend extends React.Component<object, object> {
       PlantBackend.plantArray[i] = currentPlant;
     }
     // push plantArray
-    AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray)).then(() => {
+    AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray))
+    .then(() => {
       console.log('The plant array has been updated after an item has been bought');
     });
   }
@@ -119,9 +121,9 @@ export default class PlantBackend extends React.Component<object, object> {
    *          else, returns body of plant and new ownedArray
    */
   public addBody(plantIndex: number = 0, newBodyName: string) {
-    const tempOwnedArray: IOwnedObject = this.storeController.getOwned();
+    const tempOwned: IOwnedObject = this.storeController.getOwned();
     let itemIndex = 0;
-    const item = tempOwnedArray.bodies.find((itemToCheck: IOwnedItem, index: number) => {
+    const item = tempOwned.bodies.find((itemToCheck: IOwnedItem, index: number) => {
       if (itemToCheck.name === newBodyName) {
         itemIndex = index;
         return true;
@@ -141,7 +143,7 @@ export default class PlantBackend extends React.Component<object, object> {
     // update item itself and puts the updated item back into owned array
     item.used++;
     item.available = item.owned > item.used;
-    tempOwnedArray.bodies[itemIndex] = item;
+    tempOwned.bodies[itemIndex] = item;
 
     // add this item to the end of the body array and then update plantArray
     const currentPlant = PlantBackend.plantArray[plantIndex];
@@ -149,9 +151,10 @@ export default class PlantBackend extends React.Component<object, object> {
     currentPlant.body.push(newPlantItem);
     PlantBackend.plantArray[plantIndex] = currentPlant;
 
-    this.storeController.setOwned(tempOwnedArray);
+    this.storeController.setOwned(tempOwned);
 
-    AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray)).then(() => {
+    AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray))
+    .then(() => {
       console.log('Successfully updated plant array after adding body');
     });
 
@@ -224,7 +227,8 @@ export default class PlantBackend extends React.Component<object, object> {
       // replace updated items into async
       this.storeController.setOwned(tempOwnedArray);
 
-      AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray)).then(() => {
+      AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray))
+      .then(() => {
         console.log('New item successfully swapped in plant body');
       });
 
@@ -283,8 +287,7 @@ export default class PlantBackend extends React.Component<object, object> {
    * @param oldHeaderName name of oldheader item
    * @param newHeaderName name of new header item
    */
-  public changeHeader(plantIndex: number = 0, oldHeaderName: string,
-                      newHeaderName: string) {
+  public changeHeader(plantIndex: number = 0, oldHeaderName: string, newHeaderName: string) {
 
     // initialize holders
     let currentItem = null;
@@ -328,11 +331,10 @@ export default class PlantBackend extends React.Component<object, object> {
 
         // replace updated items into async
         this.storeController.setOwned(tempOwnedArray);
-        AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray)).then(
-          () => {
-            console.log('PlantArray array successfully updated after swapping header');
-          },
-        );
+        AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray))
+        .then(() => {
+          console.log('PlantArray array successfully updated after swapping header');
+        });
 
         // returns the new header and owned array
         return{
@@ -351,8 +353,7 @@ export default class PlantBackend extends React.Component<object, object> {
    * @param oldFooterName name of old footer item
    * @param newFooterName name of new footer item
    */
-  public changeFooter(plantIndex: number = 0, oldFooterName: string,
-                      newFooterName: string) {
+  public changeFooter(plantIndex: number = 0, oldFooterName: string, newFooterName: string) {
     // initialize holders
     let currentItem = null;
     let oldItem = null;
@@ -395,7 +396,8 @@ export default class PlantBackend extends React.Component<object, object> {
 
         // replace updated items into async
         this.storeController.setOwned(tempOwnedArray);
-        AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray)).then(() => {
+        AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray))
+        .then(() => {
           console.log('Plant array successfully updated');
         });
 
@@ -410,7 +412,7 @@ export default class PlantBackend extends React.Component<object, object> {
   }
 
   /**
-   * internal helper method that sets up a default plant array with 
+   * internal helper method that sets up a default plant array with
    * 1 header, body, and footer
    */
   private static createDefaultPlantArray() {
@@ -435,7 +437,8 @@ export default class PlantBackend extends React.Component<object, object> {
     const fullPlantArray = [defaultPlant];
     const stringifiedPlant = JSON.stringify(fullPlantArray);
 
-    AsyncStorage.setItem('PlantArray', stringifiedPlant).then(() => {
+    AsyncStorage.setItem('PlantArray', stringifiedPlant)
+    .then(() => {
       console.log('Successfully created default plant in async');
     });
 

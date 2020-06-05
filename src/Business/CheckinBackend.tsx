@@ -20,16 +20,21 @@ filtering the active questions and adding a new question
 This file would thus require the least refactoring, mostly replacing getItem calls
 with a parameter for the current value that getItem was getting as well as
 replacing for loops with calls to higher-order functions
+
+At the moment the main functions it will need to include are:
+saveCheckin(checkin) - completed
+getQuestions() - completed
+setQuestions(questions) - not written, will call setItem and return its promise
 */
 
-const CheckinBackend = {
+const CheckinBackend = Object.freeze({
 
   /**
    * Saves a checkin object to async storage
    * @param: the object with the checkin data
    * @returns : none
    */
-  saveData: async (checkin: object) => {
+  saveCheckin: async (checkin: object) => {
     const date = getCurrentDate();
     // checks if person already checked in today
     const userCheckedIn = await isUserCheckedIn();
@@ -177,7 +182,7 @@ const CheckinBackend = {
    * @param: none
    * @returns : all the questions in async storage
    */
-  getAllQuestions: async () => {
+  getQuestions: async () => {
     const questionArrayJson = await AsyncStorage.getItem('questions');
     const questionArray = questionArrayJson ? JSON.parse(questionArrayJson) : null;
     // TODO refactor so that createDefault returns the array and the promise it will be saved
@@ -198,7 +203,7 @@ const CheckinBackend = {
    * @param: used - which usage activities do you want to look for
    * @returns : an array of questions with the specific usage
    */
-  getUsedQuestions: async (questionArray: ICheckinQuestion[], used: boolean) => {
+  getQuestionsByActive: async (questionArray: ICheckinQuestion[], active: boolean = true) => {
     // gets the question aray from asyncstorage
     if (questionArray == null) {
       // ends function call if question array doesn't exist
@@ -207,15 +212,13 @@ const CheckinBackend = {
     }
 
     // looks to find all the questions that are used (or not used)
-    const matchingQuestion = questionArray.filter((question) => {
-      return question.active === used;
-    });
+    const matchingQuestions = questionArray.filter((question) => question.active === active);
 
-    console.log(matchingQuestion);
-    return matchingQuestion;
+    console.log(matchingQuestions);
+    return matchingQuestions;
 
   },
 
-};
+});
 
 export default CheckinBackend;

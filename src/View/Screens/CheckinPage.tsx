@@ -82,7 +82,7 @@ class CheckinPage extends React.Component<IProps, IState> {
     const { questions, toggleModalVisible, addModalVisible, customQuestionText,
             ...formData } = this.state;
     console.log(`Saving checkin response ${JSON.stringify(formData)}`);
-    CheckinBackend.saveData(formData)
+    CheckinBackend.saveCheckin(formData)
     .then((result) => {
       if (!result) {
         Alert.alert('You have already checked in today');
@@ -281,7 +281,7 @@ class CheckinPage extends React.Component<IProps, IState> {
 
           <Button
             title="Get All Questions"
-            onPress={() => { CheckinBackend.getAllQuestions(); }}
+            onPress={() => { CheckinBackend.getQuestions(); }}
           />
 
           <Button
