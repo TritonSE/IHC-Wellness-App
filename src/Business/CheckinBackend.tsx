@@ -5,28 +5,6 @@ import { getCurrentDate, isUserCheckedIn } from './ProfileBackend';
 // TODO this interface will be moved to constants/Questions once frontend has an editing PoC
 // import { ICheckinQuestion } from '../View/Screens/CheckinPage';
 
-/*
-TODO
-Ask Bobby about the frontend logic, it probably makes sense
-to use an MVVM (frontend-driven) pattern for certain CRUD
-operations on questionArray. This pattern would entail NOT
-converting this to a singleton as the frontend would get its
-initial state from here and make calls here to updates its state,
-but no data would need to be stored here; instead only having it handle
-saving a checkin, getting the current questions array from storage,
-and operations on a questions array passed as a parameter such as
-filtering the active questions and adding a new question
-
-This file would thus require the least refactoring, mostly replacing getItem calls
-with a parameter for the current value that getItem was getting as well as
-replacing for loops with calls to higher-order functions
-
-At the moment the main functions it will need to include are:
-saveCheckin(checkin) - completed
-getQuestions() - completed
-setQuestions(questions) - not written, will call setItem and return its promise
-*/
-
 const CheckinBackend = Object.freeze({
 
   /**
@@ -54,28 +32,32 @@ const CheckinBackend = Object.freeze({
   },
 
   /**
-   * Displays all data in async storage
+   * Gets all the questions in async storage
    * @param: none
-   * @returns : true if we were able to get everything from async and log it
+   * @returns : all the questions in async storage
    */
-  displayAllData: async () => {
-    AsyncStorage.getAllKeys((err, keys) => {
-      AsyncStorage.multiGet(keys, (error, stores) => {
-        stores.map((result, i, store) => {
-          console.log({ [store[i][0]]: store[i][1] });
-          return true;
-        });
-      });
-    });
+  getQuestions: async () => {
+    const questionArrayJson = await AsyncStorage.getItem('questions');
+    const questionArray = questionArrayJson ? JSON.parse(questionArrayJson) : null;
+    // TODO refactor so that createDefault returns the array and the promise it will be saved
+    if (questionArray == null) {
+      const asyncPromise = CheckinBackend.createDefaultQuestionsArray();
+      return {
+        questions: [],
+        promise: asyncPromise,
+      };
+    }
+    console.log(questionArray);
+    return questionArray;
   },
 
   /**
-   * Clears everything in async storage
-   * @param: none
-   * @returns : none
+   * Takes in a question array and stores all of it into async storage
+   * @param: The question array that you want to add to async
+   * @returns : a promise for setting the questions to async
    */
-  clearAllData: async () => {
-    await AsyncStorage.clear();
+  setQuestions: (questionArray: ICheckinQuestion[]) => {
+    return AsyncStorage.setItem('questions', JSON.stringify(questionArray));
   },
 
   /**
@@ -137,16 +119,6 @@ const CheckinBackend = Object.freeze({
   },
 
   /**
-   * Takes in a question array and stores all of it into async storage
-   * @param: The question array that you want to add to async
-   * @returns : a promise for setting the question to async
-   */
-  storeAllQuestions: (questionArray: ICheckinQuestion[]) => {
-    const promise = AsyncStorage.setItem('questions', JSON.stringify(questionArray));
-    return promise;
-  },
-
-  /**
    * Sets a specific question's activity
    * @param: key - the key for the question you want to cahnge
    * @param: using - whether you want to set the usage to true or false
@@ -178,26 +150,6 @@ const CheckinBackend = Object.freeze({
   },
 
   /**
-   * Gets all the questions in async storage
-   * @param: none
-   * @returns : all the questions in async storage
-   */
-  getQuestions: async () => {
-    const questionArrayJson = await AsyncStorage.getItem('questions');
-    const questionArray = questionArrayJson ? JSON.parse(questionArrayJson) : null;
-    // TODO refactor so that createDefault returns the array and the promise it will be saved
-    if (questionArray == null) {
-      const asyncPromise = CheckinBackend.createDefaultQuestionsArray();
-      return {
-        questions: [],
-        promise: asyncPromise,
-      };
-    }
-    console.log(questionArray);
-    return questionArray;
-  },
-
-  /**
    * Gets all the questions with a specific usage activity (true or false)
    * @param: questionarray - the array of questinos you want to filter through
    * @param: used - which usage activities do you want to look for
@@ -217,6 +169,31 @@ const CheckinBackend = Object.freeze({
     console.log(matchingQuestions);
     return matchingQuestions;
 
+  },
+
+  /**
+   * Displays all data in async storage
+   * @param: none
+   * @returns : true if we were able to get everything from async and log it
+   */
+  displayAllData: async () => {
+    AsyncStorage.getAllKeys((err, keys) => {
+      AsyncStorage.multiGet(keys, (error, stores) => {
+        stores.map((result, i, store) => {
+          console.log({ [store[i][0]]: store[i][1] });
+          return true;
+        });
+      });
+    });
+  },
+
+  /**
+   * Clears everything in async storage
+   * @param: none
+   * @returns : none
+   */
+  clearAllData: async () => {
+    await AsyncStorage.clear();
   },
 
 });
