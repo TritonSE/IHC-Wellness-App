@@ -80,6 +80,85 @@ export default class StoreBackend extends React.Component<object, object> {
   }
 
   /**
+   * Checks to see if an item is avaiale in the owned array
+   * @param sectionName the name of the section to look at
+   * @param itemToCheck the item to check whether it is avaiable in owned array
+   * @return boolean representing whether we own that item
+   */
+  public isItemAvailable(sectionName: string, itemToCheck: string) {
+    // checks if section name is one of 'headers, 'bodies', 'footers'
+    if (sectionName !== 'headers' && sectionName !== 'bodies' && sectionName !== 'footers') {
+      console.log('A valid section name was not passed in. Must be \'headers\', \'bodies\', or \'footers\'');
+      return {
+        index: -1,
+        object: undefined,
+      };
+    }
+
+    let itemIndex = -1;
+    const item = StoreBackend.ownedObject[sectionName].find((element: IOwnedItem,
+                                                             index: number) => {
+      if (element.name === itemToCheck) {
+        itemIndex = index;
+        return true;
+      }
+      return false;
+    });
+    console.log(`The item you are looking for is ${item.name} and it was found at index ${itemIndex}`);
+
+    return {
+      index: itemIndex,
+      object: item,
+    };
+  }
+
+  /**
+   * increases item count in ownedObject
+   * @param sectionName the name of the section to look at
+   * @param index the index of the item to increment
+   * @return the owned object
+   */
+  public incrementItemUsage(sectionName: string, index: number) {
+    // checks if section name is one of 'headers, 'bodies', 'footers'
+    if (sectionName !== 'headers' && sectionName !== 'bodies' && sectionName !== 'footers') {
+      console.log('A valid section name was not passed in. Must be \'headers\', \'bodies\', or \'footers\'');
+      return null;
+    }
+
+    // increments the item
+    const tempOwned = StoreBackend.ownedObject;
+    const item = tempOwned[sectionName][index];
+    item.used++;
+    item.available = item.owned > item.used;
+    tempOwned[sectionName][index] = item;
+
+    return StoreBackend.ownedObject;
+  }
+
+  /**
+   * decreases item count in ownedObject
+   * @param sectionName the name of the section to look at
+   * @param index the index of the item to decrement
+   * @return the owned object
+   */
+  public decrementItemUsage(sectionName: string, index: number) {
+    // checks if section name is one of 'headers, 'bodies', 'footers'
+    if (sectionName !== 'headers' && sectionName !== 'bodies' && sectionName !== 'footers') {
+      console.log('A valid section name was not passed in. Must be \'headers\', \'bodies\', or \'footers\'');
+      return null;
+    }
+
+    // increments the item
+    const tempOwned = StoreBackend.ownedObject;
+    const item = tempOwned[sectionName][index];
+    item.used--;
+    item.available = item.owned > item.used;
+    tempOwned[sectionName][index] = item;
+
+    return StoreBackend.ownedObject;
+  }
+
+  /**
    * @param newOwnedObject new owned object to set to
    */
   public setOwned(newOwnedObject: IOwned): Promise<void> {

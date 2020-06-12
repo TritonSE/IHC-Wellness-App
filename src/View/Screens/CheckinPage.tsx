@@ -15,6 +15,7 @@ import CheckinSlider from '../../components/CheckinSlider';
 import CheckinTextInput from '../../components/CheckinTextInput';
 
 // TODO add a call to addMoney when user submits a checkin
+import PlantBackend from '../../Business/PlantBackend';
 import StoreBackend from '../../Business/StoreBackend';
 
 const { height, width } = Dimensions.get('window');
@@ -242,6 +243,102 @@ class CheckinPage extends React.Component<IProps, IState> {
               title="Submit"
               onPress={this.sendFormInfo}
             />
+
+
+
+ {/* BUTTONS FOR TESTING DELETE BEFORE PUSH */}
+ <Button
+              title="AddBody"
+              onPress={() => {PlantBackend.getInstance().addBody(0,'newBody') }}
+            />
+
+            <Button
+              title="add $5"
+              onPress={() => {StoreBackend.getInstance().addMoney(5) }}
+            />
+
+            <Button
+              title="spend $2"
+              onPress={() => {StoreBackend.getInstance().spendMoney(2)}}
+            />
+
+            <Button
+              title="get the owned array"
+              onPress={() => {console.log(StoreBackend.getInstance().getOwned())}}
+            />
+
+            <Button
+              title="Buy Terracotta"
+              onPress={() => {StoreBackend.getInstance().buyItem("footers", "Terracotta")}}
+            />
+
+            <Button
+              title="Buy red pot"
+              onPress={() => {StoreBackend.getInstance().buyItem("footers", "redPot")}}
+            />
+
+            <Button
+              title="Buy Long Body"
+              onPress={() => {StoreBackend.getInstance().buyItem("bodies", "Long Body")}}
+            />
+
+            <Button
+              title="Buy Carnation"
+              onPress={() => {StoreBackend.getInstance().buyItem("headers", "Carnation")}}
+            />
+
+            <Button
+              title="Buy Sunflower"
+              onPress={() => {StoreBackend.getInstance().buyItem("headers", "Sunflower")}}
+            />
+
+
+            <Button
+              title="Get info about Carnation in owned array"
+              onPress={() => {console.log(StoreBackend.getInstance().getItemInfo("headers", "Carnation"))}}
+            />
+
+            <Button
+              title="Get info about Terracotta in owned array"
+              onPress={() => {console.log(StoreBackend.getInstance().getItemInfo("footers", "Terracotta"))}}
+            />
+
+            <Button
+              title="Add Long Body"
+              onPress={() => {console.log(PlantBackend.getInstance().addBody(0, "Long Body"))}}
+            />
+
+            <Button
+              title="Change Body to Long"
+              onPress={() => {console.log(PlantBackend.getInstance().changeBody(0, 0,"Body", "Long Body"))}}
+            />
+
+            <Button
+              title="Change Sunflower to Carnation"
+              onPress={() => {console.log(PlantBackend.getInstance().changeHeader(0, "Sunflower", "Carnation"))}}
+            />
+
+<Button
+              title="Change Clay to redPot"
+              onPress={() => {console.log(PlantBackend.getInstance().changeFooter(0, "Clay", "redPot"))}}
+            />
+
+            
+
+            {/* BUTTONS FOR TESTING DELETE BEFORE PUSH */}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
           <Button
             title="check active questions for debugging"
