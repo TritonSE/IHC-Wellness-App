@@ -1,16 +1,10 @@
 import * as React from 'react';
-<<<<<<< HEAD
 import { Button, Dimensions, FlatList, StyleSheet, View } from 'react-native';
 
 import { PlantBodies, PlantFooters, PlantHeaders,
   PlantImages } from '../../../constants/Plants';
-=======
-import { Dimensions, FlatList, ImageSourcePropType, StyleSheet, View, TouchableOpacity, Text, Button } from 'react-native';
-
-import { PlantBodies, PlantFooters, PlantHeaders,
-         PlantImages } from '../../../constants/Plants';
->>>>>>> 80d2d05bb1185400e3753797c99d170d31885a3b
 import PlantBackend, { IPlantItem } from '../../Business/PlantBackend';
+import StoreBackend, { IOwnedItem } from '../../Business/StoreBackend';
 import AppHeader from '../../components/AppHeader';
 import PlantCard from '../../components/PlantCard';
 
@@ -18,9 +12,11 @@ interface IState {
   plantBody: IPlantItem[];
   plantFooter: IPlantItem;
   plantHeader: IPlantItem;
-  headerItems: IPlantItem[];
-  bodyItems: IPlantItem[];
-  footerItems: IPlantItem[];
+
+  // Hardcoded values for owned items, will be replaced with backend calls
+  headerItems: IOwnedItem[];
+  bodyItems: IOwnedItem[];
+  footerItems: IOwnedItem[];
 }
 
 const width = Dimensions.get('window').width;
@@ -29,47 +25,43 @@ const width = Dimensions.get('window').width;
 // but the elements needed to play around with style are here
 export default class PlantPage extends React.Component<object, IState> {
   private readonly plantController: PlantBackend = PlantBackend.getInstance();
+  private readonly storeController: StoreBackend = StoreBackend.getInstance();
 
   constructor(props: object) {
     super(props);
     // TODO use this.plantController to set initial state to initial values
     // by calling its get methods and using setState with the resulting value
     this.plantController = PlantBackend.getInstance();
+
     this.state = {
-      // TODO clean backend functions and uncomment these
-      // plantBody: PlantBackend.getBody(0),
-      // plantFooter: PlantBackend.getFooter(0),
-      // plantHeader: PlantBackend.getHeader(0),
-      plantBody: [...PlantBodies],
-      plantFooter: PlantFooters[0],
-      plantHeader: PlantHeaders[0],
-<<<<<<< HEAD
+      // TODO clean backend functions and uncomment these DONE
+      plantBody: this.plantController.getBody(),
+      plantFooter: this.plantController.getFooter(),
+      plantHeader: this.plantController.getHeader(),
+
+      // plantBody: [...PlantBodies],
+      // plantFooter: PlantFooters[0],
+      // plantHeader: PlantHeaders[0],
 
       // hard coded arrays
-=======
-      // hard coded arrays
-      // TODO remove prices here, only name is needed for rendering
-      // so IPlantItem only has the name field
->>>>>>> 80d2d05bb1185400e3753797c99d170d31885a3b
       headerItems: [
-        { name: "Sunflower", price: 1.25 },
-        { name: "Carnation", price: 1.25 },
-        { name: "redRose", price: 1.25 }
+        { name: "Sunflower", owned: 5, used: 3, available: true },
+        { name: "Carnation", owned: 5, used: 3, available: true },
+        { name: "redRose", owned: 5, used: 3, available: true }
       ],
       bodyItems: [
-        { name: "Body", price: 1.25 },
-        { name: "Long Body", price: 2.5 },
-        { name: "Stem", price: 1.25 }
+        { name: "Body", owned: 5, used: 3, available: true },
+        { name: "Long Body", owned: 5, used: 3, available: true },
+        { name: "Stem", owned: 5, used: 3, available: true }
       ],
       footerItems: [
-        { name: "Clay", price: 1.25 },
-        { name: "Terracotta", price: 1.25 },
-        { name: "linedVase", price: 1.25 },
-        { name: "redPot", price: 1.25 },
-        { name: "standardPot", price: 1.25 }
+        { name: "Clay", owned: 5, used: 3, available: true },
+        { name: "Terracotta", owned: 5, used: 3, available: true },
+        { name: "linedVase", owned: 5, used: 3, available: true },
+        { name: "redPot", owned: 5, used: 3, available: true },
+        { name: "standardPot", owned: 5, used: 3, available: true }
       ],
     };
-    // this.plantController.getBody();
   }
 
   public async componentDidMount() {
@@ -90,15 +82,15 @@ export default class PlantPage extends React.Component<object, IState> {
   }
 
   public swapHeaderHandler(plantItem: IOwnedItem) {
-    this.setState( (prevState: IState) => ({
+    this.setState( (prevState: IState) => {
       plantHeader: {name: plantItem.name},
-    }));
+    });
   }
 
   public swapFooterHandler(plantItem: IOwnedItem) {
-    this.setState( (prevState: IState) => ({
+    this.setState( (prevState: IState) => {
       plantFooter: {name: plantItem.name},
-    }));
+    });
   }
 
   public addItem(plantItem: IPlantItem) {
@@ -131,6 +123,10 @@ export default class PlantPage extends React.Component<object, IState> {
           }}
           keyExtractor={(item, index) => index.toString()}
         />
+        <Button
+          title="Add Body"
+          onPress={() => { PlantBackend.getInstance().addBody(0, {name:"long"}); }}
+        />
      </View>
     );
   }
@@ -146,7 +142,7 @@ export default class PlantPage extends React.Component<object, IState> {
     return (
       <PlantCard
         modalTitle={ plantItem.name }
-        transparent={ true } 
+        transparent={ true }
         data={ data }
         swapPlant={ swapHandler }
       />
@@ -171,5 +167,5 @@ const styles = StyleSheet.create({
   plantList: {
     width,
     alignItems: 'center',
-  }
+  },
 });
