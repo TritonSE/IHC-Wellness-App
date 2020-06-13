@@ -1,8 +1,12 @@
 import * as React from 'react';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { Button, Dimensions, FlatList, Modal, SafeAreaView, ScrollView, StyleSheet, Text  , TouchableOpacity, View, TextInput } from 'react-native';
 =======
 import { Alert, Button, Dimensions, FlatList, Modal, SafeAreaView, ScrollView,
+=======
+import { Alert, Button, Dimensions, FlatList, Modal, SafeAreaView,
+>>>>>>> origin/master
          StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 >>>>>>> 80d2d05bb1185400e3753797c99d170d31885a3b
 
@@ -19,7 +23,9 @@ import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
 import CheckinSlider from '../../components/CheckinSlider';
 import CheckinTextInput from '../../components/CheckinTextInput';
-import CustomQuestion from '../../components/CustomQuestion';
+
+// TODO add a call to addMoney when user submits a checkin
+import StoreBackend from '../../Business/StoreBackend';
 
 const width = Dimensions.get('window').width;
 
@@ -40,8 +46,13 @@ interface IState {
   mood: number;
   journal: string;
   questions: ICheckinQuestion[];
+<<<<<<< HEAD
   isVisible: boolean;
   addQuestionsIsVisible: boolean;
+=======
+  toggleModalVisible: boolean;
+  addModalVisible: boolean;
+>>>>>>> origin/master
   customQuestionText: string;
 }
 
@@ -65,23 +76,23 @@ class CheckinPage extends React.Component<IProps, IState> {
   });
 
   private removeExitListener = this.navigation.addListener('blur', (e) => {
-    console.log('CheckinPage exit, nothing to do here');
+    // console.log('CheckinPage exit, nothing to do here');
   });
 
   constructor(props: IProps) {
     super(props);
     this.state = {
-      addQuestionsIsVisible: false,
+      addModalVisible: false,
       customQuestionText: '',
       health: 5,
       hoursOfSleep: 8,
-      isVisible: false,
+      toggleModalVisible: false,
       journal: '',
       mood: 1,
       questions: [{ title: 'how healthy...', key: '0', active: true, type: 'slider' },
                   { title: 'hours of sleep...', key: '1', active: true, type: 'slider' },
                   { title: 'happiness', key: '2', active: true, type: 'slider' },
-                  { title: 'journal', key: '3', active: true, type: 'slider' }]
+                  { title: 'journal', key: '3', active: true, type: 'slider' }],
     };
 <<<<<<< HEAD
 
@@ -98,9 +109,10 @@ class CheckinPage extends React.Component<IProps, IState> {
 
   public sendFormInfo = () => {
     // Object destructuring and spread syntax to separate questions from rest of state object
-    const { questions, ...formData } = this.state;
+    const { questions, toggleModalVisible, addModalVisible, customQuestionText,
+            ...formData } = this.state;
     console.log(`Saving checkin response ${JSON.stringify(formData)}`);
-    CheckinBackend.saveData(formData)
+    CheckinBackend.saveCheckin(formData)
     .then((result) => {
       if (!result) {
         Alert.alert('You have already checked in today');
@@ -121,55 +133,96 @@ class CheckinPage extends React.Component<IProps, IState> {
           style={styles.screenScroll}
           contentContainerStyle={styles.questionContentContainer}
         >
-          {/* TODO: Replace with FlatList, same style but in contentContainerStyle prop */}
-          <ScrollView style={styles.questionWidth}>
-            <FlatList
+          <FlatList
+            contentContainerStyle={styles.questionWidth}
+            data={this.state.questions.filter((q) => q.active)}
+            extraData={this.state}
+            renderItem={({ item }) => {
+              if (item.title === 'how healthy...') {
+                return <CheckinSlider
+                  title="How healthy are you feeling today?"
+                  step={0.1}
+                  minValue={0}
+                  maxValue={10}
+                  value={this.state.health}
+                  onSlidingComplete={(val) => this.setState({ health: val })}
+                />;
+              } else if (item.title === 'hours of sleep...') {
+                return <CheckinSlider
+                  title="How many hours of sleep did you get last night?"
+                  step={0.1}
+                  minValue={0}
+                  maxValue={10}
+                  value={this.state.hoursOfSleep}
+                  onSlidingComplete={(val) => this.setState({ hoursOfSleep: val })}
+                />;
+              } else if (item.title === 'happiness') {
+                return <CheckinSlider
+                  title="Are you happy?"
+                  step={0.01}
+                  minValue={0}
+                  maxValue={1}
+                  value={this.state.mood}
+                  onSlidingComplete={(val) => this.setState({ mood: val })}
+                />;
+              } else if (item.title == 'journal') {
+                return <CheckinTextInput
+                  style={styles.textInput}
+                  title="Journal Entry"
+                  titleColor="#000000"
+                  multiline={true}
+                  autocapital="none"
+                  underlineColor="transparent"
+                  finalText={this.state.journal}
+                  onChangeText={(val) => this.setState({ journal: val })}
+                />;
+              } else {
+                // return <CustomQuestion />;
+                return <CheckinTextInput
+                  style={styles.textInput}
+                  title={item.title}
+                  titleColor="black"
+                  underlineColor="white"
+                  finalText={item.title}
+                  onChangeText={(val) => {
+                    // TODO no dynamic keys yet
+                    // this.setState({customQuestion: val})
+                  }}
+                />;
+              }
+            }}
+          />
+
+          <Modal visible={this.state.toggleModalVisible} animationType={'fade'} transparent={true}>
+            <SafeAreaView style={styles.modalView}>
+              <FlatList
                 data={this.state.questions}
-                renderItem={({ item }) => {
-                  if (item.title == 'how healthy...') {
-                    return <CheckinSlider
-                      title="How healthy are you feeling today?"
-                      step={0.1}
-                      minValue={0}
-                      maxValue={10}
-                      value={this.state.health}
-                      onSlidingComplete={(val) => this.setState({ health: val })}
-                    />
-                  } else if (item.title == 'hours of sleep...') {
-                    return <CheckinSlider
-                    title="How many hours of sleep did you get last night?"
-                    step={0.1}
-                    minValue={0}
-                    maxValue={10}
-                    value={this.state.hoursOfSleep}
-                    onSlidingComplete={(val) => this.setState({ hoursOfSleep: val })}
-                  />
-                  } else if (item.title == 'happiness') {
-                    return <CheckinSlider
-                    title="Are you happy?"
-                    step={0.01}
-                    minValue={0}
-                    maxValue={1}
-                    value={this.state.mood}
-                    onSlidingComplete={(val) => this.setState({ mood: val })}
-                  />
-                  } else if (item.title == 'journal') {
-                    return <CheckinTextInput
-                    style={styles.textInputs}
-                    title="Journal Entry"
-                    titleColor="#000000"
-                    multiline={true}
-                    autocapital="none"
-                    underlineColor="transparent"
-                    finalText={this.state.journal}
-                    onChangeText={(val) => this.setState({ journal: val })}
-                  />
-                  } else {
-                    return <CustomQuestion />
-                  }
-                }}
                 extraData={this.state}
+                renderItem={({ item, index }) => (
+                  <View style={{ padding: 5 }}>
+                    <ListItem
+                      style={{ width }}
+                      title={item.title}
+                      rightIcon={
+                            (<Ionicons
+                              name="md-checkmark-circle"
+                              size={32}
+                              color={this.state.questions[index].active ? 'green' : 'white'}
+                            />)
+                      }
+                      onPress={() => {
+                        this.setState((prevState) => {
+                          const { questions: newQuestions } = prevState;
+                          const pressedQuestion = newQuestions[index];
+                          pressedQuestion.active = !pressedQuestion.active;
+                          return { questions: newQuestions };
+                        });
+                      }}
+                    />
+                  </View>
+                )}
               />
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 <Modal visible={this.state.isVisible} animationType={'fade'} transparent={true}>
@@ -253,82 +306,128 @@ class CheckinPage extends React.Component<IProps, IState> {
                 onPress={() => this.setState({ addQuestionsIsVisible: true })}
               />
 
+=======
+>>>>>>> origin/master
               <Button
-                title="Toggle Questions"
-                onPress={() => this.setState({ isVisible: true })}
+                title="Close"
+                onPress={() => this.setState({ toggleModalVisible: false })}
               />
+            </SafeAreaView>
+          </Modal>
 
-              <Button
-                title="Submit"
-                onPress={this.sendFormInfo}
+          <Modal visible={this.state.addModalVisible} animationType={'fade'} transparent={true}>
+            <SafeAreaView style={styles.modalView}>
+              <TextInput
+                style={{ borderColor: 'black', borderWidth: 1 }}
+                placeholder={'Add q here'}
+                onChangeText={ (text) => { this.setState({ customQuestionText: text }); } }
               />
+              <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                <Button
+                  title="Add"
+                  onPress={() => {
+                    const newQuestion = {
+                      title: this.state.customQuestionText,
+                      // TODO need a proper key, number should be index not random
+                      key: `key${Math.floor(Math.random() * 1000)}`,
+                      active: true,
+                      type: 'text',
+                    };
+                    this.setState((prevState) => {
+                      return {
+                        addModalVisible: false,
+                        questions: [...prevState.questions, newQuestion],
+                      };
+                    });
+                  }}
+                />
+                <Button
+                  title="Cancel"
+                  onPress={ () => this.setState({ addModalVisible: false })}
+                />
+              </View>
+            </SafeAreaView>
+          </Modal>
 
-            <Button 
-              title="check active questions for debugging"
-              onPress={() => console.log(this.filter())}
+            <Button
+              title="Add Custom Question"
+              onPress={() => this.setState({ addModalVisible: true })}
             />
 
             <Button
-              title="Display"
-              onPress={() => { CheckinBackend.displayAllData(); }}
+              title="Toggle Questions"
+              onPress={() => this.setState({ toggleModalVisible: true })}
             />
 
             <Button
-              title="Clear"
-              onPress={() => { CheckinBackend.clearAllData(); }}
+              title="Submit"
+              onPress={this.sendFormInfo}
             />
 
-            <Button
-              title="Add Question"
-              onPress={() => { CheckinBackend.addQuestion('How?', 'how'); }}
+          <Button
+            title="check active questions for debugging"
+            onPress={() => console.log(this.state.questions.filter((q) => q.active)) }
+          />
+
+          <Button
+            title="Display"
+            onPress={() => { CheckinBackend.displayAllData(); }}
+          />
+
+          <Button
+            title="Clear"
+            onPress={() => { CheckinBackend.clearAllData(); }}
+          />
+
+          {/*
+            TODO change this to a full page modal, similar to Toggle Questions model
+            Modal contents should have a TextInput for question title and 2 buttons:
+            Cancel (for closing modal and not adding question, should reset state of TextInput)
+            Add (for adding question to this.state.questions, also resets state of TextInput)
+          */}
+          <Button
+            title="Add Question"
+            onPress={() => { console.log(CheckinBackend.addQuestion(this.state.questions, 'How?', 'how')); }}
+          />
+
+          <Button
+            title="Set Question True"
+            onPress={() => { CheckinBackend.setQuestionActive('How?', true); }}
+          />
+
+          <Button
+            title="Set Question False"
+            onPress={() => { CheckinBackend.setQuestionActive('How?', false); }}
             />
 
-            <Button
-              title="Set Question True"
-              onPress={() => { CheckinBackend.setQuestionActive('How?', true); }}
-            />
+          <Button
+            title="Get All Questions"
+            onPress={() => { CheckinBackend.getQuestions(); }}
+          />
 
-            <Button
-              title="Set Question False"
-              onPress={() => { CheckinBackend.setQuestionActive('How?', false); }}
-              />
+          <Button
+            title="Get Used Question"
+            onPress={() => { CheckinBackend.getQuestionsByActive(this.state.questions, true); }}
+          />
 
-            <Button
-              title="Get All Questions"
-              onPress={() => { CheckinBackend.getAllQuestions(); }}
-            />
-
-            <Button
-              title="Get Used Question"
-              onPress={() => { CheckinBackend.getUsedQuestions(true); }}
-            />
-
-            <Button
-              title="Get Non Used Question"
-              onPress={() => { CheckinBackend.getUsedQuestions(false); }}
-            />
-          </ScrollView>
+          <Button
+            title="Get Non Used Question"
+            onPress={() => { CheckinBackend.getQuestionsByActive(this.state.questions, false); }}
+          />
         </KeyboardAwareScrollView>
       </View>
     );
   }
-
-  // for filtering, but makes ts lint angry as is due to ordering
-  private filter () {
-    const activeQuestions = [];
-    for (let i = this.state.questions.length - 1; i >= 0; i--) {
-      if (this.state.questions[i].active) {
-        activeQuestions.push(this.state.questions[i]);
-      }
-    }
-
-    return activeQuestions;
-  }
-
-  private checkActiveStatus(index: number) {return this.state.questions[index].active;}
 }
 
 const styles = StyleSheet.create({
+  modalView: {
+    height,
+    width,
+    flex: 1,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+  },
   pageView: {
     alignItems: 'center',
     flex: 1,
@@ -348,7 +447,7 @@ const styles = StyleSheet.create({
   submitButton: {
     paddingTop: 20,
   },
-  textInputs: {
+  textInput: {
     height: 100, // For dimensions
     borderRadius: 2, // How round is the text box
     borderWidth: 2, // Set border width.

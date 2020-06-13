@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { AsyncStorage } from 'react-native';
 
-import { PlantBodies, PlantHeaders, PlantFooters, IStoreItem } from '../../constants/Plants';
+import { IStoreItem, PlantBodies, PlantFooters, PlantHeaders } from '../../constants/Plants';
 
 export interface IOwnedItem {
   name: string;
@@ -10,264 +10,327 @@ export interface IOwnedItem {
   available: boolean;
 }
 
-/*
-TODO
-Finish implementing singleton logic: in constructor load owned object
-Keep CRUD operations on owned object here, owned object will be a private static member
-Refactor createDefault to use .map() to create the owned arrays
-Replace for loops with functions like .find() and .findIndex()
-Rename non-descriptive variable names (item, value, temp etc.)
-*/
+export interface IOwned {
+  headers: IOwnedItem[];
+  bodies: IOwnedItem[];
+  footers: IOwnedItem[];
+}
+
+export enum OwnedSectionName {
+  headers = 'headers',
+  bodies = 'bodies',
+  footers = 'footers',
+}
+
+const OWNED_KEY = 'owned';
+const MONEY_KEY = 'Money';
+
+/**
+ * Class  for StoreBackend model
+ * has an instance of storebackend
+ * amount of money
+ * default ownedObject
+ */
 export default class StoreBackend extends React.Component<object, object> {
-  // TODO: a note about static members, in a non-static function the `this` keyword
-  // refers to the current instance of the object (the non-static instance) so you
-  // must use StoreBackend.money to access money. BUT, in a static method `this`
-  // refers to StoreBackend, the static class, so you can use either StoreBackend.money
-  // or this.money if you are inside of a static method. Just remember, static methods
-  // should be private helper functions, functions to be used for frontend should be
-  // public non-static so that frontend is forced to call getInstance() to use any logic in here
-  private static money: number = 0;
-  /*
-  private ownedItems: {
-  headers: IOwnedItem[],
-  bodies: IOwnedItem[],
-  footers: IOwnedItem[],
-} | null = null;
-*/
-// TODO convert this to an object
-// As an array it is not clear which is headers, bodies and footers
-private static ownedArray = [[], [], []];
+  private static instance: StoreBackend;
+  private static money: number = -1;
+  private static ownedObject: IOwned;
 
-private constructor(props: {}) {
-  super(props);
-}
+  /**
+   * Creates storeController and ownedObject
+   * @param props empty props list
+   */
+  private constructor(props: {}) {
+    super(props);
+    console.log('StoreController created');
 
-public static getInstance(): StoreBackend {
-  if (!StoreBackend.instance) {
-    StoreBackend.instance = new StoreBackend({});
+    // TODO replace with logic similar to the above getItem
+    StoreBackend.setMoney(1000);
   }
-  return StoreBackend.instance;
-}
 
-public getOwnedArray() {
-  console.log("CALLED")
-  return StoreBackend.ownedArray;
-}
-
-public updateOwnedArray(newOwnedArray) {
-  // updates member variable
-  StoreBackend.ownedArray = newOwnedArray;
-  // updates async storage
-  AsyncStorage.setItem('owned', JSON.stringify(newOwnedArray)).then(() => {
-    console.log("Successfully updated owned array");
-  });
-}
-
-// Note on public vs private methods: public methods will be used by frontend,
-// private methods are to avoid code duplication within backend logic
-// What public methods are needed are driven by what frontend/the user needs
-// So since the frontend does not need to directly set money, only add money
-// and spend money, setMoney should be private and methods like addMoney and
-// spendMoney should be public but use setMoney to avoid code duplication
-// TODO: make setMoney private, add functions addMoney() that increases money
-// and spendMoney() that decreases money, they'll use setMoney as a helper function
-private static setMoney(amount: number) {
-  this.money = amount;
-  AsyncStorage.setItem('Money', amount.toString()).then(() => {
-    console.log('Successfully updated money');
-  });
-  return amount;
-}
-
-private static createDefaultOwnedArrays(){
-  // TODO refactor to use constants/Plants.ts instead of headers, bodies, footers
-  // Below is an example of how to use the map higher order function to get an
-  // IOwnedItem[] array from IStoreItem[] array
-
-  // let ownedPlantHeaders: IOwnedItem[] = PlantHeaders.map((header: IStoreItem) => {
-  //   return {
-  //     ...header,
-  //     owned: 0,
-  //     used: 0,
-  //     available: false,
-  //   };
-  // });
-  // ownedPlantHeaders[0].owned = 1;
-  // ownedPlantHeaders[0].used = 1;
-
-  // TODO replace all var keywords with let, const is even better if value does not change
-  const item = [[],[],[]];
-  const stringifiedItem = JSON.stringify(item);
-  AsyncStorage.setItem('owned', stringifiedItem).then(() => {
-    console.log("default owned array set");
-  });
-  return item;
-}
-
-// takes in an item and updates it and its owned and available fields in all
-// owned array in async
-public updateOwned(sectionIndex: number, item: IOwnedItem ){
-  const indexOwnedArray = StoreBackend.ownedArray[sectionIndex];
-  let found = false;
-
-  for (let i = 0; i < indexOwnedArray.length; i++) {
-    // update item
-    if (indexOwnedArray[i].name === item.name) {
-      item.owned++;
-      item.available = item.owned > item.used;
-      indexOwnedArray[i] = item;
-      found = true;
+  /**
+   * @returns instance of store Backend in this model
+   */
+  public static getInstance(): StoreBackend {
+    if (!StoreBackend.instance) {
+      StoreBackend.instance = new StoreBackend({});
     }
+    return StoreBackend.instance;
   }
 
-  // if not owned yet
-  if (!found) {
-    // converts store item owned item (same as IPlantItem)
-    item.owned = 1;
-    item.used = 0;
-    item.available = item.owned > item.used;
-    indexOwnedArray.push(item);
-  }
-  StoreBackend.ownedArray[sectionIndex] = indexOwnedArray;
-  AsyncStorage.setItem('owned', JSON.stringify(StoreBackend.ownedArray)).then(() => {
-    console.log('Successfully updated owned array')
-  });
+  /**
+   * @returns current owned array
+   */
+  public async getOwned() {
+    console.log(`StoreBackend getOwned(): ${StoreBackend.ownedObject}`);
+    if (StoreBackend.ownedObject) return StoreBackend.ownedObject;
 
-  return StoreBackend.ownedArray;
-}
+    console.log('Getting the owned object from storage');
 
-// TODO replace var with let, let that doesn't change with const, double == with triple ===
-// TODO as this functions Updates the plant, move it to PlantBackend
-// Also, rename functions named like this to be clearer: handle doesn't describe what change
-// is happening, replace handle with a verb that describes the update (swap, add, delete etc.)
-// public handlePlants(item, plantArray, section) {
-//   for(let i = 0; i < plantArray.length; i++) {
-//     let currentPlant = plantArray[i]
-//
-//     if (section == "footers") {
-//       // footer
-//       if (currentPlant.footer.name == item.name) {
-//         // we are currently using the bought item as a footer in the plant
-//
-//         currentPlant.footer = item
-//       }
-//     } else if (section == "bodies") {
-//       let bodyArray = currentPlant.body
-//       for (let j = 0; j < bodyArray.length; j ++) {
-//
-//         let bodyItem = bodyArray[j]
-//         console.log("Body:" + bodyItem.name)
-//         console.log("Item:" + item.name)
-//         if (bodyItem.name == item.name) {
-//           bodyArray[j] = item
-//           currentPlant.body = bodyArray
-//         }
-//       }
-//
-//     } else if (section == "headers") {
-//       if (currentPlant.header.name == item.name) {
-//         currentPlant.header = item
-//       }
-//     }
-//     plantArray[i] = currentPlant;
-//   }
-//   // push plantArray
-//   AsyncStorage.setItem('PlantArray', JSON.stringify(plantArray)).then(() => {
-//     console.log('test');
-//   });
-// }
+    // gets the owned array from asyncstorage
+    const ownedString = await AsyncStorage.getItem(OWNED_KEY);
+    if (ownedString === null) {
+      StoreBackend.ownedObject = StoreBackend.createDefaultOwnedObject();
+    } else {
+      StoreBackend.ownedObject = JSON.parse(ownedString);
+    }
 
-public async buyItem(item: string, section: string) {
-  let newItem = null;
-  // TODO move this to the constructor
-  // create owned array if doesn't exist already
-  if (StoreBackend.ownedArray == null){
-    console.log('created default owned array');
-    StoreBackend.createDefaultOwnedArrays();
+    console.log(`owned array is ${JSON.stringify(StoreBackend.ownedObject)}`);
+    return StoreBackend.ownedObject;
   }
 
-  // add onto the previous array
-  // TODO getAll is a code smell, access the owned array member instead
-  // TODO asyncValue is not a descriptive variable name, use fn f2 to rename variables like these
-  const asyncValue = StoreBackend.getAllItems();
+  /**
+   * @param newOwnedObject new owned object to set to
+   */
+  public setOwned(newOwnedObject: IOwned): Promise<void> {
+    // sets member variable
+    StoreBackend.ownedObject = newOwnedObject;
 
-  let found = false;
-  // gets the index of the section
-  const sectionIndex = StoreBackend.getListIndex(section);
+    // sets async storage
+    return AsyncStorage.setItem(OWNED_KEY, JSON.stringify(newOwnedObject));
+  }
 
-  // looks for the item in a certain section
-  for (let i = 0; i < asyncValue[sectionIndex].length; i++) {
-    // item was found
-    if (asyncValue[sectionIndex][i].name === item) {
-      found = true;
-      // adds to owned array
-      newItem = await StoreBackend.updateOwned(asyncValue[sectionIndex][i], sectionIndex);
+  /**
+   * @returns current amount of money
+   */
+  public async getMoney() {
+    if (StoreBackend.money < 0) {
+      const moneyString = await AsyncStorage.getItem(MONEY_KEY);
+      StoreBackend.money = JSON.parse(moneyString || '0');
+    }
 
-      let plantArray = await AsyncStorage.getItem('PlantArray');
-      plantArray = JSON.parse(plantArray);
+    return StoreBackend.money;
+  }
 
-      StoreBackend.handlePlants(newItem, plantArray, section);
+  /**
+   * adds amount to money
+   * @param amount amount to add
+   */
+  public addMoney(amount: number) {
+    const newAmount = StoreBackend.money + amount;
+    return StoreBackend.setMoney(newAmount);
+  }
 
-      let balance = await AsyncStorage.getItem('Money');
-      balance = parseInt(balance, 10)
-      let cost = asyncValue[i].price
-      if (balance < cost) {
-        console.log("broke")
-        return
-      } else {
-        balance -= cost
-        await AsyncStorage.setItem("Money", balance.toString())
+  /**
+   * Spends user's money
+   * @param amount of money to spend
+   * @returns new amount
+   */
+  public spendMoney(amount: number) {
+    const newAmount = StoreBackend.money - amount;
+    if (newAmount < 0) {
+      console.log('You do not have enough money');
+      return null;
+    }
+    return StoreBackend.setMoney(newAmount);
+  }
+
+  /**
+   * sets money amount
+   * @param amount new money amount
+   */
+  private static setMoney(amount: number) {
+    this.money = amount;
+    AsyncStorage.setItem(MONEY_KEY, amount.toString()).then(() => {
+      console.log(`Successfully updated money. Current money owned: ${this.money}`);
+    });
+    return this.money;
+  }
+
+  /**
+   * creates a default owned array and @returns it
+   */
+  private static createDefaultOwnedObject() {
+    // creates array of all the headers and set the first item to be used
+    const ownedPlantHeaders: IOwnedItem[] = PlantHeaders.map((header: IStoreItem) => {
+      return {
+        name: header.name,
+        owned: 0,
+        used: 0,
+        available: false,
+      };
+    });
+    ownedPlantHeaders[0].owned = 2;
+    ownedPlantHeaders[0].used = 1;
+    ownedPlantHeaders[0].available = true;
+    console.log(`createDefaultOwnedObject: ${JSON.stringify(ownedPlantHeaders[0])}`);
+
+    // creates array of all the bodies and set the first item to be used
+    const ownedPlantBodies: IOwnedItem[] = PlantBodies.map((body: IStoreItem) => {
+      return {
+        name: body.name,
+        owned: 0,
+        used: 0,
+        available: false,
+      };
+    });
+    ownedPlantBodies[0].owned = 2;
+    ownedPlantBodies[0].used = 1;
+    ownedPlantBodies[0].available = true;
+
+    // creates array of all the footers and set the first item to be used
+    const ownedPlantFooters: IOwnedItem[] = PlantFooters.map((footer: IStoreItem) => {
+      return {
+        name: footer.name,
+        owned: 0,
+        used: 0,
+        available: false,
+      };
+    });
+    ownedPlantFooters[0].owned = 2;
+    ownedPlantFooters[0].used = 1;
+    ownedPlantFooters[0].available = true;
+
+    const defaultOwned: IOwned = {
+      headers: ownedPlantHeaders,
+      bodies: ownedPlantBodies,
+      footers: ownedPlantFooters,
+    };
+
+    const stringifiedItem = JSON.stringify(defaultOwned);
+    AsyncStorage.setItem(OWNED_KEY, stringifiedItem).then(() => {
+      console.log('default owned array set');
+    });
+
+    return defaultOwned;
+  }
+
+  /**
+   * Simulates buying one item by increasing the owned amount by 1
+   * @param sectionName either headers, bodies, or footers
+   * @param item item to update by one
+   */
+  private static updateOwnedBy1(sectionName: string, item: IOwnedItem) {
+    // checks if section name is one of 'headers, 'bodies', 'footers'
+    if (sectionName !== 'headers' && sectionName !== 'bodies' && sectionName !== 'footers') {
+      console.log('A valid section name was not passed in. Must be \'headers\', \'bodies\', or \'footers\'');
+      return null;
+    }
+
+    // gets the section of the owned array we're interested in
+    const sectionArray = StoreBackend.ownedObject[sectionName];
+    let found = false;
+
+    for (let i = 0; i < sectionArray.length; i++) {
+      // update item
+      if (sectionArray[i].name === item.name) {
+        item.owned++;
+        item.available = item.owned > item.used;
+        sectionArray[i] = item;
+        found = true;
       }
     }
-  }
 
-  //item was not found, so create a new instance
-  if(!found){
-    alert("You are trying to buy an item that doesn't exist");
-  }else{
-    return newItem
-  }
-}
-
-public async getItemInfo(item, list){
-  let temp = null;
-  const  asyncValue = StoreBackend.getAllItems();
-  // adds the Item array
-  const sectionIndex = StoreBackend.getListIndex(list);
-
-  for(let i = 0; i < asyncValue[sectionIndex].length; i++){
-    // item was found
-    if (asyncValue[sectionIndex][i].name === item){
-      temp = asyncValue[sectionIndex][i];
+    // if not owned yet
+    if (!found) {
+      // converts store item owned item (same as IPlantItem)
+      item.owned = 1;
+      item.used = 0;
+      item.available = item.owned > item.used;
+      sectionArray.push(item);
     }
+    StoreBackend.ownedObject[sectionName] = sectionArray;
+    AsyncStorage.setItem(OWNED_KEY, JSON.stringify(StoreBackend.ownedObject)).then(() => {
+      console.log('Successfully updated owned array');
+    });
+
+    // returns the updated item
+    return item;
   }
-  // looks for this item in all owned and
-  let ownedArray = await AsyncStorage.getItem("owned");
-  ownedArray = JSON.parse(ownedArray);
-  let indexOwnedArray = ownedArray[sectionIndex];
-  for(let i = 0; i < indexOwnedArray.length; i++){
-    if(indexOwnedArray[i].name == item){
-      return indexOwnedArray[i]
+
+  /**
+   * @returns new item after update, null on error
+   * @param sectionName either header, bodies, or footers
+   * @param itemName name of item to buy
+   */
+  public buyItem(sectionName: string, itemName: string) {
+    // checks if section name is one of 'headers, 'bodies', 'footers'
+    if (sectionName !== 'headers' && sectionName !== 'bodies' && sectionName !== 'footers') {
+      console.log('A valid section name was not passed in. Must be \'headers\', \'bodies\', or \'footers\'');
+      return null;
     }
+
+    // keeps track of which section we're in so we get get the item's price
+    let storeSection;
+    switch (sectionName) {
+      case 'headers':
+        storeSection = PlantHeaders;
+      case 'bodies':
+        storeSection = PlantBodies;
+      case 'footers':
+        storeSection = PlantFooters;
+    }
+
+    let itemAfterUpdate = null;
+
+    let found = false;
+
+    // looks for the item in a certain section
+    const sectionArray = StoreBackend.ownedObject[sectionName];
+    for (let i = 0; i < sectionArray.length; i++) {
+      // item was found
+      if (sectionArray[i].name === itemName) {
+        found = true;
+
+        // checks whether user has enough money to buy the item before updating
+        const cost = storeSection[i].price;
+        if (StoreBackend.money < cost) {
+          console.log('You do not have enough money to buy this item');
+          return null;
+        }
+
+        StoreBackend.money -= cost;
+        AsyncStorage.setItem(MONEY_KEY, StoreBackend.money.toString()).then(() => {
+          console.log('Cost of item has been successfully deducted from your balance');
+        });
+
+        // the item was found, so increased owned count by 1 in owned array
+        itemAfterUpdate = StoreBackend.updateOwnedBy1(sectionName, sectionArray[i]);
+
+        // updates owned array
+        if (itemAfterUpdate != null) {
+          sectionArray[i] = itemAfterUpdate;
+          StoreBackend.ownedObject[sectionName] = sectionArray;
+          AsyncStorage.setItem(OWNED_KEY, JSON.stringify(StoreBackend.ownedObject)).then(() => {
+            console.log('owned array has been successfully updated in asyncstorage after an item purchase');
+          });
+        }
+
+        // returns the item after it has been updated to reflect purchase
+        return itemAfterUpdate;
+      }
+    }
+
+    // item was not found. It does not exist
+    if (!found) {
+      console.log('This item does not exist in the database');
+      return null;
+    }
+    return itemAfterUpdate;
   }
 
-  //item not owned yet so return hardcoded 0
-  temp.owned = 0;
-  temp.available = false;
-  temp.used = 0;
-  return temp;
+  /**
+   * gets a specific item from owned array
+   * @param sectionName either headers, bodies, or footers
+   * @param itemName name of item to @return
+   */
+  public getItemInfo(sectionName: string, itemName: string) {
+    // checks if section name is one of 'headers, 'bodies', 'footers'
+    if (sectionName !== 'headers' && sectionName !== 'bodies' && sectionName !== 'footers') {
+      console.log('A valid section name was not passed in. Must be \'headers\', \'bodies\', or \'footers\'');
+      return null;
+    }
 
-}
+    let itemToFind = null;
+    const sectionArray = StoreBackend.ownedObject[sectionName];
 
-// TODO remove this function after converting owned to an object
-public getListIndex (section:string){
-  switch (section) {
-    case 'footers':
-      return 0;
-    case 'bodies':
-      return 1;
-    case 'headers':
-      return 2;
+    for (const element of sectionArray) {
+      // item was found
+      if (element.name === itemName) {
+        itemToFind = element;
+      }
+    }
+
+    return itemToFind;
   }
-}
 }

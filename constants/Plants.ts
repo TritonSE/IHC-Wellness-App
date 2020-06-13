@@ -3,7 +3,7 @@
 export const PlantImages = Object.freeze({
   // HEADERS
   // Daisy: require('app/assets/images/Plant_Header.png'),
-  // Sunflower: require('app/assets/images/cartoon_top.png'),
+  Fern: require('app/assets/images/cartoon_top.png'),
   Carnation: require("app/assets/images/_top_carnation.png"),
   Sunflower: require("app/assets/images/_top_sunflower.png"),
   redRose: require("app/assets/images/_top_red_rose.png"),

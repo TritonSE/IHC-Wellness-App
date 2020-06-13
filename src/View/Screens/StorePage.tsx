@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import { NavigationProp } from '@react-navigation/native';
 
 import { PlantBodies, PlantFooters, PlantHeaders } from '../../../constants/Plants';
 import StoreSection from '../../../src/components/Store/StoreSection';
@@ -8,19 +10,44 @@ import AppHeader from '../../components/AppHeader';
 
 const width = Dimensions.get('window').width;
 
-export default class StorePage extends React.Component<object, object> {
-  constructor(props: object) {
+interface IProps {
+  navigation: NavigationProp<{}>;
+}
+
+interface IState {
+  money: number;
+}
+
+export default class StorePage extends React.Component<IProps, IState> {
+  private readonly navigation: NavigationProp<{}> = this.props.navigation
+  private storeController: StoreBackend = StoreBackend.getInstance();
+
+  private removeEnterListener = this.navigation.addListener('focus', (e) => {
+    this.storeController.getMoney()
+    .then((currMoney) => {
+      if (currMoney !== this.state.money) {
+        this.setState(() => ({ money: currMoney }));
+      }
+    });
+  });
+
+  constructor(props: IProps) {
     super(props);
+
+    this.state = {
+      money: 0,
+    };
   }
 
-  public componentDidMount() {
-    console.log('TODO StorePage needs to check whether default store arrays exist yet');
+  public componentWillUnmount() {
+    this.removeEnterListener();
   }
 
   public render() {
     return (
       <View style={styles.pageContainer}>
         <AppHeader title="Store"/>
+        <Text>Money: ${this.state.money}</Text>
         <ScrollView style={styles.scrollContainer}>
 
           <StoreSection
