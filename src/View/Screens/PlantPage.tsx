@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { Button, Dimensions, FlatList, StyleSheet, View } from 'react-native';
 
-import { IPlantItem,
-  PlantBodies, PlantFooters, PlantHeaders,
+import { PlantBodies, PlantFooters, PlantHeaders,
   PlantImages } from '../../../constants/Plants';
 import PlantBackend, { IPlantItem } from '../../Business/PlantBackend';
 import { IOwnedItem } from '../../Business/StoreBackend';
