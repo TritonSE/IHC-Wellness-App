@@ -1,21 +1,11 @@
 import * as React from 'react';
-<<<<<<< HEAD
-<<<<<<< HEAD
-import { Button, Dimensions, FlatList, Modal, SafeAreaView, ScrollView, StyleSheet, Text  , TouchableOpacity, View, TextInput } from 'react-native';
-=======
-import { Alert, Button, Dimensions, FlatList, Modal, SafeAreaView, ScrollView,
-=======
 import { Alert, Button, Dimensions, FlatList, Modal, SafeAreaView,
->>>>>>> origin/master
          StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
->>>>>>> 80d2d05bb1185400e3753797c99d170d31885a3b
 
+import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
+import { ListItem } from 'react-native-elements';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-<<<<<<< HEAD
-import reactNativeModalDropdown from 'react-native-modal-dropdown';
-=======
->>>>>>> 80d2d05bb1185400e3753797c99d170d31885a3b
 
 // TODO replace interface in this file with this import after PoC editing questions is ready
 // import { ICheckinQuestion } from '../../../constants/Questions';
@@ -27,13 +17,14 @@ import CheckinTextInput from '../../components/CheckinTextInput';
 // TODO add a call to addMoney when user submits a checkin
 import StoreBackend from '../../Business/StoreBackend';
 
-const width = Dimensions.get('window').width;
+const { height, width } = Dimensions.get('window');
 
+// TODO add optional members for sliders, e.g. minValue?: number; maxValue?: number;
 interface ICheckinQuestion {
   title: string;
   key: string;
   active: boolean;
-  type: 'numeric' | 'text';
+  type: 'slider' | 'text';
 }
 
 interface IProps {
@@ -46,26 +37,10 @@ interface IState {
   mood: number;
   journal: string;
   questions: ICheckinQuestion[];
-<<<<<<< HEAD
-  isVisible: boolean;
-  addQuestionsIsVisible: boolean;
-=======
   toggleModalVisible: boolean;
   addModalVisible: boolean;
->>>>>>> origin/master
   customQuestionText: string;
 }
-
-// TODO these hardcoded values are to test the frontend behavior
-// but they will need to be replaced with data from backend
-const hardcodedQuestions: ICheckinQuestion[] = [
-  {
-    title: 'How is your mood?',
-    key: 'mood',
-    active: true,
-    type: 'numeric',
-  },
-];
 
 class CheckinPage extends React.Component<IProps, IState> {
   private readonly navigation: NavigationProp<{}> = this.props.navigation;
@@ -94,11 +69,6 @@ class CheckinPage extends React.Component<IProps, IState> {
                   { title: 'happiness', key: '2', active: true, type: 'slider' },
                   { title: 'journal', key: '3', active: true, type: 'slider' }],
     };
-<<<<<<< HEAD
-
-    this.checkActiveStatus = this.checkActiveStatus.bind(this)
-=======
->>>>>>> 80d2d05bb1185400e3753797c99d170d31885a3b
   }
 
   public componentWillUnmount() {
@@ -120,11 +90,6 @@ class CheckinPage extends React.Component<IProps, IState> {
     });
   }
 
-<<<<<<< HEAD
-  // TODO: KeyboardAvoidingView did not work
-  // Will probably want to use react-native-keyboard-aware-scroll-view instead
-=======
->>>>>>> 80d2d05bb1185400e3753797c99d170d31885a3b
   public render() {
     return (
       <View style={styles.pageView}>
@@ -222,92 +187,6 @@ class CheckinPage extends React.Component<IProps, IState> {
                   </View>
                 )}
               />
-<<<<<<< HEAD
-
-<<<<<<< HEAD
-<Modal visible={this.state.isVisible} animationType={'fade'} transparent={true}>
-              <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff', margin: 25 }}>
-                <FlatList
-                  data={this.state.questions}
-                  renderItem={({ item, index, separators }) => (
-                    <View style={{ padding: 5 }}>
-                      <TouchableOpacity
-                        onPress={ () => {
-                          this.state.questions[index].active =
-                          !this.state.questions[index].active; }}
-                      >
-                        <Text style={{backgroundColor: this.state.questions[index].active?'green':'red'}}>Question is currently {this.state.questions[index].active.toString()}</Text>
-                      </TouchableOpacity>
-=======
-            <Modal visible={this.state.isVisible} animationType={'fade'} transparent={true}>
-              <SafeAreaView style={{ height, width, flex: 1, backgroundColor: 'white' }}>
-                <FlatList
-                  data={this.state.questions}
-                  extraData={this.state}
-                  renderItem={({ item, index }) => (
-                    <View style={{ padding: 5 }}>
-                      <ListItem
-                        style={{ width }}
-                        title={item.title}
-                        rightIcon={
-                              (<Ionicons
-                                name="md-checkmark-circle"
-                                size={32}
-                                color={this.state.questions[index].active ? 'green' : 'white'}
-                              />)
-                        }
-                        onPress={(e) => {
-                          this.setState((prevState) => {
-                            const { questions: newQuestions, ...otherData } = prevState;
-                            const pressedQuestion = newQuestions[index];
-                            pressedQuestion.active = !pressedQuestion.active;
-                            return { questions: newQuestions, ...otherData };
-                          });
-                        }}
-                      />
->>>>>>> 80d2d05bb1185400e3753797c99d170d31885a3b
-                    </View>
-                  )}
-                />
-                <Button
-                  title="hide modal"
-                  onPress={() => this.setState({ isVisible: false })}
-                />
-              </SafeAreaView>
-            </Modal>
-
-            <Modal
-              visible={this.state.addQuestionsIsVisible} animationType={'fade'} transparent={true}>
-              <SafeAreaView style={{flex:1, backgroundColor: '#ffffff', margin: 25, justifyContent: 'center' }}>
-                <TextInput
-                  style={{ borderColor: 'black', borderWidth: 1 }}
-                  placeholder={'Add q here'}
-                  onChangeText={ text =>
-                    {this.setState({ customQuestionText: text })} }
-                />
-                <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                  <Button
-                    title="Add"
-                    onPress={ () => {
-                      this.setState({ addQuestionsIsVisible: false })
-                      this.state.questions.push(
-                        { title: 'test', key: 'key', active: true, type: 'text' });}}
-                  />
-                  <Button
-                    title="Cancel"
-                    onPress={ () => this.setState({ addQuestionsIsVisible: false })}
-                  />
-                </View>
-              </SafeAreaView>
-            </Modal>
-
-              <Button
-                title="Add Custom Question"
-                onPress={() => this.setState({ addQuestionsIsVisible: true })}
-              />
-
-=======
->>>>>>> origin/master
               <Button
                 title="Close"
                 onPress={() => this.setState({ toggleModalVisible: false })}
