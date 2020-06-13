@@ -1,9 +1,17 @@
 import * as React from 'react';
+<<<<<<< HEAD
 import { Button, Dimensions, FlatList, Modal, SafeAreaView, ScrollView, StyleSheet, Text  , TouchableOpacity, View, TextInput } from 'react-native';
+=======
+import { Alert, Button, Dimensions, FlatList, Modal, SafeAreaView, ScrollView,
+         StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+>>>>>>> 80d2d05bb1185400e3753797c99d170d31885a3b
 
 import { NavigationProp } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+<<<<<<< HEAD
 import reactNativeModalDropdown from 'react-native-modal-dropdown';
+=======
+>>>>>>> 80d2d05bb1185400e3753797c99d170d31885a3b
 
 // TODO replace interface in this file with this import after PoC editing questions is ready
 // import { ICheckinQuestion } from '../../../constants/Questions';
@@ -75,8 +83,11 @@ class CheckinPage extends React.Component<IProps, IState> {
                   { title: 'happiness', key: '2', active: true, type: 'slider' },
                   { title: 'journal', key: '3', active: true, type: 'slider' }]
     };
+<<<<<<< HEAD
 
     this.checkActiveStatus = this.checkActiveStatus.bind(this)
+=======
+>>>>>>> 80d2d05bb1185400e3753797c99d170d31885a3b
   }
 
   public componentWillUnmount() {
@@ -97,8 +108,11 @@ class CheckinPage extends React.Component<IProps, IState> {
     });
   }
 
+<<<<<<< HEAD
   // TODO: KeyboardAvoidingView did not work
   // Will probably want to use react-native-keyboard-aware-scroll-view instead
+=======
+>>>>>>> 80d2d05bb1185400e3753797c99d170d31885a3b
   public render() {
     return (
       <View style={styles.pageView}>
@@ -157,6 +171,7 @@ class CheckinPage extends React.Component<IProps, IState> {
                 extraData={this.state}
               />
 
+<<<<<<< HEAD
 <Modal visible={this.state.isVisible} animationType={'fade'} transparent={true}>
               <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff', margin: 25 }}>
                 <FlatList
@@ -170,6 +185,34 @@ class CheckinPage extends React.Component<IProps, IState> {
                       >
                         <Text style={{backgroundColor: this.state.questions[index].active?'green':'red'}}>Question is currently {this.state.questions[index].active.toString()}</Text>
                       </TouchableOpacity>
+=======
+            <Modal visible={this.state.isVisible} animationType={'fade'} transparent={true}>
+              <SafeAreaView style={{ height, width, flex: 1, backgroundColor: 'white' }}>
+                <FlatList
+                  data={this.state.questions}
+                  extraData={this.state}
+                  renderItem={({ item, index }) => (
+                    <View style={{ padding: 5 }}>
+                      <ListItem
+                        style={{ width }}
+                        title={item.title}
+                        rightIcon={
+                              (<Ionicons
+                                name="md-checkmark-circle"
+                                size={32}
+                                color={this.state.questions[index].active ? 'green' : 'white'}
+                              />)
+                        }
+                        onPress={(e) => {
+                          this.setState((prevState) => {
+                            const { questions: newQuestions, ...otherData } = prevState;
+                            const pressedQuestion = newQuestions[index];
+                            pressedQuestion.active = !pressedQuestion.active;
+                            return { questions: newQuestions, ...otherData };
+                          });
+                        }}
+                      />
+>>>>>>> 80d2d05bb1185400e3753797c99d170d31885a3b
                     </View>
                   )}
                 />

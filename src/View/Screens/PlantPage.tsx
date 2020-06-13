@@ -1,10 +1,16 @@
 import * as React from 'react';
+<<<<<<< HEAD
 import { Button, Dimensions, FlatList, StyleSheet, View } from 'react-native';
 
 import { PlantBodies, PlantFooters, PlantHeaders,
   PlantImages } from '../../../constants/Plants';
+=======
+import { Dimensions, FlatList, ImageSourcePropType, StyleSheet, View, TouchableOpacity, Text, Button } from 'react-native';
+
+import { PlantBodies, PlantFooters, PlantHeaders,
+         PlantImages } from '../../../constants/Plants';
+>>>>>>> 80d2d05bb1185400e3753797c99d170d31885a3b
 import PlantBackend, { IPlantItem } from '../../Business/PlantBackend';
-import { IOwnedItem } from '../../Business/StoreBackend';
 import AppHeader from '../../components/AppHeader';
 import PlantCard from '../../components/PlantCard';
 
@@ -12,11 +18,9 @@ interface IState {
   plantBody: IPlantItem[];
   plantFooter: IPlantItem;
   plantHeader: IPlantItem;
-
-  // Hardcoded values for owned items, will be replaced with backend calls
-  headerItems: IOwnedItem[];
-  bodyItems: IOwnedItem[];
-  footerItems: IOwnedItem[];
+  headerItems: IPlantItem[];
+  bodyItems: IPlantItem[];
+  footerItems: IPlantItem[];
 }
 
 const width = Dimensions.get('window').width;
@@ -33,30 +37,36 @@ export default class PlantPage extends React.Component<object, IState> {
     this.plantController = PlantBackend.getInstance();
     this.state = {
       // TODO clean backend functions and uncomment these
-      // plantBody: this.plantController.getBody(),
-      // plantFooter: this.plantController.getFooter(),
-      // plantHeader: this.plantController.getHeader(),
+      // plantBody: PlantBackend.getBody(0),
+      // plantFooter: PlantBackend.getFooter(0),
+      // plantHeader: PlantBackend.getHeader(0),
       plantBody: [...PlantBodies],
       plantFooter: PlantFooters[0],
       plantHeader: PlantHeaders[0],
+<<<<<<< HEAD
 
       // hard coded arrays
+=======
+      // hard coded arrays
+      // TODO remove prices here, only name is needed for rendering
+      // so IPlantItem only has the name field
+>>>>>>> 80d2d05bb1185400e3753797c99d170d31885a3b
       headerItems: [
-        { name: "Sunflower", owned: 5, used: 3, available: true },
-        { name: "Carnation", owned: 5, used: 3, available: true },
-        { name: "redRose", owned: 5, used: 3, available: true }
+        { name: "Sunflower", price: 1.25 },
+        { name: "Carnation", price: 1.25 },
+        { name: "redRose", price: 1.25 }
       ],
       bodyItems: [
-        { name: "Body", owned: 5, used: 3, available: true },
-        { name: "Long Body", owned: 5, used: 3, available: true },
-        { name: "Stem", owned: 5, used: 3, available: true }
+        { name: "Body", price: 1.25 },
+        { name: "Long Body", price: 2.5 },
+        { name: "Stem", price: 1.25 }
       ],
       footerItems: [
-        { name: "Clay", owned: 5, used: 3, available: true },
-        { name: "Terracotta", owned: 5, used: 3, available: true },
-        { name: "linedVase", owned: 5, used: 3, available: true },
-        { name: "redPot", owned: 5, used: 3, available: true },
-        { name: "standardPot", owned: 5, used: 3, available: true }
+        { name: "Clay", price: 1.25 },
+        { name: "Terracotta", price: 1.25 },
+        { name: "linedVase", price: 1.25 },
+        { name: "redPot", price: 1.25 },
+        { name: "standardPot", price: 1.25 }
       ],
     };
     // this.plantController.getBody();
@@ -121,10 +131,6 @@ export default class PlantPage extends React.Component<object, IState> {
           }}
           keyExtractor={(item, index) => index.toString()}
         />
-        <Button
-          title="Add Body"
-          onPress={() => { PlantBackend.getInstance().addBody(0, {name:"long"}); }}
-        />
      </View>
     );
   }
@@ -140,7 +146,7 @@ export default class PlantPage extends React.Component<object, IState> {
     return (
       <PlantCard
         modalTitle={ plantItem.name }
-        transparent={ true }
+        transparent={ true } 
         data={ data }
         swapPlant={ swapHandler }
       />
@@ -165,5 +171,5 @@ const styles = StyleSheet.create({
   plantList: {
     width,
     alignItems: 'center',
-  },
+  }
 });
