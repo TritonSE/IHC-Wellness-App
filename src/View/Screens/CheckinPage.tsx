@@ -13,6 +13,7 @@ import CheckinBackend from '../../Business/CheckinBackend';
 import AppHeader from '../../components/AppHeader';
 import CheckinSlider from '../../components/CheckinSlider';
 import CheckinTextInput from '../../components/CheckinTextInput';
+import ProfileBackend from '../../Business/ProfileBackend'
 
 // TODO add a call to addMoney when user submits a checkin
 import StoreBackend from '../../Business/StoreBackend';
@@ -25,6 +26,9 @@ interface ICheckinQuestion {
   key: string;
   active: boolean;
   type: 'slider' | 'text';
+  min?: number;
+  max?: number;
+  step?: number;
 }
 
 interface IProps {
@@ -56,6 +60,9 @@ class CheckinPage extends React.Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
+
+
+
     this.state = {
       addModalVisible: false,
       customQuestionText: '',
@@ -67,7 +74,7 @@ class CheckinPage extends React.Component<IProps, IState> {
       questions: [{ title: 'how healthy...', key: '0', active: true, type: 'slider' },
                   { title: 'hours of sleep...', key: '1', active: true, type: 'slider' },
                   { title: 'happiness', key: '2', active: true, type: 'slider' },
-                  { title: 'journal', key: '3', active: true, type: 'slider' }],
+                  { title: 'journal', key: '3', active: true, type: 'text' }],
     };
   }
 
@@ -130,7 +137,7 @@ class CheckinPage extends React.Component<IProps, IState> {
                   value={this.state.mood}
                   onSlidingComplete={(val) => this.setState({ mood: val })}
                 />;
-              } else if (item.title == 'journal') {
+              } else if (item.title === 'journal') {
                 return <CheckinTextInput
                   style={styles.textInput}
                   title="Journal Entry"
@@ -218,6 +225,7 @@ class CheckinPage extends React.Component<IProps, IState> {
                         questions: [...prevState.questions, newQuestion],
                       };
                     });
+                    CheckinBackend.setQuestions(this.state.questions);
                   }}
                 />
                 <Button
@@ -235,12 +243,18 @@ class CheckinPage extends React.Component<IProps, IState> {
 
             <Button
               title="Toggle Questions"
-              onPress={() => this.setState({ toggleModalVisible: true })}
+              onPress={() => {
+                this.setState({ toggleModalVisible: true });
+                CheckinBackend.setQuestions(this.state.questions);
+              }}
             />
 
             <Button
               title="Submit"
-              onPress={this.sendFormInfo}
+              onPress={() => {
+                this.sendFormInfo();
+                this.props.navigation.navigate('Plant');
+              }}
             />
 
           <Button
