@@ -106,7 +106,7 @@ export default class StoreBackend extends React.Component<object, object> {
    * adds amount to money
    * @param amount amount to add
    */
-  public addMoney(amount: number) {
+  public addMoney(amount: number): number {
     const newAmount = StoreBackend.money + amount;
     return StoreBackend.setMoney(newAmount);
   }
@@ -116,11 +116,11 @@ export default class StoreBackend extends React.Component<object, object> {
    * @param amount of money to spend
    * @returns new amount
    */
-  public spendMoney(amount: number) {
+  public spendMoney(amount: number): number {
     const newAmount = StoreBackend.money - amount;
     if (newAmount < 0) {
       console.log('You do not have enough money');
-      return null;
+      return StoreBackend.money;
     }
     return StoreBackend.setMoney(newAmount);
   }
@@ -129,7 +129,7 @@ export default class StoreBackend extends React.Component<object, object> {
    * sets money amount
    * @param amount new money amount
    */
-  private static setMoney(amount: number) {
+  private static setMoney(amount: number): number {
     this.money = amount;
     AsyncStorage.setItem(MONEY_KEY, amount.toString()).then(() => {
       console.log(`Successfully updated money. Current money owned: ${this.money}`);
@@ -140,7 +140,7 @@ export default class StoreBackend extends React.Component<object, object> {
   /**
    * creates a default owned array and @returns it
    */
-  private static createDefaultOwnedObject() {
+  private static createDefaultOwnedObject(): IOwned {
     // creates array of all the headers and set the first item to be used
     const ownedPlantHeaders: IOwnedItem[] = PlantHeaders.map((header: IStoreItem) => {
       return {

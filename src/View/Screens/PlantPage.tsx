@@ -43,6 +43,7 @@ export default class PlantPage extends React.Component<object, IState> {
   public componentDidMount() {
     this.plantController.getPlant()
     .then((plant: IPlant) => {
+      console.log(`PlantPage: plant is ${JSON.stringify(plant)}`);
       this.setState((prevState: IState) => ({
         plantHeader: plant.header,
         plantBody: plant.body,
@@ -108,13 +109,13 @@ export default class PlantPage extends React.Component<object, IState> {
           data={this.state.plantBody}
           extraData={this.state}
           ListHeaderComponent={
-            this.renderPlantItem(this.state.plantHeader, styles.plantItem, this.state.ownedHeaders, 'header')
+            this.renderPlantItem(this.state.plantHeader, this.state.ownedHeaders, 'header')
           }
           ListFooterComponent={
-            this.renderPlantItem(this.state.plantFooter, styles.plantItem, this.state.ownedFooters, 'footer')
+            this.renderPlantItem(this.state.plantFooter, this.state.ownedFooters, 'footer')
           }
           renderItem={
-            ({ item, index }) => this.renderPlantItem(item, styles.plantItem, this.state.ownedBodies, 'body', index)
+            ({ item, index }) => this.renderPlantItem(item, this.state.ownedBodies, 'body', index)
           }
           keyExtractor={(item, index) => index.toString()}
         />
@@ -123,9 +124,8 @@ export default class PlantPage extends React.Component<object, IState> {
   }
 
   // TODO remove data parameter, get data in PlantCard with call to StoreBackend
-  private renderPlantItem(plantItem: IPlantItem, plantStyle: object, data: any, section: string, index?: number) {
-
-    // let itemImage: ImageSourcePropType = PlantImages[plantItem.name];
+  private renderPlantItem(plantItem: IPlantItem, ownedItems: IOwnedItem[],
+                          section: string, index?: number) {
 
     const swapHandler = section === 'body'
                         ? (swapItem: IOwnedItem) => this.swapBodyHandler(swapItem, index || 0)
@@ -136,8 +136,7 @@ export default class PlantPage extends React.Component<object, IState> {
     return (
       <PlantCard
         plantName={ plantItem.name }
-        transparent={ true }
-        data={ data }
+        data={ ownedItems }
         swapPlant={ swapHandler }
       />
     );

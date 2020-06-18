@@ -41,10 +41,10 @@ const CheckinBackend = Object.freeze({
     const questionArray = questionArrayJson ? JSON.parse(questionArrayJson) : null;
     // TODO refactor so that createDefault returns the array and the promise it will be saved
     if (questionArray == null) {
-      const asyncPromise = CheckinBackend.createDefaultQuestionsArray();
+      const { questions, savePromise } = CheckinBackend.createDefaultQuestionsArray();
       return {
-        questions: [],
-        promise: asyncPromise,
+        questions,
+        promise: savePromise,
       };
     }
     return questionArray;
@@ -84,7 +84,10 @@ const CheckinBackend = Object.freeze({
    * @returns : a promise that the default has been added
    */
   createDefaultQuestionsArray: () => {
-    return AsyncStorage.setItem('questions', JSON.stringify(DefaultQuestions));
+    return {
+      questions: DefaultQuestions,
+      savePromise: AsyncStorage.setItem('questions', JSON.stringify(DefaultQuestions)),
+    };
   },
 
   /**
