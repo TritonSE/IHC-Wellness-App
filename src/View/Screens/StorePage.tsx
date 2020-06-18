@@ -19,7 +19,7 @@ interface IState {
 }
 
 export default class StorePage extends React.Component<IProps, IState> {
-  private readonly navigation: NavigationProp<{}> = this.props.navigation
+  private readonly navigation: NavigationProp<{}> = this.props.navigation;
   private storeController: StoreBackend = StoreBackend.getInstance();
 
   private removeEnterListener = this.navigation.addListener('focus', (e) => {

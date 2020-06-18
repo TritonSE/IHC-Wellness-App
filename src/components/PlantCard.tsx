@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { Image, ImageSourcePropType, Modal, ScrollView, StyleSheet,
-         Text, TouchableHighlight, TouchableOpacity, View, Dimensions } from 'react-native';
+import { Image, ImageSourcePropType, Modal, ScrollView, StyleSheet, Text,
+         TouchableHighlight, TouchableOpacity, View } from 'react-native';
 
 import { PlantImages } from '../../constants/Plants';
+import { IPlantItem } from '../Business/PlantBackend';
 import { IOwnedItem } from '../Business/StoreBackend';
 
 interface IProps {
   plantName: string;
-  transparent: boolean;
-  data: IOwnedItem[]; // TODO replace this with a StoreBackend call
+  data: IOwnedItem[];
   swapPlant: (plant: IOwnedItem) => void;
 }
 
@@ -16,9 +16,8 @@ interface IState {
   modalVisible: boolean;
 }
 
-const width = Dimensions.get('window').width;
-
 class PlantCards extends React.Component<IProps, IState> {
+
   constructor(props: IProps) {
     super(props);
     this.state = {
@@ -33,7 +32,7 @@ class PlantCards extends React.Component<IProps, IState> {
   public render() {
     const { modalVisible } = this.state;
 
-    const dataArr = this.props.data.map((item: IOwnedItem, i: number) => {
+    const dataArr = this.props.data.map((item, i) => {
 
       const itemImage: ImageSourcePropType = PlantImages[item.name];
 
@@ -65,7 +64,7 @@ class PlantCards extends React.Component<IProps, IState> {
       <View style={styles.centeredView}>
         <Modal
           animationType="slide"
-          transparent={this.props.transparent}
+          transparent={true}
           visible={this.state.modalVisible}
         >
           <View style={styles.centeredView}>
@@ -73,7 +72,9 @@ class PlantCards extends React.Component<IProps, IState> {
               <Text>{this.props.plantName}</Text>
               <ScrollView
                   horizontal
-                  contentContainerStyle={styles.ownedList}
+                  contentContainerStyle={{
+                    alignItems: 'flex-end',
+                  }}
                 >
                   {
                     dataArr // Render the JSX in a ScrollView
@@ -138,15 +139,10 @@ const styles = StyleSheet.create({
     height: 350,
   },
   openButton: {
-    // backgroundColor: "#F194FF",
+      // backgroundColor: "#F194FF",
     borderRadius: 20,
-    // padding: 10,
+      // padding: 10,
     elevation: 2,
-  },
-  ownedList: {
-    width,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   closeButton: {
     backgroundColor: '#F194FF',

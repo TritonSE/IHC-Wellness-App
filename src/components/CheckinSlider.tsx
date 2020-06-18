@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Slider, Text, View, StyleSheet } from 'react-native';
+import { Slider, StyleSheet, Text, View } from 'react-native';
 
 interface IProps {
   title: string;
@@ -45,7 +45,7 @@ class CheckinSlider extends React.Component<IProps, IState> {
   }
 
   public sliderBound(event: any) {
-    const { x, y, width, height } = event.nativeEvent.layout;
+    const { x, width } = event.nativeEvent.layout;
     this.setState({
       width,
       leftOffset: x,
@@ -55,7 +55,8 @@ class CheckinSlider extends React.Component<IProps, IState> {
   public render() {
     const valuePosition = this.state.leftOffset - sliderRadius
                           + this.state.width * widthCorrection
-                          * (this.state.value / (this.props.maxValue - this.props.minValue));
+                          * ((this.state.value - this.props.minValue)
+                            / (this.props.maxValue - this.props.minValue));
 
     return (
         <View style={styles.container}
