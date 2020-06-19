@@ -219,7 +219,6 @@ class CheckinPage extends React.Component<IProps, IState> {
               // TODO check if form has already been submitted
               this.sendFormInfo();
               this.storeController.addMoney(CHECKIN_REWARD);
-              this.props.navigation.navigate('Plant');
             }}
           />
 

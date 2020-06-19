@@ -8,6 +8,7 @@ interface IProps {
   readonly plantItems: ReadonlyArray<IStoreItem>;
   readonly storageName: string;
   readonly sectionTitle: string;
+  readonly setPageMoney: (money: number) => void;
 }
 
 export default function StoreSection(props: IProps) {
@@ -22,6 +23,7 @@ export default function StoreSection(props: IProps) {
             name={item.name}
             price={item.price}
             sectionName={props.storageName}
+            setPageMoney={props.setPageMoney}
           />
         )}
         keyExtractor={(_, index) => index.toString()}

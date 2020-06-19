@@ -309,7 +309,8 @@ export default class StoreBackend extends React.Component<object, object> {
       sectionArray.push(item);
     }
     StoreBackend.ownedObject[sectionName] = sectionArray;
-    AsyncStorage.setItem(OWNED_KEY, JSON.stringify(StoreBackend.ownedObject)).then(() => {
+    AsyncStorage.setItem(OWNED_KEY, JSON.stringify(StoreBackend.ownedObject))
+    .then(() => {
       console.log('Successfully updated owned array');
     });
 
@@ -322,11 +323,15 @@ export default class StoreBackend extends React.Component<object, object> {
    * @param sectionName either header, bodies, or footers
    * @param itemName name of item to buy
    */
-  public buyItem(sectionName: string, itemName: string) {
+  public async buyItem(sectionName: string, itemName: string) {
     // checks if section name is one of 'headers, 'bodies', 'footers'
     if (sectionName !== 'headers' && sectionName !== 'bodies' && sectionName !== 'footers') {
       console.log('A valid section name was not passed in. Must be \'headers\', \'bodies\', or \'footers\'');
       return null;
+    }
+
+    if (!StoreBackend.ownedObject) {
+      StoreBackend.ownedObject = await this.getOwned();
     }
 
     // keeps track of which section we're in so we get get the item's price
@@ -344,8 +349,10 @@ export default class StoreBackend extends React.Component<object, object> {
 
     let found = false;
 
+    // TODO try to remove the 3 for-loops in this file
     // looks for the item in a certain section
     const sectionArray = StoreBackend.ownedObject[sectionName];
+    const itemIndex = sectionArray.find((item) => item.name === item.name);
     for (let i = 0; i < sectionArray.length; i++) {
       // item was found
       if (sectionArray[i].name === itemName) {
@@ -358,10 +365,14 @@ export default class StoreBackend extends React.Component<object, object> {
           return null;
         }
 
+        // TODO
+        this.spendMoney(cost);
+        /*
         StoreBackend.money -= cost;
         AsyncStorage.setItem(MONEY_KEY, StoreBackend.money.toString()).then(() => {
           console.log('Cost of item has been successfully deducted from your balance');
         });
+        */
 
         // the item was found, so increased owned count by 1 in owned array
         itemAfterUpdate = StoreBackend.updateOwnedBy1(sectionName, sectionArray[i]);
@@ -376,7 +387,10 @@ export default class StoreBackend extends React.Component<object, object> {
         }
 
         // returns the item after it has been updated to reflect purchase
-        return itemAfterUpdate;
+        return {
+          money: StoreBackend.money,
+          ownedItem: itemAfterUpdate,
+        };
       }
     }
 
@@ -385,7 +399,10 @@ export default class StoreBackend extends React.Component<object, object> {
       console.log('This item does not exist in the database');
       return null;
     }
-    return itemAfterUpdate;
+    return {
+      money: StoreBackend.money,
+      ownedItem: itemAfterUpdate,
+    };
   }
 
   /**

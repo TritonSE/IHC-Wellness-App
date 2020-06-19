@@ -7,6 +7,7 @@ import StoreBackend from '../../Business/StoreBackend';
 
 interface IProps extends IStoreItem {
   sectionName: string;
+  setPageMoney: (money: number) => void;
 }
 
 interface IState {
@@ -19,6 +20,8 @@ class StoreCard extends React.Component<IProps, IState> {
   public readonly sectionName: string = this.props.sectionName;
 
   private readonly image: ImageSourcePropType = PlantImages[this.name];
+
+  private readonly storeController: StoreBackend = StoreBackend.getInstance();
 
   constructor(props: IProps) {
     super(props);
@@ -65,8 +68,12 @@ class StoreCard extends React.Component<IProps, IState> {
                   <Button
                     title={`Buy for $${this.price}`}
                     onPress={() => {
-                      console.log(`Not implemented: Attempting to buy ${this.name} for $${this.price}`);
-                      // StoreBackend.buyItem(this.name, this.sectionName);
+                      console.log(`Attempting to buy ${this.name} for $${this.price}`);
+                      this.storeController.buyItem(this.sectionName, this.name)
+                      .then((result) => {
+                        if (!result) return;
+                        this.props.setPageMoney(result.money);
+                      });
                     }}
                   />
                 </View>

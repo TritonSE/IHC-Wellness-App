@@ -43,29 +43,38 @@ export default class StorePage extends React.Component<IProps, IState> {
     this.removeEnterListener();
   }
 
+  private setPageMoney = (money: number) => {
+    this.setState(() => ({ money }));
+  }
+
   public render() {
     return (
       <View style={styles.pageContainer}>
         <AppHeader title="Store"/>
-        <Text>Money: ${this.state.money}</Text>
+        <View style={styles.infoArea}>
+          <Text>Money: ${this.state.money.toFixed(2)}</Text>
+        </View>
         <ScrollView style={styles.scrollContainer}>
 
           <StoreSection
             sectionTitle="Heads"
             plantItems={ PlantHeaders }
             storageName="headers"
+            setPageMoney={this.setPageMoney}
           />
 
           <StoreSection
             sectionTitle="Stems"
             plantItems={ PlantBodies }
             storageName="bodies"
+            setPageMoney={this.setPageMoney}
           />
 
           <StoreSection
             sectionTitle="Pots"
             plantItems={ PlantFooters }
             storageName="footers"
+            setPageMoney={this.setPageMoney}
           />
 
         </ScrollView>
@@ -76,6 +85,11 @@ export default class StorePage extends React.Component<IProps, IState> {
 
 // Element styling akin to CSS, check https://reactnative.dev/docs/flexbox for info
 const styles = StyleSheet.create({
+  infoArea: {
+    width,
+    alignItems: 'flex-end',
+    padding: 10,
+  },
   pageContainer: {
     alignItems: 'center',
     // backgroundColor: 'green',
@@ -91,7 +105,8 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     width,
-    padding: 20,
+    paddingLeft: 20,
+    paddingRight: 20,
   },
   shopItem: {
     borderColor: 'red',

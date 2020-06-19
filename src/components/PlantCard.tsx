@@ -55,6 +55,7 @@ class PlantCards extends React.Component<IProps, IState> {
                 style={styles.plantStyle}
             />
           </TouchableOpacity>
+          <Text>Available: {item.owned - item.used}</Text>
           </View>
         </View>
       );

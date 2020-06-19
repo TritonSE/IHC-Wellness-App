@@ -74,13 +74,13 @@ export default class PlantPage extends React.Component<object, IState> {
   }
 
   public swapHeaderHandler(plantItem: IOwnedItem) {
-    this.setState((prevState: IState) => ({
+    this.setState(() => ({
       plantHeader: { name: plantItem.name },
     }));
   }
 
   public swapFooterHandler(plantItem: IOwnedItem) {
-    this.setState((prevState: IState) => ({
+    this.setState(() => ({
       plantFooter: { name: plantItem.name },
     }));
   }
