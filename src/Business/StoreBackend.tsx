@@ -45,7 +45,7 @@ export default class StoreBackend extends React.Component<object, object> {
     console.log('StoreController created');
 
     // TODO replace with logic similar to the above getItem
-    StoreBackend.setMoney(1000);
+    // StoreBackend.setMoney(1000);
   }
 
   /**
@@ -88,11 +88,7 @@ export default class StoreBackend extends React.Component<object, object> {
   public isItemAvailable(sectionName: string, itemToCheck: string) {
     // checks if section name is one of 'headers, 'bodies', 'footers'
     if (sectionName !== 'headers' && sectionName !== 'bodies' && sectionName !== 'footers') {
-      console.log('A valid section name was not passed in. Must be \'headers\', \'bodies\', or \'footers\'');
-      return {
-        index: -1,
-        object: undefined,
-      };
+      throw new Error('A valid section name was not passed in. Must be \'headers\', \'bodies\', or \'footers\'');
     }
 
     let itemIndex = -1;
@@ -104,7 +100,7 @@ export default class StoreBackend extends React.Component<object, object> {
       }
       return false;
     });
-    console.log(`The item you are looking for is ${item.name} and it was found at index ${itemIndex}`);
+    console.log(`The item you are looking for is ${item?.name} and it was found at index ${itemIndex}`);
 
     return {
       index: itemIndex,
@@ -121,8 +117,7 @@ export default class StoreBackend extends React.Component<object, object> {
   public incrementItemUsage(sectionName: string, index: number) {
     // checks if section name is one of 'headers, 'bodies', 'footers'
     if (sectionName !== 'headers' && sectionName !== 'bodies' && sectionName !== 'footers') {
-      console.log('A valid section name was not passed in. Must be \'headers\', \'bodies\', or \'footers\'');
-      return null;
+      throw new Error('A valid section name was not passed in. Must be \'headers\', \'bodies\', or \'footers\'');
     }
 
     // increments the item
@@ -131,6 +126,8 @@ export default class StoreBackend extends React.Component<object, object> {
     item.used++;
     item.available = item.owned > item.used;
     tempOwned[sectionName][index] = item;
+
+    this.setOwned(StoreBackend.ownedObject);
 
     return StoreBackend.ownedObject;
   }
@@ -144,8 +141,7 @@ export default class StoreBackend extends React.Component<object, object> {
   public decrementItemUsage(sectionName: string, index: number) {
     // checks if section name is one of 'headers, 'bodies', 'footers'
     if (sectionName !== 'headers' && sectionName !== 'bodies' && sectionName !== 'footers') {
-      console.log('A valid section name was not passed in. Must be \'headers\', \'bodies\', or \'footers\'');
-      return null;
+      throw new Error('A valid section name was not passed in. Must be \'headers\', \'bodies\', or \'footers\'');
     }
 
     // increments the item
@@ -154,6 +150,8 @@ export default class StoreBackend extends React.Component<object, object> {
     item.used--;
     item.available = item.owned > item.used;
     tempOwned[sectionName][index] = item;
+
+    this.setOwned(StoreBackend.ownedObject);
 
     return StoreBackend.ownedObject;
   }
@@ -208,7 +206,8 @@ export default class StoreBackend extends React.Component<object, object> {
    * sets money amount
    * @param amount new money amount
    */
-  private static setMoney(amount: number): number {
+  // TODO only public to allow debug buttons, should ultimately be private
+  public static setMoney(amount: number): number {
     this.money = amount;
     AsyncStorage.setItem(MONEY_KEY, amount.toString()).then(() => {
       console.log(`Successfully updated money. Current money owned: ${this.money}`);
@@ -424,6 +423,7 @@ export default class StoreBackend extends React.Component<object, object> {
       // item was found
       if (element.name === itemName) {
         itemToFind = element;
+        break;
       }
     }
 

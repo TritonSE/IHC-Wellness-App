@@ -238,6 +238,11 @@ class CheckinPage extends React.Component<IProps, IState> {
           <Text>Debug buttons go below</Text>
 
           <Button
+            title="Get $1,000"
+            onPress={() => StoreBackend.setMoney(1000)}
+          />
+
+          <Button
             title="Clear all async data"
             onPress={() => { CheckinBackend.clearAllData(); }}
           />

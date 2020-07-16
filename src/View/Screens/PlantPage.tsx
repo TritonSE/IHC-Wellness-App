@@ -59,30 +59,43 @@ export default class PlantPage extends React.Component<object, IState> {
         ownedFooters: owned.footers.filter((o) => o.available),
       }));
     });
-
-    setTimeout(() => console.log(`ownedHeaders: ${JSON.stringify(this.state.ownedHeaders)}`), 1000);
   }
 
   public swapBodyHandler(plantItem: IOwnedItem, index: number) {
-    this.setState((prevState: IState) => {
-      const newBodies = [...prevState.plantBody];
-      newBodies[index] = { name: plantItem.name };
-      return {
-        plantBody: newBodies,
-      };
-    });
+    const newBodyName = plantItem.name;
+    const { bodies, ownedBodies } = this.plantController.swapBody(this.state.plantBody,
+                                                                  index, newBodyName);
+
+    this.setState(() => ({
+      ownedBodies,
+      plantBody: bodies,
+    }));
+
+    this.plantController.savePlantSection('bodies', bodies); 
   }
 
   public swapHeaderHandler(plantItem: IOwnedItem) {
+    const [oldName, newName] = [this.state.plantHeader.name, plantItem.name];
+    const { header, ownedHeaders } = this.plantController.swapHeader(oldName, newName);
+
     this.setState(() => ({
-      plantHeader: { name: plantItem.name },
+      ownedHeaders,
+      plantHeader: header,
     }));
+
+    this.plantController.savePlantSection('headers', header);
   }
 
   public swapFooterHandler(plantItem: IOwnedItem) {
+    const [oldName, newName] = [this.state.plantFooter.name, plantItem.name];
+    const { footer, ownedFooters } = this.plantController.swapFooter(oldName, newName);
+
     this.setState(() => ({
-      plantFooter: { name: plantItem.name },
+      ownedFooters,
+      plantFooter: footer,
     }));
+
+    this.plantController.savePlantSection('footers', footer);
   }
 
   public addItem(plantItem: IPlantItem) {
@@ -108,6 +121,7 @@ export default class PlantPage extends React.Component<object, IState> {
           contentContainerStyle={styles.plantList}
           data={this.state.plantBody}
           extraData={this.state}
+          keyExtractor={(item, index) => index.toString()}
           ListHeaderComponent={
             this.renderPlantItem(this.state.plantHeader, this.state.ownedHeaders, 'header')
           }
@@ -117,13 +131,11 @@ export default class PlantPage extends React.Component<object, IState> {
           renderItem={
             ({ item, index }) => this.renderPlantItem(item, this.state.ownedBodies, 'body', index)
           }
-          keyExtractor={(item, index) => index.toString()}
         />
      </View>
     );
   }
 
-  // TODO remove data parameter, get data in PlantCard with call to StoreBackend
   private renderPlantItem(plantItem: IPlantItem, ownedItems: IOwnedItem[],
                           section: string, index?: number) {
 
@@ -146,14 +158,11 @@ export default class PlantPage extends React.Component<object, IState> {
 // Element styling akin to CSS, check https://reactnative.dev/docs/flexbox for info
 const styles = StyleSheet.create({
   container: {
-    // height,
     width,
     alignItems: 'center',
     flex: 1,
   },
   plantItem: {
-    // borderColor: 'black',
-    // borderWidth: 3,
     height: 100,
     width: 100,
   },

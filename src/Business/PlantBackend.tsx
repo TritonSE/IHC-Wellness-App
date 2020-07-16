@@ -72,53 +72,14 @@ export default class PlantBackend extends React.Component<object, object> {
     });
   }
 
-  /**
-   * When an item is bought in store, need to update its presence in the plantArray
-   * @param sectionName either header, footer, or bodies so we konw which array to update
-   * @param item the item that we are trying to reflect the changes of
-   * @returns: null iff the item is invalid
-   */
-  public handlePlants(sectionName: string, item: IOwnedItem | null) {
-    if (item === null) {
-      console.log('The item passed in is invalid, plant array has not been changed');
-      return null;
+  public savePlantSection(sectionName: string, section: IPlantItem | IPlantItem[], plantIndex = 0) {
+    if (sectionName !== 'headers' && sectionName !== 'bodies' && sectionName !== 'footers') {
+      throw new Error('A valid section name was not passed in. Must be \'headers\', \'bodies\', or \'footers\'');
     }
-    // loops through all the plants the user owns
-    for (let i = 0; i < PlantBackend.plantArray.length; i++) {
-      const currentPlant = PlantBackend.plantArray[i];
+    const plantSection = sectionName === 'headers' ? header : sectionName === 'bodies' ? 'body' : 'footer';
+    PlantBackend.plantArray[plantIndex][plantSection] = section;
+    AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray));
 
-      // we are looking at the footer array
-      if (sectionName === 'footers') {
-        // we are currently using the bought item as a footer in the plant
-        if (currentPlant.footer.name === item.name) {
-          currentPlant.footer = item;
-        }
-      } else if (sectionName === 'bodies') {
-        // we are looking at the bodies array
-        const bodyArray = currentPlant.body;
-        for (let j = 0; j < bodyArray.length; j ++) {
-          // we are currently using the bought item as a body in the plant
-          const bodyItem = bodyArray[j];
-          if (bodyItem.name === item.name) {
-            bodyArray[j] = item;
-            currentPlant.body = bodyArray;
-          }
-        }
-      } else if (sectionName === 'headers') {
-        // we are currently using the bought item as a header in the plant
-        if (currentPlant.header.name === item.name) {
-          currentPlant.header = item;
-        }
-      }
-
-      // pushes all changes to the plant array
-      PlantBackend.plantArray[i] = currentPlant;
-    }
-    // push plantArray
-    AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray))
-    .then(() => {
-      console.log('The plant array has been updated after an item has been bought');
-    });
   }
 
   /**
@@ -171,71 +132,73 @@ export default class PlantBackend extends React.Component<object, object> {
   }
 
   /**
+   * @returns null if failure, new header and owned array if success
+   * @param plantIndex index of plant whose header we want to change
+   * @param oldHeaderName name of oldheader item
+   * @param newHeaderName name of new header item
+   */
+  public swapHeader(oldHeaderName: string, newHeaderName: string) {
+    // Change bodies to use new item at specified index
+    const newHeader = { name: newHeaderName };
+
+    const oldHeaderOwnedIndex = this.storeController.isItemAvailable('headers', oldHeaderName).index;
+    const newHeaderOwnedIndex = this.storeController.isItemAvailable('headers', newHeaderName).index;
+
+    let ownedObject = this.storeController.decrementItemUsage('headers', oldHeaderOwnedIndex);
+    ownedObject = this.storeController.incrementItemUsage('headers', newHeaderOwnedIndex);
+
+    return {
+      header: newHeader,
+      ownedHeaders: ownedObject.headers,
+    };
+  }
+
+  /**
    * Swaps out a body item in the plant's body array
+   * @param bodies array of plant bodies to update
    * @param plantIndex which plant to update
-   * @param oldPlantBodyIndex which old body item we want to swap out
    * @param oldBodyName name of that old body item
    * @param newBodyName name of the new body item
    * @returns: null if item is invalid
    *           else returns the new body and owned arrays
    */
-  public changeBody(plantIndex: number = 0, oldPlantBodyIndex: number,
-                    oldBodyName: string, newBodyName: string) {
+  public swapBody(bodies: IPlantItem[], oldBodyIndex: number, newBodyName: string) {
+    // Change bodies to use new item at specified index
+    const oldBodyName = bodies[oldBodyIndex].name;
+    const newBodies: IPlantItem[] = [...bodies];
+    newBodies[oldBodyIndex].name = newBodyName;
 
-    // looks to see if the old item is currently in ownedObject
-    const resultOfSearchingOldBody = this.storeController.isItemAvailable('bodies', oldBodyName);
-    const oldItem = resultOfSearchingOldBody.object;
-    const oldIndex = resultOfSearchingOldBody.index;
+    const oldBodyOwnedIndex = this.storeController.isItemAvailable('bodies', oldBodyName).index;
+    const newBodyOwnedIndex = this.storeController.isItemAvailable('bodies', newBodyName).index;
 
-    if (oldItem === undefined) {
-      console.log('old item in plant couldn\'t be found');
-      return null;
-    }
-    console.log('found oldBody in owned array');
+    let ownedObject = this.storeController.decrementItemUsage('bodies', oldBodyOwnedIndex);
+    ownedObject = this.storeController.incrementItemUsage('bodies', newBodyOwnedIndex);
 
-    // looks to see if the new item is currently in ownedObject
-    const resultOfSearchingNewBody = this.storeController.isItemAvailable('bodies', newBodyName);
-    const newItem = resultOfSearchingNewBody.object;
-    const newIndex = resultOfSearchingNewBody.index;
-
-    if (newItem === undefined) {
-      console.log('new item in owned couldn\'t be found');
-      return null;
-    }
-    console.log('found newBody in owned array');
-
-    // check for availability of the new item
-    if (!newItem.available) {
-      console.log('You do not have enough of the new item to swap it into your plant');
-      return null;
-    }
-    // newItem was found, decrement old usage and increment new usage
-    let updatedOwnedObject = this.storeController.decrementItemUsage('bodies', oldIndex);
-    if (updatedOwnedObject === null) return;
-
-    updatedOwnedObject = this.storeController.incrementItemUsage('bodies', newIndex);
-    if (updatedOwnedObject === null) return;
-
-    console.log('swapping body of plant');
-
-    // update plantArray
-    const currentPlant = PlantBackend.plantArray[plantIndex];
-    const newPlantItem: IPlantItem = { name: newItem.name };
-    currentPlant.body[oldPlantBodyIndex] = newPlantItem;
-    PlantBackend.plantArray[plantIndex] = currentPlant;
-
-    // replace updated items into async
-    this.storeController.setOwned(updatedOwnedObject);
-
-    AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray))
-    .then(() => {
-      console.log('New item successfully swapped in plant body');
-    });
-
-    // returns the new body array and owned array
     return {
-      newBody: PlantBackend.plantArray[plantIndex].body,
-      promiseForOwned: this.storeController.getOwned(),
+      bodies: newBodies,
+      ownedBodies: ownedObject.bodies,
+    };
+  }
+
+  /**
+   * @returns null if failure, new header and owned array if success
+   * @param plantIndex index of plant whose header we want to change
+   * @param oldFooterName name of old footer item
+   * @param newFooterName name of new footer item
+   */
+  public swapFooter(oldFooterName: string, newFooterName: string) {
+    // Change bodies to use new item at specified index
+    const newFooter = { name: newFooterName };
+
+    const oldFooterOwnedIndex = this.storeController.isItemAvailable('footers', oldFooterName).index;
+    const newFooterOwnedIndex = this.storeController.isItemAvailable('footers', newFooterName).index;
+
+    let ownedObject = this.storeController.decrementItemUsage('footers', oldFooterOwnedIndex);
+    ownedObject = this.storeController.incrementItemUsage('footers', newFooterOwnedIndex);
+
+    return {
+      footer: newFooter,
+      ownedFooters: ownedObject.footers,
     };
   }
 
@@ -276,148 +239,6 @@ export default class PlantBackend extends React.Component<object, object> {
     }
     console.log('The plant array does not exist yet');
     return null;
-  }
-
-  /**
-   * @returns null if failure, new header and owned array if success
-   * @param plantIndex index of plant whose header we want to change
-   * @param oldHeaderName name of oldheader item
-   * @param newHeaderName name of new header item
-   */
-  public changeHeader(plantIndex: number = 0, oldHeaderName: string, newHeaderName: string) {
-
-    // looks to see if the old item is currently in ownedObject
-    const resultOfSearchingOldHeader = this.storeController.isItemAvailable('headers',
-                                                                            oldHeaderName);
-    const oldItem = resultOfSearchingOldHeader.object;
-    const oldIndex = resultOfSearchingOldHeader.index;
-
-    if (oldItem === undefined || oldItem === null) {
-      console.log('old item in plant couldn\'t be found');
-      return null;
-    }
-    console.log('found oldHeader in owned array');
-
-    // looks to see if the old item is currently in ownedObject
-    const resultOfSearchingNewHeader = this.storeController.isItemAvailable('headers',
-                                                                            newHeaderName);
-    const newItem = resultOfSearchingNewHeader.object;
-    const newIndex = resultOfSearchingNewHeader.index;
-
-    if (newItem === undefined || newItem === null) {
-      console.log('new item in owned couldn\'t be found');
-      return null;
-    }
-    console.log('found newHeader in owned array');
-
-    // check for availability of the new item
-    if (!newItem.available) {
-      console.log('You do not have enough of the new item to swap it into your plant');
-      return null;
-    }
-
-    // new item found, increment newItem usage and decrement oldItem usage
-    let updatedOwnedObject = this.storeController.decrementItemUsage('headers', oldIndex);
-    if (updatedOwnedObject === null) return;
-
-    updatedOwnedObject = this.storeController.incrementItemUsage('headers', newIndex);
-    if (updatedOwnedObject === null) return;
-
-    console.log('swapping header of plant');
-
-    // updates PlantArray
-    const newPlantItem: IPlantItem = { name: newItem.name };
-    PlantBackend.plantArray[plantIndex].header = newPlantItem;
-
-    // replace updated items into async
-    this.storeController.setOwned(updatedOwnedObject);
-    AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray))
-    .then(() => {
-      console.log('PlantArray array successfully updated after swapping header');
-    });
-
-    // returns the new header and owned array
-    return{
-      newHeader: PlantBackend.plantArray[plantIndex].header,
-      promiseForOwned: this.storeController.getOwned(),
-    };
-  }
-
-  /**
-   * @returns null if failure, new header and owned array if success
-   * @param plantIndex index of plant whose header we want to change
-   * @param oldFooterName name of old footer item
-   * @param newFooterName name of new footer item
-   */
-  public changeFooter(plantIndex: number = 0, oldFooterName: string, newFooterName: string) {
-    // // initialize holders
-    // let currentItem = null;
-    // let oldItem = null;
-    // let oldIndex = 0;
-
-    // // find oldItem for later update
-    // const tempOwnedArray: IOwned = this.storeController.getOwned();
-    // for (let i = 0; i < tempOwnedArray.footers.length; i ++) {
-    //   if (tempOwnedArray.footers[i].name === oldFooterName) {
-    //     console.log('found old footer');
-    //     oldItem = tempOwnedArray.footers[i];
-    //     oldIndex = i;
-    //   }
-    // }
-
-    // looks to see if the old item is currently in ownedObject
-    const resultOfSearchingOldFooter = this.storeController.isItemAvailable('footers',
-                                                                            oldFooterName);
-    const oldItem = resultOfSearchingOldFooter.object;
-    const oldIndex = resultOfSearchingOldFooter.index;
-
-    if (oldItem === undefined || oldItem === null) {
-      console.log('old item in plant couldn\'t be found');
-      return null;
-    }
-    console.log('found oldFooter in owned array');
-
-    // looks to see if the new item is currently in ownedObject
-    const resultOfSearchingNewFooter = this.storeController.isItemAvailable('footers',
-                                                                            newFooterName);
-    const newItem = resultOfSearchingNewFooter.object;
-    const newIndex = resultOfSearchingNewFooter.index;
-
-    if (newItem === undefined || newItem === null) {
-      console.log('new item in owned couldn\'t be found');
-      return null;
-    }
-    console.log('found newFooter in owned array');
-
-    // check for availability of the new item
-    if (!newItem.available) {
-      console.log('You do not have enough of the new item to swap it into your plant');
-      return null;
-    }
-
-    // newItem found, increment newIOtem usage and decrement oldItem usage
-    let updatedOwnedObject = this.storeController.decrementItemUsage('footers', oldIndex);
-    if (updatedOwnedObject === null) return;
-
-    updatedOwnedObject = this.storeController.incrementItemUsage('footers', newIndex);
-    if (updatedOwnedObject === null) return;
-    console.log('swapping footer of plant');
-
-    // updates PlantArray
-    const newPlantItem: IPlantItem = { name: newItem.name };
-    PlantBackend.plantArray[plantIndex].footer = newPlantItem;
-
-    // replace updated items into async
-    this.storeController.setOwned(updatedOwnedObject);
-    AsyncStorage.setItem('PlantArray', JSON.stringify(PlantBackend.plantArray))
-    .then(() => {
-      console.log('Plant array successfully updated');
-    });
-
-    return{
-      newFooter: PlantBackend.plantArray[plantIndex].footer,
-      promiseForOwned: this.storeController.getOwned(),
-    };
   }
 
   /**
